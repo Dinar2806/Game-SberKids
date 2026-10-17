@@ -194,6 +194,204 @@
         }
       },
       "image": "./assets/robodog.svg"
+    },
+    {
+      "id": "demo-scooter-weekend",
+      "name": "Самокат: выходные на колёсах",
+      "icon": "🛴",
+      "description": "Демо-кампания. Друзья зовут кататься, а копилка зовёт подумать. Что победит: ещё одно мороженое или мечта о первом заезде?",
+      "difficulty": "easy",
+      "progressIcons": [
+        "🛞",
+        "🛹",
+        "🕹️",
+        "🔋",
+        "🚀"
+      ],
+      "eventsFile": "./data/events/scooter.json",
+      "balance": {
+        "initialStats": {
+          "money": 55,
+          "tech": 55,
+          "trust": 55,
+          "team": 55
+        },
+        "initialDream": 15,
+        "winDream": 75,
+        "multipliers": {
+          "resourceLoss": 0.9,
+          "resourceGain": 1,
+          "dreamLoss": 1,
+          "dreamGain": 1
+        },
+        "miniGameMaxBonus": 12
+      },
+      "image": "./assets/scooter.svg"
+    },
+    {
+      "id": "demo-console-evening",
+      "name": "Приставка: игровой вечер",
+      "icon": "🎮",
+      "description": "Демо-кампания. Геймпады ждут свою команду! Собери друзей и не дай хитрым предложениям потратить ваши планы на вечер.",
+      "difficulty": "medium",
+      "progressIcons": [
+        "📺",
+        "🕹️",
+        "💾",
+        "🎧",
+        "👑"
+      ],
+      "eventsFile": "./data/events/console.json",
+      "balance": {
+        "initialStats": {
+          "money": 50,
+          "tech": 50,
+          "trust": 50,
+          "team": 50
+        },
+        "initialDream": 10,
+        "winDream": 80,
+        "multipliers": {
+          "resourceLoss": 1,
+          "resourceGain": 1,
+          "dreamLoss": 1,
+          "dreamGain": 1
+        },
+        "miniGameMaxBonus": 10
+      },
+      "image": "./assets/console.svg"
+    },
+    {
+      "id": "demo-robodog-workshop",
+      "name": "Робопёс: секретная мастерская",
+      "icon": "🤖",
+      "description": "Демо-кампания. Из мастерской слышится странное «гав». Кажется, твой проект оживает! Осталось подружить чертежи, бюджет и здравый смысл.",
+      "difficulty": "hard",
+      "progressIcons": [
+        "🐾",
+        "⚙️",
+        "👀",
+        "🔋",
+        "🐕"
+      ],
+      "eventsFile": "./data/events/robodog.json",
+      "balance": {
+        "initialStats": {
+          "money": 45,
+          "tech": 45,
+          "trust": 45,
+          "team": 45
+        },
+        "initialDream": 5,
+        "winDream": 85,
+        "multipliers": {
+          "resourceLoss": 1.22,
+          "resourceGain": 1,
+          "dreamLoss": 1,
+          "dreamGain": 1
+        },
+        "miniGameMaxBonus": 8
+      },
+      "image": "./assets/robodog.svg"
+    },
+    {
+      "id": "demo-scooter-route",
+      "name": "Самокат: большой маршрут",
+      "icon": "🛴",
+      "description": "Демо-кампания. За поворотом ждёт новое приключение. Прибереги силы, выручи друзей и оставь в копилке немного монет на неожиданности.",
+      "difficulty": "easy",
+      "progressIcons": [
+        "🛞",
+        "🛹",
+        "🕹️",
+        "🔋",
+        "🚀"
+      ],
+      "eventsFile": "./data/events/scooter.json",
+      "balance": {
+        "initialStats": {
+          "money": 55,
+          "tech": 55,
+          "trust": 55,
+          "team": 55
+        },
+        "initialDream": 15,
+        "winDream": 75,
+        "multipliers": {
+          "resourceLoss": 0.9,
+          "resourceGain": 1,
+          "dreamLoss": 1,
+          "dreamGain": 1
+        },
+        "miniGameMaxBonus": 12
+      },
+      "image": "./assets/scooter.svg"
+    },
+    {
+      "id": "demo-console-tournament",
+      "name": "Приставка: турнир друзей",
+      "icon": "🎮",
+      "description": "Демо-кампания. Главный приз — весёлый вечер вместе. А главный соперник — кнопка «Купить прямо сейчас». Кто кого переиграет?",
+      "difficulty": "medium",
+      "progressIcons": [
+        "📺",
+        "🕹️",
+        "💾",
+        "🎧",
+        "👑"
+      ],
+      "eventsFile": "./data/events/console.json",
+      "balance": {
+        "initialStats": {
+          "money": 50,
+          "tech": 50,
+          "trust": 50,
+          "team": 50
+        },
+        "initialDream": 10,
+        "winDream": 80,
+        "multipliers": {
+          "resourceLoss": 1,
+          "resourceGain": 1,
+          "dreamLoss": 1,
+          "dreamGain": 1
+        },
+        "miniGameMaxBonus": 10
+      },
+      "image": "./assets/console.svg"
+    },
+    {
+      "id": "demo-robodog-exhibition",
+      "name": "Робопёс: большая выставка",
+      "icon": "🤖",
+      "description": "Демо-кампания. Робопёс репетирует поклон, друзья готовят выступление, а последняя деталь куда-то пропала. Включай смекалку: ваш выход уже скоро!",
+      "difficulty": "hard",
+      "progressIcons": [
+        "🐾",
+        "⚙️",
+        "👀",
+        "🔋",
+        "🐕"
+      ],
+      "eventsFile": "./data/events/robodog.json",
+      "balance": {
+        "initialStats": {
+          "money": 45,
+          "tech": 45,
+          "trust": 45,
+          "team": 45
+        },
+        "initialDream": 5,
+        "winDream": 85,
+        "multipliers": {
+          "resourceLoss": 1.22,
+          "resourceGain": 1,
+          "dreamLoss": 1,
+          "dreamGain": 1
+        },
+        "miniGameMaxBonus": 8
+      },
+      "image": "./assets/robodog.svg"
     }
   ]
 }
