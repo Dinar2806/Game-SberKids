@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 220"><defs>
+ <linearGradient id="purple" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#f5eaff"/><stop offset=".4" stop-color="#bf99ff"/><stop offset="1" stop-color="#7648d6"/></linearGradient>
+ <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="white"/><stop offset=".4" stop-color="#e3e6f1"/><stop offset="1" stop-color="#8c92ae"/></linearGradient>
+ <linearGradient id="dark" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#626179"/><stop offset=".55" stop-color="#302d42"/><stop offset="1" stop-color="#171522"/></linearGradient>
+ <linearGradient id="lime" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#f3ffac"/><stop offset=".45" stop-color="#c3f64e"/><stop offset="1" stop-color="#78b421"/></linearGradient>
+ <linearGradient id="orange" x1="0" y1="0" x2=".7" y2="1"><stop stop-color="#ffe6b1"/><stop offset=".35" stop-color="#ffb85c"/><stop offset="1" stop-color="#f07840"/></linearGradient>
+ <radialGradient id="fur" cx=".3" cy=".2" r=".85"><stop stop-color="#ffe0ab"/><stop offset=".45" stop-color="#ffa55c"/><stop offset="1" stop-color="#e46a3b"/></radialGradient>
+ <radialGradient id="white" cx=".35" cy=".2" r=".9"><stop stop-color="white"/><stop offset=".7" stop-color="#f1e5df"/><stop offset="1" stop-color="#d1b9b9"/></radialGradient>
+ </defs><ellipse cx="120" cy="187" rx="91" ry="12" fill="#584175" opacity=".18"/>
+<path d="M28 105 L143 77 L211 137 V155 L92 184 L28 125 Z" fill="#8aac51"/>
+<path d="M28 104 L143 76 L211 136 L92 165 Z" fill="url(#lime)" stroke="#efffc7" stroke-width="2"/>
+<path d="M52 110 L139 89 L188 133 L96 153 Z" fill="none" stroke="#f9fff0" stroke-width="12" stroke-linejoin="round"/>
+<g fill="#9ec460"><circle cx="73" cy="105" r="4"/><circle cx="100" cy="98" r="4"/><circle cx="150" cy="103" r="4"/><circle cx="176" cy="125" r="4"/><circle cx="142" cy="141" r="4"/></g>
+<g transform="rotate(-13 160 56)"><rect x="137" y="33" width="48" height="58" rx="9" fill="#9161c5"/><rect x="131" y="26" width="48" height="58" rx="9" fill="url(#purple)" stroke="#e8d8ff" stroke-width="2"/><path d="M143 42 H168 M143 51 H165 M143 60 H159" stroke="#f4eaff" stroke-width="4" stroke-linecap="round"/></g>
+<rect x="48" y="123" width="48" height="49" rx="11" fill="#c38440"/><rect x="45" y="116" width="48" height="49" rx="11" fill="url(#orange)" stroke="#ffe8b5" stroke-width="2"/>
+<g fill="#75502d"><circle cx="57" cy="128" r="4"/><circle cx="80" cy="128" r="4"/><circle cx="68" cy="140" r="4"/><circle cx="57" cy="152" r="4"/><circle cx="80" cy="152" r="4"/></g>
+<ellipse cx="127" cy="126" rx="14" ry="6" fill="#7d4caa"/><path d="M116 123 L121 101 H132 L138 123 Z" fill="url(#purple)"/><circle cx="126" cy="97" r="9" fill="url(#purple)"/>
+</svg>

@@ -24,8 +24,8 @@ function triggerMiniGameIfNeeded(nextCallback) {
   let spawnTimer = null;
   let countdown = null;
 
-  // Масштабируем максимум бонуса под длину колоды, чтобы в 40 карточках не набрать 100% слишком рано
-  const maxCap = activeDeck.length === 40 ? 8 : (activeDeck.length === 30 ? 10 : 12);
+  // Бонус задаётся кампанией независимо от количества событий.
+  const maxCap = currentDream.balance.miniGameMaxBonus;
 
   const timerFillEl = document.getElementById('mgTimerFill');
   if (timerFillEl) timerFillEl.style.width = '100%';

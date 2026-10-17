@@ -64,31 +64,9 @@
     </section>
     <p class="welcome-intro">Привет, я Вольтик! Будем играть, учиться<br class="wide-break"> копить и вместе идти к твоей мечте.</p>
     <div class="section-heading"><h2>Какая у тебя мечта?</h2><span>Выбирай и играй ↓</span></div>
-    <div class="dream-grid">
-      <button class="dream-option dream-featured" type="button" data-dream="scooter">
-        <div class="dream-option-copy"><span class="dream-kicker">✦ НАЧНИ ЗДЕСЬ</span>
-          <span class="dream-opt-title">Самокат<br>мечты</span>
-          <span class="dream-opt-sub">Копи монеты и делай<br>первые открытия</span>
-          <span class="dream-meta">20 историй · лёгкий старт</span>
-        </div>
-        <img class="dream-toy" src="./assets/scooter.svg" alt="" width="240" height="220">
-        <span class="dream-go" aria-hidden="true">↗</span>
-      </button>
-      <button class="dream-option dream-console" type="button" data-dream="console">
-        <img class="dream-toy" src="./assets/console.svg" alt="" width="240" height="220">
-        <span class="dream-opt-title">Игровая<br>приставка</span>
-        <span class="dream-opt-sub">Покупай с умом</span>
-        <span class="dream-meta">30 историй · посложнее</span>
-        <span class="dream-go" aria-hidden="true">↗</span>
-      </button>
-      <button class="dream-option dream-robot" type="button" data-dream="robodog">
-        <img class="dream-toy" src="./assets/robodog.svg" alt="" width="240" height="220">
-        <span class="dream-opt-title">Робо-пёс<br>и друзья</span>
-        <span class="dream-opt-sub">Собери свою мечту</span>
-        <span class="dream-meta">40 историй · вызов</span>
-        <span class="dream-go" aria-hidden="true">↗</span>
-      </button>
-    </div>
+    <p id="campaignLoadStatus" role="status" aria-live="polite">Загружаем приключения…</p>
+    <button id="campaignRetryBtn" class="btn-sub" type="button" hidden>Попробовать ещё раз</button>
+    <div class="dream-grid" id="campaignList" aria-busy="true"></div>
     <footer class="welcome-footer"><span aria-hidden="true">✧</span> Здесь только игровые монеты.<br>Настоящие деньги не тратятся.</footer>
   </div>
 </div>
@@ -255,6 +233,7 @@
   <!-- Модульные скрипты игры (относительные пути для СберKids WebView) -->
   <script src="./js/bridge-sound.js"></script>
   <script src="./js/data.js"></script>
+  <script src="./js/campaign-data.js"></script>
   <script src="./js/graphics-vfx.js"></script>
   <script src="./js/minigames.js"></script>
   <script src="./js/game.js"></script>

@@ -12,6 +12,8 @@
 }
 .overlay-screen.active { display: flex; }
 
+.dream-option:disabled { cursor: wait; opacity: 0.65; }
+
 .dialog-box {
   width: 100%;
   max-width: 384px;

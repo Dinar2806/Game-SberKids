@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 220"><defs>
+ <linearGradient id="purple" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#f5eaff"/><stop offset=".4" stop-color="#bf99ff"/><stop offset="1" stop-color="#7648d6"/></linearGradient>
+ <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="white"/><stop offset=".4" stop-color="#e3e6f1"/><stop offset="1" stop-color="#8c92ae"/></linearGradient>
+ <linearGradient id="dark" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#626179"/><stop offset=".55" stop-color="#302d42"/><stop offset="1" stop-color="#171522"/></linearGradient>
+ <linearGradient id="lime" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#f3ffac"/><stop offset=".45" stop-color="#c3f64e"/><stop offset="1" stop-color="#78b421"/></linearGradient>
+ <linearGradient id="orange" x1="0" y1="0" x2=".7" y2="1"><stop stop-color="#ffe6b1"/><stop offset=".35" stop-color="#ffb85c"/><stop offset="1" stop-color="#f07840"/></linearGradient>
+ <radialGradient id="fur" cx=".3" cy=".2" r=".85"><stop stop-color="#ffe0ab"/><stop offset=".45" stop-color="#ffa55c"/><stop offset="1" stop-color="#e46a3b"/></radialGradient>
+ <radialGradient id="white" cx=".35" cy=".2" r=".9"><stop stop-color="white"/><stop offset=".7" stop-color="#f1e5df"/><stop offset="1" stop-color="#d1b9b9"/></radialGradient>
+ </defs><ellipse cx="120" cy="192" rx="77" ry="11" fill="#584175" opacity=".18"/>
+<path d="M68 91 Q41 93 45 161 M173 91 Q199 93 195 161" fill="none" stroke="#7553a0" stroke-width="15" stroke-linecap="round"/>
+<path d="M97 48 V36 Q120 16 143 36 V48" fill="none" stroke="#8d6bb4" stroke-width="10"/>
+<path d="M63 79 Q62 45 95 43 H145 Q177 45 179 80 L187 154 Q190 184 160 187 H82 Q52 185 55 157 Z" fill="#7847ac"/>
+<path d="M58 72 Q58 39 92 36 H141 Q176 39 176 74 L182 148 Q186 178 154 181 H78 Q48 178 51 150 Z" fill="url(#purple)" stroke="#e6d3ff" stroke-width="2"/>
+<path d="M67 77 Q69 51 93 49 H140 Q164 51 166 78" fill="none" stroke="#fff" opacity=".55" stroke-width="4" stroke-linecap="round"/>
+<rect x="68" y="111" width="98" height="54" rx="17" fill="url(#lime)" stroke="#efffc6" stroke-width="2"/>
+<path d="M81 123 H151" stroke="#799e45" stroke-width="3" stroke-linecap="round"/><rect x="146" y="121" width="5" height="12" rx="2" fill="url(#metal)"/>
+<circle cx="118" cy="82" r="19" fill="url(#orange)" stroke="#ffe6b3" stroke-width="2"/><path d="M118 68 L124 84 L118 95 L112 80 Z" fill="#f8fff1"/><path d="M118 68 L124 84 L118 81 Z" fill="#71439a"/>
+</svg>

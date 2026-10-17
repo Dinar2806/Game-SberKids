@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 220"><defs>
+ <linearGradient id="purple" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#f5eaff"/><stop offset=".4" stop-color="#bf99ff"/><stop offset="1" stop-color="#7648d6"/></linearGradient>
+ <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="white"/><stop offset=".4" stop-color="#e3e6f1"/><stop offset="1" stop-color="#8c92ae"/></linearGradient>
+ <linearGradient id="dark" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#626179"/><stop offset=".55" stop-color="#302d42"/><stop offset="1" stop-color="#171522"/></linearGradient>
+ <linearGradient id="lime" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#f3ffac"/><stop offset=".45" stop-color="#c3f64e"/><stop offset="1" stop-color="#78b421"/></linearGradient>
+ <linearGradient id="orange" x1="0" y1="0" x2=".7" y2="1"><stop stop-color="#ffe6b1"/><stop offset=".35" stop-color="#ffb85c"/><stop offset="1" stop-color="#f07840"/></linearGradient>
+ <radialGradient id="fur" cx=".3" cy=".2" r=".85"><stop stop-color="#ffe0ab"/><stop offset=".45" stop-color="#ffa55c"/><stop offset="1" stop-color="#e46a3b"/></radialGradient>
+ <radialGradient id="white" cx=".35" cy=".2" r=".9"><stop stop-color="white"/><stop offset=".7" stop-color="#f1e5df"/><stop offset="1" stop-color="#d1b9b9"/></radialGradient>
+ </defs><ellipse cx="122" cy="190" rx="98" ry="11" fill="#584175" opacity=".18"/>
+<g fill="none"><circle cx="56" cy="146" r="34" stroke="url(#dark)" stroke-width="11"/><circle cx="183" cy="146" r="34" stroke="url(#dark)" stroke-width="11"/>
+<g stroke="#b6b9d3" stroke-width="2"><path d="M22 146 H90 M56 112 V180 M32 122 L80 170 M32 170 L80 122 M149 146 H217 M183 112 V180 M159 122 L207 170 M159 170 L207 122"/></g>
+<path d="M56 146 L94 91 L123 146 H56 M94 91 H157 L123 146 M157 91 L183 146" stroke="#8055bd" stroke-width="10" stroke-linejoin="round"/>
+<path d="M56 144 L94 91 L123 144 H58 M97 91 H154 L123 144" stroke="url(#purple)" stroke-width="6" stroke-linejoin="round"/>
+<path d="M96 94 L88 69 M154 92 L152 65 H173" stroke="url(#metal)" stroke-width="7" stroke-linecap="round"/></g>
+<rect x="70" y="60" width="35" height="13" rx="6" fill="url(#dark)"/><rect x="163" y="59" width="19" height="10" rx="5" fill="url(#lime)"/>
+<circle cx="123" cy="146" r="13" fill="url(#lime)" stroke="#e8ffb9" stroke-width="2"/><path d="M123 146 L134 156 H145" fill="none" stroke="#50425e" stroke-width="4" stroke-linecap="round"/>
+</svg>
