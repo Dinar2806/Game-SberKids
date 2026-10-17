@@ -1,0 +1,205 @@
+/* Toy-like volume, a quiet graphite stage, and readable story cards.
+   Everything is local: no fonts, libraries, or network requests required. */
+:root {
+  --ink: #24202e; --muted: #625b70;
+  --lime: #d0f77a; --lavender: #d8c4fc; --stage: #19171f;
+  --left-color: #392657; --left-bg: #eee4ff; --left-border: #bda0ef;
+  --right-color: #28451c; --right-bg: #e5f9bd; --right-border: #b2d966;
+}
+html, body { background: var(--stage); background-image: none; color: var(--ink); font-family: 'Trebuchet MS', 'Segoe UI', sans-serif; }
+body { --scene-accent: #bda0ef; }
+button { font-family: inherit; }
+button:focus-visible, [role="button"]:focus-visible { outline: 3px solid #8bbdff; outline-offset: 5px; }
+h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus { outline: none; }
+.bg-decor { background: radial-gradient(ellipse at 50% 38%, #332740 0, transparent 65%); }
+.bg-shape { opacity: .07; filter: blur(36px); }
+.bg-shape.s1 { width: 330px; height: 330px; }
+.bg-shape.s2 { width: 280px; height: 280px; }
+.bg-shape.s3 { opacity: .035; }
+.eyebrow { font-size: 10px; font-weight: 800; letter-spacing: .1em; }
+.wordmark { display: flex; gap: 6px; align-items: center; color: #fff; font-size: 23px; font-weight: 900; letter-spacing: -.9px; }
+.wordmark > span:last-child { color: var(--lime); margin-left: -5px; }
+.brand-spark { color: var(--lime); font-size: 28px; margin-right: 2px; line-height: 1; }
+.game-label { color: #bdb6ca; font-size: 9px; font-weight: 700; letter-spacing: .11em; }
+
+/* The welcome screen is a small game lobby, rather than an alert box. */
+#dreamSelectScreen { background: var(--stage); overflow-y: auto; overscroll-behavior-y: contain; padding: 0; align-items: flex-start; }
+.welcome-shell { width: 100%; max-width: 440px; padding: max(24px, env(safe-area-inset-top)) 22px max(20px, env(safe-area-inset-bottom)); margin: auto; overflow: hidden; flex-shrink: 0; }
+.welcome-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.welcome-hero { position: relative; min-height: 210px; margin-top: 18px; display: flex; align-items: center; }
+.hero-copy { position: relative; z-index: 2; pointer-events: none; }
+.hero-copy .eyebrow { display: block; color: #b5aabd; max-width: 150px; font-size: 8px; line-height: 1.6; letter-spacing: .09em; margin-bottom: 10px; }
+.hero-copy h1 { margin: 0; color: #fff; font-size: clamp(40px, 11.7vw, 51px); line-height: .99; letter-spacing: -2.5px; font-weight: 900; }
+.hero-copy h1 > span { color: var(--lime); }
+.hero-art { position: absolute; width: 220px; height: 224px; top: -2px; right: -19px; }
+.hero-art img { position: absolute; width: 220px; height: auto; top: 10px; right: -6px; transform: rotate(-12deg); filter: drop-shadow(0 16px 16px #08040b60); }
+.hero-orbit { position: absolute; width: 165px; height: 165px; border-radius: 50%; right: 14px; top: 18px; background: radial-gradient(circle at 35% 25%, #624f7b, #332641 70%); box-shadow: 0 0 55px #bd7aff15; }
+.hero-orbit::after { content: ''; position: absolute; inset: -17px -20px; border: 1px solid #75608b66; border-radius: 50%; transform: rotate(-25deg) scaleY(.7); }
+.toy-star { position: absolute; color: #d6b5ff; font-size: 37px; text-shadow: 2px 4px 0 #8460ae; z-index: 2; }
+.star-one { right: 7px; top: 1px; transform: rotate(10deg); }
+.star-two { right: 30px; bottom: 28px; color: var(--lime); font-size: 25px; text-shadow: 2px 3px 0 #6a9c30; }
+.toy-coin { display: grid; place-items: center; position: absolute; width: 39px; height: 43px; background: linear-gradient(135deg, #fff0b7, #ffba43 55%, #e67c2a); border: 2px solid #ffdb85; border-radius: 50%; box-shadow: 4px 3px 0 #be681e, inset 0 0 0 4px #f0aa45; color: #a95d1f; font-size: 22px; font-weight: 900; }
+.coin-one { right: 154px; top: 13px; transform: rotate(-22deg); z-index: 3; }
+.fox-sticker { position: absolute; bottom: 18px; right: 32px; background: var(--lavender); color: #3b2957; font-size: 10px; font-weight: 800; border-radius: 8px; padding: 7px 10px; transform: rotate(-7deg); box-shadow: 0 3px 0 #8d6ab9; }
+.welcome-intro { margin: 0 0 18px; color: #c5bfce; font-size: 14px; line-height: 1.55; }
+.section-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+.section-heading h2 { color: #fff; margin: 0; font-size: 18px; letter-spacing: -.5px; }
+.section-heading > span { color: #b9b0c4; font-size: 10px; }
+.dream-grid { margin: 0; grid-template-columns: 1fr 1fr; gap: 12px; }
+.dream-option { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 0; border: 1px solid #ffffff55; box-shadow: inset 0 2px 1px #ffffff88, 0 4px 0 #0003; border-radius: 25px; overflow: hidden; padding: 15px; transition: transform .18s, box-shadow .18s; color: #292332; }
+.dream-option:hover { transform: translateY(-3px); box-shadow: inset 0 2px 1px #ffffff88, 0 7px 0 #0003; }
+.dream-option:active { transform: translateY(2px) scale(.985); }
+.dream-featured { grid-column: 1 / -1; min-height: 174px; background: linear-gradient(120deg, #d8c1fa, #c4a4ef); padding: 17px 19px; }
+.dream-kicker { display: inline-block; padding: 4px 7px; background: #ffffff70; border-radius: 5px; color: #54396c; font-size: 8px; font-weight: 900; letter-spacing: .06em; margin-bottom: 8px; }
+.dream-opt-title { display: block; font-size: 21px; line-height: 1.04; letter-spacing: -.7px; font-weight: 900; }
+.dream-featured .dream-opt-title { font-size: 27px; }
+.dream-opt-sub { display: block; font-size: 11px; line-height: 1.4; font-weight: 600; color: #534460; margin-top: 7px; }
+.dream-meta { display: block; font-size: 9px; font-weight: 700; color: #554362; margin-top: 12px; }
+.dream-toy { width: 145px; height: 111px; object-fit: contain; align-self: center; pointer-events: none; margin: -11px -4px 3px; }
+.dream-featured .dream-toy { position: absolute; width: 195px; height: 185px; right: -4px; bottom: -2px; margin: 0; transform: rotate(8deg); }
+.dream-option-copy { position: relative; z-index: 1; }
+.dream-go { position: absolute; right: 12px; bottom: 12px; width: 29px; height: 29px; border-radius: 50%; background: #292332; color: #fff; display: grid; place-items: center; font-size: 20px; }
+.dream-featured .dream-go { background: var(--lime); color: #29371b; border: 1px solid #fff7; width: 34px; height: 34px; }
+.dream-console { background: linear-gradient(130deg, #edfad4, #d8efb3); min-height: 214px; }
+.dream-robot { background: linear-gradient(130deg, #ffe5d2, #f5c9ad); min-height: 214px; }
+.dream-console .dream-meta, .dream-robot .dream-meta { font-size: 8px; margin-top: 10px; padding-right: 12px; max-width: 116px; }
+.welcome-footer { margin-top: 16px; color: #a39bac; font-size: 10px; line-height: 1.6; text-align: center; }
+.welcome-footer > span { display: inline; color: var(--lime); margin-right: 3px; }
+
+/* Game HUD. Every resource keeps its icon, name, value, and fill level. */
+.app { max-width: 440px; padding: max(16px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom)); height: 100%; height: 100dvh; gap: 10px; justify-content: flex-start; }
+.game-heading { flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.game-heading .eyebrow { color: #bcb1ca; font-size: 8px; }
+.game-heading h1 { font-size: 23px; letter-spacing: -.9px; color: #fff; margin: 4px 0 0; line-height: 1.1; }
+.game-heading h1 > span { color: var(--lime); margin-left: 8px; }
+.header-actions { display: flex; gap: 8px; }
+.icon-btn { background: linear-gradient(150deg, #423c4c, #27232e); color: #e5d9f5; border: 1px solid #63596e; box-shadow: inset 0 1px 0 #ffffff26, 0 3px 0 #0e0b13; border-radius: 14px; width: 42px; height: 44px; font-size: 17px; }
+.icon-btn.sound-on { background: #d5f3a7; color: #2c411d; border-color: #b5d787; box-shadow: 0 3px 0 #627b3e; }
+.top-bar { display: block; }
+.stats-row { gap: 8px; border: 0; background: none; padding: 0; box-shadow: none; border-radius: 0; }
+.stat-pill { gap: 2px; border-radius: 18px; background: #29252f; border: 1px solid #4b4159; padding: 7px 3px 6px; min-height: 90px; box-shadow: inset 0 1px 0 #ffffff0c; }
+.stat-dot { position: absolute; z-index: 5; top: -6px; right: 0; }
+.stat-jar { width: 37px; height: 34px; border-radius: 12px; border: 1px solid #ffffff55; background: #47404f; box-shadow: inset 0 2px 5px #0003, 0 2px 0 #15111c; }
+.stat-jar::after { width: 4px; height: 11px; }
+.stat-icon { font-size: 20px; }
+.stat-val { font-size: 16px; color: #faf5ff; line-height: 1.2; }
+.stat-label { font-size: 9px; color: #c6bdcf; font-weight: 700; }
+.dream-capsule { margin-top: 10px; padding: 10px; gap: 10px; background: #302936; border: 1px solid #53435e; border-radius: 20px; box-shadow: inset 0 1px 0 #ffffff0c; }
+.dream-icon-box { width: 53px; height: 53px; border: 1px solid #dec8ff55; box-shadow: inset 0 2px 2px #ffffff88, 0 3px 0 #191220; background: linear-gradient(135deg, #e1ccff, #b58bdd); border-radius: 15px; }
+.dream-icon-box img { width: 64px; height: 58px; object-fit: contain; }
+.dream-caption { color: #b9a9c6; font-size: 8px; line-height: 1.4; font-weight: 600; }
+.dream-caption span { display: block; color: #eee1fc; font-size: 12px; font-weight: 800; }
+.dream-progress-area { gap: 6px; min-width: 0; }
+.dream-parts-row { gap: 4px; }
+.part-node { height: 15px; font-size: 10px; background: #44374e; border: 0; border-radius: 4px; }
+.part-node.unlocked { background: #d7ecaa; border: 0; box-shadow: 0 1px 0 #7f9657; }
+.dream-bar-track { height: 5px; background: #52405e; box-shadow: none; }
+.dream-bar-fill { background: linear-gradient(90deg, #a7c968, #ddff99); }
+.dream-score-badge { font-size: 12px; background: #d5f6a3; border: 1px solid #e7ffbd; color: #344b20; min-width: 52px; padding: 7px; border-radius: 12px; }
+
+/* A little companion beside a large story card. */
+.mascot-dock { height: 54px; margin: -3px 0 -13px; justify-content: flex-start; align-items: center; padding-left: 14px; }
+.mascot-avatar { width: 70px; height: 64px; border: 0; padding: 0; background: none; flex-shrink: 0; filter: drop-shadow(0 4px 2px #0002); }
+.mascot-avatar svg { width: 100%; height: 100%; }
+.mascot-caption { font-size: 12px; color: #e2d7ef; font-weight: 800; padding: 0 0 9px 7px; }
+.mascot-caption > span { display: block; color: #b5a7c2; font-size: 9px; font-weight: 600; margin-top: 3px; }
+.mascot-bubble, .mascot-bubble.hint-mode { left: auto; right: 0; top: 2px; white-space: normal; max-width: 138px; font-size: 10px; padding: 6px 8px; border-width: 1px; border-color: #c9b2e5; background: #eee0ff; color: #57366e; }
+.streak-pill { top: -5px; right: 5px; background: #e0f4a3; color: #3b501c; border: 1px solid #e4ffc0; font-size: 9px; box-shadow: 0 2px 0 #6f8249; }
+.deck-area { margin: 0 0 11px; min-height: 270px; }
+.game-card, .card-shadow-1, .card-shadow-2 { max-width: none; max-height: 510px; border-radius: 25px; }
+.game-card { border: 2px solid #fff; box-shadow: 0 5px 0 #b6a8c9, 0 13px 24px #07040b40; touch-action: pan-y; }
+.card-shadow-1 { background: #c5b2db; border: 0; box-shadow: 0 4px 0 #725f8c; transform: translateY(9px) scale(.95); }
+.card-shadow-2 { background: #796888; border: 0; transform: translateY(17px) scale(.9); }
+.card-art-zone { height: 43%; min-height: 102px; border: 0; flex-shrink: 0; }
+.card-art-zone::before, .card-art-zone::after { content: '✦'; position: absolute; color: #ffffffaa; font-size: 22px; left: 17%; top: 37%; transform: rotate(15deg); }
+.card-art-zone::after { left: auto; right: 17%; top: 65%; font-size: 13px; }
+.sprite-wrapper { width: 180px; height: 100%; max-height: 180px; }
+.step-badge { font-size: 10px; top: 10px; left: 11px; color: #51405e; border: 1px solid #ffffff88; background: #ffffffba; padding: 6px 10px; box-shadow: none; }
+.cond-badge { font-size: 8px; padding: 5px; max-width: 49%; right: 7px; }
+.inspect-btn { min-height: 44px; bottom: 7px; right: 8px; font-size: 11px; padding: 6px 10px; border: 1px solid #cbb7e4; box-shadow: 0 2px 0 #b3a0c9; background: #fff9; }
+.inspect-btn.active { background: #eaf8cb; border-color: #9aba63; color: #425923; box-shadow: 0 2px 0 #95ad61; }
+.card-text-zone { text-align: left; padding: 16px; gap: 12px; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; min-height: 0; }
+.card-title { font-size: 21px; line-height: 1.12; letter-spacing: -.55px; color: #2b2236; }
+.card-desc { font-size: 14px; line-height: 1.45; margin-top: 8px; color: #5e5369; font-weight: 500; }
+.card-tip { background: #f1ebf8; border: 0; border-radius: 12px; font-size: 11px; line-height: 1.45; font-weight: 600; color: #665175; padding: 9px 10px; }
+.card-tip.highlight-tip { background: #ecf8d6; border: 1px solid #b8d98a; color: #405c25; box-shadow: none; transform: none; }
+.tutorial-hand { top: 35%; width: 100%; }
+.tut-pill { font-size: 16px; padding: 5px 14px; background: #30243ed9; }
+.tut-caption { background: #fffef4; border: 1px solid #d9c5e6; font-size: 10px; padding: 5px 9px; }
+.controls-row { gap: 10px; }
+.choice-btn { min-height: 66px; font-size: 12px; line-height: 1.3; border-radius: 19px; padding: 11px 12px; gap: 8px; }
+.choice-btn.left { background: linear-gradient(160deg, #f3eaff, #d4b9f0); border: 1px solid #e6d3ff; box-shadow: inset 0 1px 1px #fff, 0 4px 0 #8d6ab3; }
+.choice-btn.right { background: linear-gradient(160deg, #e4ffb0, #c1e78a); border: 1px solid #e9ffc8; box-shadow: inset 0 1px 1px #fff, 0 4px 0 #7c9e43; }
+.choice-arrow { font-size: 21px; font-weight: 500; flex-shrink: 0; opacity: .7; }
+.reward-banner { top: max(75px, env(safe-area-inset-top)); background: #f4eaff; color: #432c5b; font-size: 12px; line-height: 1.45; border-radius: 17px; padding: 12px 16px; border: 1px solid #d6baf4; box-shadow: 0 7px 25px #0e071950; width: max-content; max-width: min(92%, 410px); }
+.comic-pop { font-size: 18px; background: #52346f; background-image: none; border: 2px solid #fff; border-radius: 18px; max-width: 90vw; white-space: normal; text-align: center; }
+
+/* Mini-games and results belong to the same toy collection. */
+.overlay-screen { background: #110c1bdc; overflow-y: auto; overscroll-behavior: contain; padding: max(18px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom)); }
+.dialog-box { max-width: 400px; max-height: 100%; overflow-y: auto; background: #faf7ff; border: 1px solid #e4d7f5; border-radius: 28px; padding: 24px 20px; box-shadow: 0 6px 0 #9c81ba, 0 20px 55px #0005; }
+.minigame-box { height: min(550px, 100%); min-height: 320px; max-width: 400px; background: #faf7ff; border: 2px solid #d9bdf5; box-shadow: 0 5px 0 #8d6baa; padding: 16px; }
+.mg-top { background: #e9ddf9; border: 1px solid #d2b8ed; color: #51316b; font-size: 12px; padding: 9px; }
+.mg-timer-bar { height: 6px; margin-top: 10px; }
+.mg-timer-fill { background: linear-gradient(90deg, #badb87, #bba0e1); }
+.mg-arena { border: 1px solid #d6c8e5; background: radial-gradient(circle at 35% 20%, #fff, #e6daf3); box-shadow: inset 0 2px 8px #65447d0d; }
+.mg-hole { background: #e5d9f1; border: 1px solid #c7b5dc; }
+.mem-card, .sorter-card, .detective-row { border-color: #c8b3dd; box-shadow: 0 3px 0 #b9a1d0; }
+#mgSkipBtn { min-height: 44px; }
+.btn-main { background: linear-gradient(#d6f99f, #bce17a); color: #33481e; border: 1px solid #d9fbb0; box-shadow: 0 4px 0 #7e9e4c; min-height: 52px; font-size: 15px; }
+.btn-share { background: #ecdefb; border: 1px solid #c8abeb; color: #563978; box-shadow: 0 3px 0 #ab8bc9; min-height: 48px; }
+.btn-sub { background: #eee9f3; border: 1px solid #d2c5de; color: #60516e; box-shadow: 0 3px 0 #b6a6c3; min-height: 48px; }
+.rank-pill { background: #e9ddfb; border: 1px solid #c5a8ea; color: #664188; box-shadow: 0 2px 0 #b99ad5; font-size: 10px; text-transform: none; }
+.skill-summary-box { background: #ece4f6; border: 1px solid #d1bfe5; color: #59416f; padding: 11px; font-size: 12px; line-height: 1.5; }
+.ach-card { padding: 10px; background: #eee8f4; border: 1px solid #d8cbe5; opacity: .7; }
+.ach-card.earned { background: #ecf6da; border: 1px solid #bcd58e; box-shadow: 0 2px 0 #cadba9; }
+.ach-card.earned .ach-icon { background: #e0f5b6; border-color: #b9d181; }
+.ach-card.earned .ach-status { background: #55742c; }
+.ach-title { font-size: 14px; }
+.ach-desc { font-size: 11px; line-height: 1.4; }
+@media (min-width: 700px) {
+  .welcome-shell { border-left: 1px solid #ffffff0b; border-right: 1px solid #ffffff0b; }
+  .app { border-left: 1px solid #ffffff09; border-right: 1px solid #ffffff09; }
+}
+@media (max-width: 359px) {
+  .welcome-shell { padding-left: 16px; padding-right: 16px; }
+  .hero-art { width: 180px; right: -12px; }
+  .hero-art img { width: 180px; top: 22px; }
+  .hero-orbit { width: 140px; height: 140px; top: 30px; }
+  .coin-one { right: 125px; }
+  .dream-featured .dream-toy { width: 160px; right: -8px; }
+  .section-heading > span { font-size: 8px; }
+  .dream-opt-title { font-size: 19px; }
+  .dream-meta { font-size: 8px; }
+  .app { padding-left: 12px; padding-right: 12px; gap: 8px; }
+  .choice-btn { padding: 10px 8px; font-size: 11px; gap: 5px; }
+  .card-title { font-size: 19px; }
+  .card-desc { font-size: 13px; }
+}
+@media (max-height: 740px) {
+  .app { padding-top: max(8px, env(safe-area-inset-top)); padding-bottom: max(12px, env(safe-area-inset-bottom)); gap: 8px; }
+  .game-heading h1 { font-size: 21px; }
+  .stat-pill { min-height: 76px; padding-top: 5px; padding-bottom: 4px; }
+  .stat-jar { height: 28px; width: 32px; }
+  .stat-val { font-size: 14px; }
+  .dream-capsule { padding: 7px 9px; margin-top: 7px; }
+  .dream-caption { font-size: 7px; }
+  .dream-icon-box { width: 43px; height: 43px; }
+  .dream-icon-box img { width: 54px; height: 50px; }
+  .dream-progress-area { gap: 4px; }
+  .mascot-dock { height: 42px; }
+  .mascot-avatar { width: 58px; height: 53px; }
+  .deck-area { min-height: 225px; }
+  .card-text-zone { padding: 12px; gap: 9px; }
+  .card-title { font-size: 19px; }
+  .card-desc { margin-top: 6px; font-size: 13px; line-height: 1.35; }
+  .card-tip { padding: 7px 9px; font-size: 10px; }
+  .choice-btn { min-height: 58px; }
+}
+@media (max-height: 590px) {
+  .app { overflow-y: auto; overscroll-behavior: contain; }
+  .deck-area { flex-shrink: 0; height: 300px; }
+  .controls-row { padding-bottom: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
