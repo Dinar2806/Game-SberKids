@@ -67,10 +67,9 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
 .welcome-footer > span { display: inline; color: var(--lime); margin-right: 3px; }
 
 /* Game HUD. Every resource keeps its icon, name, value, and fill level. */
-.app { max-width: 440px; padding: max(16px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom)); height: 100%; height: 100dvh; gap: 10px; justify-content: flex-start; }
+.app { max-width: 440px; padding: max(16px, env(safe-area-inset-top)) 10px max(18px, env(safe-area-inset-bottom)); height: 100%; height: 100dvh; gap: 10px; justify-content: flex-start; }
 .game-heading { flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-.game-heading .eyebrow { color: #bcb1ca; font-size: 8px; }
-.game-heading h1 { font-size: 23px; letter-spacing: -.9px; color: #fff; margin: 4px 0 0; line-height: 1.1; }
+.game-heading h1 { font-size: 23px; letter-spacing: -.9px; color: #fff; margin: 0; line-height: 1.1; }
 .game-heading h1 > span { color: var(--lime); margin-left: 8px; }
 .header-actions { display: flex; gap: 8px; }
 .icon-btn { background: linear-gradient(150deg, #423c4c, #27232e); color: #e5d9f5; border: 1px solid #63596e; box-shadow: inset 0 1px 0 #ffffff26, 0 3px 0 #0e0b13; border-radius: 14px; width: 42px; height: 44px; font-size: 17px; }
@@ -98,39 +97,31 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
 .dream-score-badge { font-size: 12px; background: #d5f6a3; border: 1px solid #e7ffbd; color: #344b20; min-width: 52px; padding: 7px; border-radius: 12px; }
 
 /* A little companion beside a large story card. */
-.mascot-dock { height: 54px; margin: -3px 0 -13px; justify-content: flex-start; align-items: center; padding-left: 14px; }
+.mascot-dock { width: 100%; max-width: none; height: 54px; margin: -3px auto 0; justify-content: flex-start; align-items: center; padding-left: 0; }
 .mascot-avatar { width: 70px; height: 64px; border: 0; padding: 0; background: none; flex-shrink: 0; filter: drop-shadow(0 4px 2px #0002); }
 .mascot-avatar svg { width: 100%; height: 100%; }
-.mascot-caption { font-size: 12px; color: #e2d7ef; font-weight: 800; padding: 0 0 9px 7px; }
-.mascot-caption > span { display: block; color: #b5a7c2; font-size: 9px; font-weight: 600; margin-top: 3px; }
-.mascot-bubble, .mascot-bubble.hint-mode { left: auto; right: 0; top: 2px; white-space: normal; max-width: 138px; font-size: 10px; padding: 6px 8px; border-width: 1px; border-color: #c9b2e5; background: #eee0ff; color: #57366e; }
-.streak-pill { top: -5px; right: 5px; background: #e0f4a3; color: #3b501c; border: 1px solid #e4ffc0; font-size: 9px; box-shadow: 0 2px 0 #6f8249; }
-.deck-area { margin: 0 0 11px; min-height: 270px; }
-.game-card, .card-shadow-1, .card-shadow-2 { max-width: none; max-height: 510px; border-radius: 25px; }
+.deck-area { margin: 0 0 11px; min-height: 270px; align-items: flex-start; }
+.game-card, .card-shadow-1, .card-shadow-2 { width: 100%; max-width: none; height: 100%; max-height: none; border-radius: 25px; }
 .game-card { border: 2px solid #fff; box-shadow: 0 5px 0 #b6a8c9, 0 13px 24px #07040b40; touch-action: pan-y; }
 .card-shadow-1 { background: #c5b2db; border: 0; box-shadow: 0 4px 0 #725f8c; transform: translateY(9px) scale(.95); }
 .card-shadow-2 { background: #796888; border: 0; transform: translateY(17px) scale(.9); }
-.card-art-zone { height: 43%; min-height: 102px; border: 0; flex-shrink: 0; }
+.card-art-zone { height: 50%; min-height: 120px; border: 0; flex-shrink: 0; }
 .card-art-zone::before, .card-art-zone::after { content: '✦'; position: absolute; color: #ffffffaa; font-size: 22px; left: 17%; top: 37%; transform: rotate(15deg); }
 .card-art-zone::after { left: auto; right: 17%; top: 65%; font-size: 13px; }
-.sprite-wrapper { width: 180px; height: 100%; max-height: 180px; }
+.sprite-wrapper { width: 280px; max-width: 90%; height: 100%; max-height: 280px; }
 .step-badge { font-size: 10px; top: 10px; left: 11px; color: #51405e; border: 1px solid #ffffff88; background: #ffffffba; padding: 6px 10px; box-shadow: none; }
 .cond-badge { font-size: 8px; padding: 5px; max-width: 49%; right: 7px; }
-.inspect-btn { min-height: 44px; bottom: 7px; right: 8px; font-size: 11px; padding: 6px 10px; border: 1px solid #cbb7e4; box-shadow: 0 2px 0 #b3a0c9; background: #fff9; }
-.inspect-btn.active { background: #eaf8cb; border-color: #9aba63; color: #425923; box-shadow: 0 2px 0 #95ad61; }
-.card-text-zone { text-align: left; padding: 16px; gap: 12px; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; min-height: 0; }
-.card-title { font-size: 21px; line-height: 1.12; letter-spacing: -.55px; color: #2b2236; }
-.card-desc { font-size: 14px; line-height: 1.45; margin-top: 8px; color: #5e5369; font-weight: 500; }
-.card-tip { background: #f1ebf8; border: 0; border-radius: 12px; font-size: 11px; line-height: 1.45; font-weight: 600; color: #665175; padding: 9px 10px; }
-.card-tip.highlight-tip { background: #ecf8d6; border: 1px solid #b8d98a; color: #405c25; box-shadow: none; transform: none; }
+.card-text-zone { text-align: center; padding: 16px; gap: 12px; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; min-height: 0; }
+.card-title { font-size: 24px; line-height: 1.18; letter-spacing: -.55px; color: #2b2236; }
+.card-desc { font-size: 17px; line-height: 1.45; margin-top: 8px; color: #5e5369; font-weight: 500; }
 .tutorial-hand { top: 35%; width: 100%; }
 .tut-pill { font-size: 16px; padding: 5px 14px; background: #30243ed9; }
 .tut-caption { background: #fffef4; border: 1px solid #d9c5e6; font-size: 10px; padding: 5px 9px; }
-.controls-row { gap: 10px; }
-.choice-btn { min-height: 66px; font-size: 12px; line-height: 1.3; border-radius: 19px; padding: 11px 12px; gap: 8px; }
-.choice-btn.left { background: linear-gradient(160deg, #f3eaff, #d4b9f0); border: 1px solid #e6d3ff; box-shadow: inset 0 1px 1px #fff, 0 4px 0 #8d6ab3; }
-.choice-btn.right { background: linear-gradient(160deg, #e4ffb0, #c1e78a); border: 1px solid #e9ffc8; box-shadow: inset 0 1px 1px #fff, 0 4px 0 #7c9e43; }
-.choice-arrow { font-size: 21px; font-weight: 500; flex-shrink: 0; opacity: .7; }
+.controls-row { width: 100%; max-width: none; margin: 0 auto; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.choice-btn { min-width: 0; min-height: 60px; font-size: 14px; font-weight: 700; line-height: 1.35; border-radius: 16px; padding: 10px 12px; gap: 0; overflow-wrap: anywhere; }
+.choice-btn.left { background: linear-gradient(165deg, #d5b6ff, #b48aef); color: var(--left-color); border: 1px solid #c9a8f2; box-shadow: inset 0 1px 0 #ffffffa6, 0 2px 0 #8f6ab6; text-align: center; justify-content: center; }
+.choice-btn.right { background: linear-gradient(165deg, #e0fca7, #bfe47b); color: var(--right-color); border: 1px solid #d6f39b; box-shadow: inset 0 1px 0 #ffffffb3, 0 2px 0 #7d9e4b; text-align: center; justify-content: center; }
+.choice-btn.left:active, .choice-btn.right:active { transform: translateY(1px); box-shadow: none; filter: brightness(1.03); } .choice-arrow { display: none; }
 .reward-banner { top: max(75px, env(safe-area-inset-top)); background: #f4eaff; color: #432c5b; font-size: 12px; line-height: 1.45; border-radius: 17px; padding: 12px 16px; border: 1px solid #d6baf4; box-shadow: 0 7px 25px #0e071950; width: max-content; max-width: min(92%, 410px); }
 .comic-pop { font-size: 18px; background: #52346f; background-image: none; border: 2px solid #fff; border-radius: 18px; max-width: 90vw; white-space: normal; text-align: center; }
 
@@ -170,13 +161,13 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
   .section-heading > span { font-size: 8px; }
   .dream-opt-title { font-size: 19px; }
   .dream-meta { font-size: 8px; }
-  .app { padding-left: 12px; padding-right: 12px; gap: 8px; }
-  .choice-btn { padding: 10px 8px; font-size: 11px; gap: 5px; }
-  .card-title { font-size: 19px; }
-  .card-desc { font-size: 13px; }
+  .app { padding-left: 8px; padding-right: 8px; gap: 8px; }
+  .choice-btn { padding: 10px 12px; font-size: 13px; }
+  .card-title { font-size: 22px; }
+  .card-desc { font-size: 16px; }
 }
 @media (max-height: 740px) {
-  .app { padding-top: max(8px, env(safe-area-inset-top)); padding-bottom: max(12px, env(safe-area-inset-bottom)); gap: 8px; }
+  .app { padding-top: max(8px, env(safe-area-inset-top)); padding-bottom: max(12px, env(safe-area-inset-bottom)); gap: 8px; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; }
   .game-heading h1 { font-size: 21px; }
   .stat-pill { min-height: 76px; padding-top: 5px; padding-bottom: 4px; }
   .stat-jar { height: 28px; width: 32px; }
@@ -189,11 +180,11 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
   .mascot-dock { height: 42px; }
   .mascot-avatar { width: 58px; height: 53px; }
   .deck-area { min-height: 225px; }
+  .game-card, .card-shadow-1, .card-shadow-2 { height: 100%; }
   .card-text-zone { padding: 12px; gap: 9px; }
-  .card-title { font-size: 19px; }
-  .card-desc { margin-top: 6px; font-size: 13px; line-height: 1.35; }
-  .card-tip { padding: 7px 9px; font-size: 10px; }
-  .choice-btn { min-height: 58px; }
+  .card-title { font-size: 22px; }
+  .card-desc { margin-top: 6px; font-size: 16px; line-height: 1.4; }
+  .choice-btn { min-height: 56px; font-size: 13px; }
 }
 @media (max-height: 590px) {
   .app { overflow-y: auto; overscroll-behavior: contain; }

@@ -56,7 +56,7 @@ function triggerComicJuice(type) {
   }, 650);
 }
 
-function renderMascot(mood, bubbleText, lookDir = 0, isHintBubble = false) {
+function renderMascot(mood, lookDir = 0) {
   const pupilShift = lookDir * 3.5;
   let visorColor = '#38bdf8';
   let visorStroke = '#0284c7';
@@ -93,7 +93,7 @@ function renderMascot(mood, bubbleText, lookDir = 0, isHintBubble = false) {
       <circle cx="36" cy="52" r="7" fill="#fff" stroke="#0f172a" stroke-width="2.5"/><circle cx="36" cy="52" r="2.6" fill="#0f172a"/>
       <circle cx="64" cy="52" r="7" fill="#fff" stroke="#0f172a" stroke-width="2.5"/><circle cx="64" cy="52" r="2.6" fill="#0f172a"/>`;
     mouth = `<ellipse cx="50" cy="65" rx="5.5" ry="4.5" fill="#0f172a"/>`;
-  } else if (mood === 'think' || mood === 'detective') {
+  } else if (mood === 'think') {
     visorColor = '#fbbf24';
     visorStroke = '#d97706';
     eyes = `
@@ -101,7 +101,6 @@ function renderMascot(mood, bubbleText, lookDir = 0, isHintBubble = false) {
       <circle cx="34.8" cy="50.5" r="1.4" fill="#ffffff"/>
       <rect x="57" y="49" width="13" height="4.2" rx="2" fill="#0f172a"/>`;
     mouth = `<line x1="44" y1="64" x2="56" y2="63" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>`;
-    badgeAddon = `<g transform="translate(68, 44)"><circle cx="10" cy="10" r="8" fill="rgba(56,189,248,0.35)" stroke="#0284c7" stroke-width="2.6"/><line x1="16" y1="16" x2="22" y2="22" stroke="#0f172a" stroke-width="3.2" stroke-linecap="round"/></g>`;
   }
 
   mascotAvatar.style.transform = `rotate(${lookDir * 6}deg) scale(${mood === 'happy' ? 1.08 : 1})`;
@@ -127,27 +126,16 @@ function renderMascot(mood, bubbleText, lookDir = 0, isHintBubble = false) {
     <ellipse cx="74" cy="81" rx="9" ry="5.5" fill="#f97316" stroke="#9a3412" stroke-width="2.5"/>
     ${badgeAddon}
   </svg>`;
-
-  mascotBubble.classList.toggle('hint-mode', !!isHintBubble);
-  if (bubbleText) {
-    mascotBubble.textContent = bubbleText;
-    mascotBubble.classList.add('show');
-  } else {
-    mascotBubble.classList.remove('show');
-  }
 }
 
 function resetIdleHintTimer() {
   clearTimeout(idleHintTimer);
-  idleHintActive = false;
   mascotAvatar.classList.remove('idle-nudge');
-  document.getElementById('cardTip').classList.remove('highlight-tip');
 
   idleHintTimer = setTimeout(() => {
     if (busy) return;
-    idleHintActive = true;
     mascotAvatar.classList.add('idle-nudge');
-    renderMascot('think', '💡 Нажми на меня!', 0, true);
+    renderMascot('think');
   }, 15000);
 }
 

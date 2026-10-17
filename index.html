@@ -74,7 +74,7 @@
 </div>
 
 <div class="app">
-  <header class="game-heading"><div><span class="eyebrow">СБЕРKIDS · ИГРА</span><h1>Путь к мечте<span>✦</span></h1></div>
+  <header class="game-heading"><div><h1>Путь к мечте<span>✦</span></h1></div>
     <div class="header-actions"><button class="icon-btn" id="soundBtn" type="button" aria-label="Включить звук" aria-pressed="false">🔇</button><button class="icon-btn" id="closeBtn" type="button" aria-label="Выйти из игры">✕</button></div>
   </header>
   <!-- ВЕРХНИЙ БЛОК: Статы + Капсула Мечты -->
@@ -123,7 +123,7 @@
     <div class="dream-capsule" id="dreamCapsule">
       <div class="dream-icon-box" id="dreamMainIcon">🛴</div>
       <div class="dream-progress-area">
-        <div class="dream-caption">Твоя мечта <span id="dreamName">Самокат мечты</span></div>
+        <div class="dream-caption"><span id="dreamName">Самокат мечты</span></div>
         <div class="dream-parts-row">
           <div class="part-node unlocked" id="part-0">🛞</div>
           <div class="part-node" id="part-1">🛹</div>
@@ -141,9 +141,7 @@
 
   <!-- МАСКОТ ВОЛЬТИК -->
   <div class="mascot-dock">
-    <div class="streak-pill" id="streakPill">🔥 КОМБО x2</div>
-    <button class="mascot-avatar" id="mascotAvatar" type="button" aria-label="Подсказка Вольтика" title="Нажми для совета Вольтика!"></button><span class="mascot-caption">Вольтик поможет <span>нажми на меня ↗</span></span>
-    <div class="mascot-bubble" id="mascotBubble">🤔</div>
+    <button class="mascot-avatar" id="mascotAvatar" type="button" aria-label="Подсказка Вольтика"></button>
   </div>
 
   <!-- КОЛОДА КАРТОЧЕК -->
@@ -169,10 +167,6 @@
         <span class="step-badge" id="stepBadge">1 / 20</span>
         <span class="cond-badge" id="condBadge">⚡ Особый случай!</span>
         <div class="sprite-wrapper" id="spriteContainer"></div>
-        <button class="inspect-btn" id="inspectBtn" type="button" title="Проверить ситуацию с Вольтиком">
-          <span>🔍</span>
-          <span id="inspectBtnLabel">Разбор</span>
-        </button>
       </div>
 
       <div class="card-text-zone">
@@ -180,7 +174,6 @@
           <h2 class="card-title" id="cardTitle">Загрузка...</h2>
           <p class="card-desc" id="cardDesc"></p>
         </div>
-        <div class="card-tip" id="cardTip"></div>
       </div>
     </div>
   </div>
