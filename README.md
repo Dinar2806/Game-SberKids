@@ -2,6 +2,29 @@
 
 HTML5-игра без сборщика и внешних зависимостей.
 
+## Сайт и автоматическая публикация
+
+Адрес после первого успешного деплоя: **https://dinar2806.github.io/Game-SberKids/**.
+
+Workflow [Check and deploy game](https://github.com/Dinar2806/Game-SberKids/actions/workflows/pages.yml)
+проверяет синтаксис JavaScript, все кампании и события. После успешных проверок
+каждый push в `artemageddon` автоматически обновляет сайт. Pull request запускает
+только проверку, без публикации. На сайте размещаются только `index.html`,
+`assets/`, `css/`, `data/`, `js/`; исходники проверок и служебные файлы не публикуются.
+
+Для первой публикации администратору репозитория нужно один раз открыть
+[Settings → Pages](https://github.com/Dinar2806/Game-SberKids/settings/pages)
+и выбрать **Build and deployment → Source → GitHub Actions**.
+Если в окружении `github-pages` ограничены ветки публикации, нужно разрешить
+`artemageddon` в **Settings → Environments → github-pages**.
+Затем отправить изменения в `artemageddon` или повторить её workflow во вкладке
+Actions. После завершения задания **Publish to GitHub Pages** сайт доступен
+по адресу выше; ссылка также есть в окружении `github-pages`.
+
+Для ручного запуска через **Run workflow** нужно, чтобы этот workflow был также
+в основной ветке репозитория; при запуске выбрать `artemageddon`.
+Обычный push в `artemageddon` запускает публикацию независимо от этого.
+
 ## Карта проекта: где что хранится
 
 ```text
