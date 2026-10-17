@@ -56,7 +56,7 @@ function triggerComicJuice(type) {
   }, 650);
 }
 
-function renderMascot(mood, bubbleText, lookDir = 0, isHintBubble = false) {
+function renderMascot(mood, lookDir = 0) {
   const pupilShift = lookDir * 3.5;
   let visorColor = '#38bdf8';
   let visorStroke = '#0284c7';
@@ -127,27 +127,16 @@ function renderMascot(mood, bubbleText, lookDir = 0, isHintBubble = false) {
     <ellipse cx="74" cy="81" rx="9" ry="5.5" fill="#f97316" stroke="#9a3412" stroke-width="2.5"/>
     ${badgeAddon}
   </svg>`;
-
-  mascotBubble.classList.toggle('hint-mode', !!isHintBubble);
-  if (bubbleText) {
-    mascotBubble.textContent = bubbleText;
-    mascotBubble.classList.add('show');
-  } else {
-    mascotBubble.classList.remove('show');
-  }
 }
 
 function resetIdleHintTimer() {
   clearTimeout(idleHintTimer);
-  idleHintActive = false;
   mascotAvatar.classList.remove('idle-nudge');
-  document.getElementById('cardTip').classList.remove('highlight-tip');
 
   idleHintTimer = setTimeout(() => {
     if (busy) return;
-    idleHintActive = true;
     mascotAvatar.classList.add('idle-nudge');
-    renderMascot('think', '💡 Нажми на меня!', 0, true);
+    renderMascot('think');
   }, 15000);
 }
 
