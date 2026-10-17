@@ -49,9 +49,12 @@ const GameData = (() => {
     data.campaigns.forEach((c, i) => {
       const p = `campaigns[${i}]`;
       object(c, p);
-      knownKeys(c, ['id', 'name', 'icon', 'description', 'difficulty', 'progressIcons', 'eventsFile', 'balance', 'endings'], p);
+      knownKeys(c, ['id', 'name', 'icon', 'image', 'description', 'difficulty', 'progressIcons', 'eventsFile', 'balance', 'endings'], p);
       id(c.id, `${p}.id`, seen);
       for (const key of ['name', 'icon', 'description']) text(c[key], `${p}.${key}`);
+      if (Object.hasOwn(c, 'image')) {
+        requireValue(typeof c.image === 'string' && /^\.\/assets\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_-]+\.(svg|png|webp|jpe?g)$/.test(c.image), `${p}.image`, 'нужен относительный путь к изображению в ./assets/');
+      }
       requireValue(Object.hasOwn(difficulties, c.difficulty), `${p}.difficulty`, 'допустимы easy, medium, hard');
       requireValue(Array.isArray(c.progressIcons) && c.progressIcons.length === 5, `${p}.progressIcons`, 'нужны пять иконок прогресса');
       c.progressIcons.forEach((v, j) => text(v, `${p}.progressIcons[${j}]`));

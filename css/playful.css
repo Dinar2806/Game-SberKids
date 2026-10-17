@@ -1,5 +1,5 @@
 /* Toy-like volume, a quiet graphite stage, and readable story cards.
-   Everything is local: no fonts, libraries, or network requests required. */
+   Local artwork and system fonts; campaign JSON loads from the same site. */
 :root {
   --ink: #24202e; --muted: #625b70;
   --lime: #d0f77a; --lavender: #d8c4fc; --stage: #19171f;
@@ -45,8 +45,8 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
 .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
 .section-heading h2 { color: #fff; margin: 0; font-size: 18px; letter-spacing: -.5px; }
 .section-heading > span { color: #b9b0c4; font-size: 10px; }
-.dream-grid { margin: 0; grid-template-columns: 1fr 1fr; gap: 12px; }
-.dream-option { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 0; border: 1px solid #ffffff55; box-shadow: inset 0 2px 1px #ffffff88, 0 4px 0 #0003; border-radius: 25px; overflow: hidden; padding: 15px; transition: transform .18s, box-shadow .18s; color: #292332; }
+.dream-grid { margin: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.dream-option { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 0; min-width: 0; border: 1px solid #ffffff55; box-shadow: inset 0 2px 1px #ffffff88, 0 4px 0 #0003; border-radius: 25px; overflow: hidden; padding: 15px; transition: transform .18s, box-shadow .18s; color: #292332; }
 .dream-option:hover { transform: translateY(-3px); box-shadow: inset 0 2px 1px #ffffff88, 0 7px 0 #0003; }
 .dream-option:active { transform: translateY(2px) scale(.985); }
 .dream-featured { grid-column: 1 / -1; min-height: 174px; background: linear-gradient(120deg, #d8c1fa, #c4a4ef); padding: 17px 19px; }
@@ -55,7 +55,7 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
 .dream-featured .dream-opt-title { font-size: 27px; }
 .dream-opt-sub { display: block; font-size: 11px; line-height: 1.4; font-weight: 600; color: #534460; margin-top: 7px; }
 .dream-meta { display: block; font-size: 9px; font-weight: 700; color: #554362; margin-top: 12px; }
-.dream-toy { width: 145px; height: 111px; object-fit: contain; align-self: center; pointer-events: none; margin: -11px -4px 3px; }
+.dream-toy { width: 145px; max-width: 100%; height: 111px; object-fit: contain; align-self: center; pointer-events: none; margin: -11px -4px 3px; }
 .dream-featured .dream-toy { position: absolute; width: 195px; height: 185px; right: -4px; bottom: -2px; margin: 0; transform: rotate(8deg); }
 .dream-option-copy { position: relative; z-index: 1; }
 .dream-go { position: absolute; right: 12px; bottom: 12px; width: 29px; height: 29px; border-radius: 50%; background: #292332; color: #fff; display: grid; place-items: center; font-size: 20px; }
@@ -63,6 +63,16 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
 .dream-console { background: linear-gradient(130deg, #edfad4, #d8efb3); min-height: 214px; }
 .dream-robot { background: linear-gradient(130deg, #ffe5d2, #f5c9ad); min-height: 214px; }
 .dream-console .dream-meta, .dream-robot .dream-meta { font-size: 8px; margin-top: 10px; padding-right: 12px; max-width: 116px; }
+/* Campaign cards are generated from JSON and can contain longer story descriptions. */
+#campaignLoadStatus { color: #c5bfce; font-size: 13px; line-height: 1.5; }
+.dream-standard { background: linear-gradient(120deg, #dfcff7, #c4a4ef); min-height: 214px; }
+.dream-option-copy { width: 100%; }
+.dream-opt-title { overflow-wrap: anywhere; }
+.dream-option > .dream-opt-sub { position: relative; padding-bottom: 22px; }
+.dream-featured .dream-option-copy { min-height: 145px; padding-right: 46%; }
+.dream-featured .dream-toy { top: 6px; bottom: auto; height: 145px; }
+.dream-toy.campaign-emoji { display: grid; place-items: center; font-size: 72px; }
+.dream-icon-box .campaign-emoji { font-size: 32px; }
 .welcome-footer { margin-top: 16px; color: #a39bac; font-size: 10px; line-height: 1.6; text-align: center; }
 .welcome-footer > span { display: inline; color: var(--lime); margin-right: 3px; }
 

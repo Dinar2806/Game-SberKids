@@ -102,9 +102,25 @@ function buildFlipMap() {
   sideFlipMap = activeDeck.map((_, i) => (i % 2 === 0 ? Math.random() < 0.6 : Math.random() < 0.4));
 }
 
+function createCampaignArt(campaign, className, width, height) {
+  const fallback = document.createElement('span');
+  fallback.className = `${className} campaign-emoji`.trim();
+  fallback.textContent = campaign.icon;
+  fallback.setAttribute('aria-hidden', 'true');
+  if (!campaign.image) return fallback;
+  const image = document.createElement('img');
+  image.className = className;
+  image.src = campaign.image;
+  image.alt = '';
+  image.width = width;
+  image.height = height;
+  image.addEventListener('error', () => image.replaceWith(fallback), { once: true });
+  return image;
+}
+
 function applyDreamTheme(campaign) {
   currentDream = campaign;
-  document.getElementById('dreamMainIcon').textContent = currentDream.icon;
+  document.getElementById('dreamMainIcon').replaceChildren(createCampaignArt(campaign, '', 64, 58));
   document.getElementById('dreamName').textContent = currentDream.name;
   currentDream.progressIcons.forEach((p, i) => {
     document.getElementById('part-' + i).textContent = p;
@@ -548,19 +564,24 @@ function showCampaignError(error) {
 
 function renderCampaignList() {
   campaignList.replaceChildren();
-  campaigns.forEach(campaign => {
+  campaigns.forEach((campaign, index) => {
     const difficulty = GameData.difficulties[campaign.difficulty];
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = 'dream-option';
+    btn.className = 'dream-option ' + (index === 0 ? 'dream-featured' : campaign.difficulty === 'medium' ? 'dream-console' : campaign.difficulty === 'hard' ? 'dream-robot' : 'dream-standard');
     btn.dataset.dream = campaign.id;
-    // Разметка постоянная, все значения из JSON вставляются как текст.
-    btn.innerHTML = '<div class="dream-opt-icon"></div><div style="flex:1;"><div class="dream-opt-head"><span class="dream-opt-title"></span><span class="diff-tag"></span></div><div class="dream-opt-sub"></div></div>';
-    btn.querySelector('.dream-opt-icon').textContent = campaign.icon;
+    // Сохраняем оформление visual, все значения из JSON вставляются как текст.
+    btn.innerHTML = '<div class="dream-option-copy"><span class="dream-opt-title"></span><span class="dream-meta"></span></div><span class="dream-opt-sub"></span><span class="dream-go" aria-hidden="true">↗</span>';
+    btn.prepend(createCampaignArt(campaign, 'dream-toy', 240, 220));
+    if (index === 0) {
+      const kicker = document.createElement('span');
+      kicker.className = 'dream-kicker';
+      kicker.textContent = '✦ НАЧНИ ЗДЕСЬ';
+      btn.querySelector('.dream-option-copy').prepend(kicker);
+    }
     btn.querySelector('.dream-opt-title').textContent = campaign.name;
     btn.querySelector('.dream-opt-sub').textContent = campaign.description;
-    const badge = btn.querySelector('.diff-tag');
-    badge.classList.add(difficulty.className);
+    const badge = btn.querySelector('.dream-meta');
     badge.textContent = difficulty.label;
     btn.addEventListener('click', () => startCampaign(campaign.id));
     campaignList.appendChild(btn);
@@ -604,7 +625,7 @@ async function startCampaign(id) {
     idx = 0;
     busy = false;
     buildFlipMap();
-    const badge = Array.from(campaignList.children).find(btn => btn.dataset.dream === id).querySelector('.diff-tag');
+    const badge = Array.from(campaignList.children).find(btn => btn.dataset.dream === id).querySelector('.dream-meta');
     badge.textContent = GameData.difficulties[campaign.difficulty].label + ' · ' + events.length + ' карт';
     document.getElementById('dreamSelectScreen').classList.remove('active');
     campaignStatus.hidden = true;
