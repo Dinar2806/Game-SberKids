@@ -42,6 +42,8 @@ window.initSoundButton = function initSoundButton() {
     Sound.enabled = !Sound.enabled;
     soundBtn.textContent = Sound.enabled ? '🔊' : '🔇';
     soundBtn.classList.toggle('sound-on', Sound.enabled);
+    soundBtn.setAttribute('aria-pressed', String(Sound.enabled));
+    soundBtn.setAttribute('aria-label', Sound.enabled ? 'Выключить звук' : 'Включить звук');
     if (Sound.enabled) Sound.coin();
   });
 };

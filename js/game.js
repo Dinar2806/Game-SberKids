@@ -101,7 +101,9 @@ function buildFlipMap() {
 function applyDreamTheme(dreamKey) {
   currentDream = DREAMS[dreamKey] || DREAMS.scooter;
   activeDeck = CAMPAIGNS[currentDream.key] || DECK_SCOOTER;
-  document.getElementById('dreamMainIcon').textContent = currentDream.icon;
+  document.getElementById('dreamMainIcon').innerHTML = `<img src="./assets/${currentDream.key}.svg" alt="" width="64" height="58">`;
+  const dreamNames = { scooter: 'Самокат мечты', console: 'Игровая приставка', robodog: 'Робо-пёс и друзья' };
+  document.getElementById('dreamName').textContent = dreamNames[currentDream.key];
   currentDream.parts.forEach((p, i) => {
     document.getElementById('part-' + i).textContent = p;
   });
@@ -190,7 +192,7 @@ if (inspectBtn) {
     inspectBtnLabel.textContent = 'Улика найдена!';
     const tipEl = document.getElementById('cardTip');
     tipEl.classList.add('highlight-tip');
-    renderMascot('detective', '🔍 Смотри на подсказку внизу карточки!', 0, true);
+    renderMascot('detective', '🔍 Подсказка внизу!', 0, true);
     const r = inspectBtn.getBoundingClientRect();
     spawnBurst(r.left + 24, r.top, ['🔍', '💡', '✨'], 4);
   });
@@ -207,7 +209,8 @@ function showCard() {
   document.getElementById('cardTitle').textContent = c.title;
   document.getElementById('cardDesc').textContent = c.desc;
   document.getElementById('cardTip').textContent = c.tip;
-  document.getElementById('cardArtZone').style.background = `radial-gradient(circle, ${c.bg[0]}, ${c.bg[1]})`;
+  const artThemes = { shop: '#f8e8bb', friend: '#dcefc4', scam: '#f5d4dd', tech: '#d6e7f7', quiz: '#e5d4f5' };
+  document.getElementById('cardArtZone').style.background = `radial-gradient(ellipse at 35% 15%, #fffcf6, ${artThemes[c.type] || artThemes.quiz})`;
   spriteWrap.innerHTML = buildCardSVG(c.type, c.emoji);
   spriteWrap.style.transform = '';
 
@@ -303,7 +306,7 @@ function renderFinalAchievements(isExitOnly) {
 
 // 12. ПРИМЕНЕНИЕ ВЫБОРА С УЧЁТОМ КОЭФФИЦИЕНТА СЛОЖНОСТИ
 function applyDecision(dir) {
-  if (busy) return;
+  if (busy || document.querySelector('.overlay-screen.active')) return;
   busy = true;
   hasSwipedOnce = true;
   clearTimeout(idleHintTimer);
@@ -443,6 +446,8 @@ let startX = 0, startY = 0, dx = 0;
 
 cardEl.addEventListener('pointerdown', (e) => {
   if (busy) return;
+  const textArea = e.target.closest('.card-text-zone');
+  if (textArea && textArea.scrollHeight > textArea.clientHeight) return;
   dragging = true;
   startX = e.clientX;
   startY = e.clientY;

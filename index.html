@@ -2,11 +2,13 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Путь к Мечте: Приключения с Вольтиком</title>
   <link rel="stylesheet" href="./css/main.css">
   <link rel="stylesheet" href="./css/cards.css">
   <link rel="stylesheet" href="./css/modals.css">
+  <link rel="stylesheet" href="./css/playful.css">
+  <meta name="theme-color" content="#19171f">
 </head>
 <body>
 
@@ -19,99 +21,109 @@
 <div class="screen-flash" id="screenFlash"></div>
 <div class="comic-pop" id="comicPop">КРАСАВА!</div>
 <canvas id="vfxCanvas"></canvas>
-<div class="reward-banner" id="rewardBanner">✨ Отличный ход!</div>
+<div class="reward-banner" id="rewardBanner" role="status" aria-live="polite">✨ Отличный ход!</div>
 
 <!-- СТАРТОВЫЙ ЭКРАН ВЫБОРА МЕЧТЫ И СЛОЖНОСТИ -->
-<div class="overlay-screen active" id="dreamSelectScreen">
-  <div class="dialog-box">
-    <div style="font-size: 44px; margin-bottom: 2px;">🦊✨</div>
-    <h2 style="margin: 0 0 4px; font-size: 20px; font-weight: 900;">Привет! Я лисёнок Вольтик!</h2>
-    <p style="margin: 0; font-size: 13px; color: #475569; font-weight: 600;">У каждой Мечты своя история, длина и сложность. Выбирай приключение:</p>
-
+<div class="overlay-screen active" id="dreamSelectScreen" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+  <div class="welcome-shell">
+    <header class="welcome-header">
+      <span class="wordmark"><span class="brand-spark" aria-hidden="true">✳</span> сбер<span>kids</span></span>
+      <span class="game-label">ИГРА ПРО МЕЧТЫ</span>
+    </header>
+    <section class="welcome-hero">
+      <div class="hero-copy">
+        <span class="eyebrow">БОЛЬШИЕ МЕЧТЫ НАЧИНАЮТСЯ С МАЛОГО</span>
+        <h1 id="welcomeTitle">Мечтай.<br>Играй.<br><span>Достигай!</span></h1>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <span class="hero-orbit"></span><span class="toy-coin coin-one">✳</span>
+        <span class="toy-star star-one">✦</span><span class="toy-star star-two">✦</span>
+        <img src="./assets/fox.svg" alt="" width="240" height="220">
+        <span class="fox-sticker">Вольтик на связи!</span>
+      </div>
+    </section>
+    <p class="welcome-intro">Привет, я Вольтик! Будем играть, учиться<br class="wide-break"> копить и вместе идти к твоей мечте.</p>
+    <div class="section-heading"><h2>Какая у тебя мечта?</h2><span>Выбирай и играй ↓</span></div>
     <div class="dream-grid">
-      <button class="dream-option" type="button" data-dream="scooter">
-        <div class="dream-opt-icon">🛴</div>
-        <div style="flex:1;">
-          <div class="dream-opt-head">
-            <span class="dream-opt-title">Электро-Самокат</span>
-            <span class="diff-tag diff-easy">Лёгкая · 20 карт</span>
-          </div>
-          <div class="dream-opt-sub">Карманные деньги, прогулки и базовые правила</div>
+      <button class="dream-option dream-featured" type="button" data-dream="scooter">
+        <div class="dream-option-copy"><span class="dream-kicker">✦ НАЧНИ ЗДЕСЬ</span>
+          <span class="dream-opt-title">Самокат<br>мечты</span>
+          <span class="dream-opt-sub">Копи монеты и делай<br>первые открытия</span>
+          <span class="dream-meta">20 историй · лёгкий старт</span>
         </div>
+        <img class="dream-toy" src="./assets/scooter.svg" alt="" width="240" height="220">
+        <span class="dream-go" aria-hidden="true">↗</span>
       </button>
-
-      <button class="dream-option" type="button" data-dream="console">
-        <div class="dream-opt-icon">🎮</div>
-        <div style="flex:1;">
-          <div class="dream-opt-head">
-            <span class="dream-opt-title">Игровая Приставка</span>
-            <span class="diff-tag diff-med">Средняя · 30 карт</span>
-          </div>
-          <div class="dream-opt-sub">Подписки, онлайн-покупки, друзья и копилка</div>
-        </div>
+      <button class="dream-option dream-console" type="button" data-dream="console">
+        <img class="dream-toy" src="./assets/console.svg" alt="" width="240" height="220">
+        <span class="dream-opt-title">Игровая<br>приставка</span>
+        <span class="dream-opt-sub">Покупай с умом</span>
+        <span class="dream-meta">30 историй · посложнее</span>
+        <span class="dream-go" aria-hidden="true">↗</span>
       </button>
-
-      <button class="dream-option" type="button" data-dream="robodog">
-        <div class="dream-opt-icon">🤖</div>
-        <div style="flex:1;">
-          <div class="dream-opt-head">
-            <span class="dream-opt-title">Умный Робо-Пёс</span>
-            <span class="diff-tag diff-hard">Сложная · 40 карт</span>
-          </div>
-          <div class="dream-opt-sub">Хардкорный баланс ресурсов, деталей и энергии!</div>
-        </div>
+      <button class="dream-option dream-robot" type="button" data-dream="robodog">
+        <img class="dream-toy" src="./assets/robodog.svg" alt="" width="240" height="220">
+        <span class="dream-opt-title">Робо-пёс<br>и друзья</span>
+        <span class="dream-opt-sub">Собери свою мечту</span>
+        <span class="dream-meta">40 историй · вызов</span>
+        <span class="dream-go" aria-hidden="true">↗</span>
       </button>
     </div>
+    <footer class="welcome-footer"><span aria-hidden="true">✧</span> Здесь только игровые монеты.<br>Настоящие деньги не тратятся.</footer>
   </div>
 </div>
 
 <div class="app">
+  <header class="game-heading"><div><span class="eyebrow">СБЕРKIDS · ИГРА</span><h1>Путь к мечте<span>✦</span></h1></div>
+    <div class="header-actions"><button class="icon-btn" id="soundBtn" type="button" aria-label="Включить звук" aria-pressed="false">🔇</button><button class="icon-btn" id="closeBtn" type="button" aria-label="Выйти из игры">✕</button></div>
+  </header>
   <!-- ВЕРХНИЙ БЛОК: Статы + Капсула Мечты -->
   <div>
     <div class="top-bar">
       <div class="stats-row">
-        <div class="stat-pill" id="pill-money" data-stat="money">
+        <div class="stat-pill" id="pill-money" data-stat="money" role="button" tabindex="0" aria-label="Копилка: узнать подробнее">
           <div class="stat-dot" id="dot-money"></div>
           <div class="stat-jar" id="jar-money">
             <div class="stat-fill" id="fill-money"></div>
             <span class="stat-icon">🪙</span>
           </div>
-          <span class="stat-val" id="val-money">50</span>
+          <span class="stat-val" id="val-money">50</span><span class="stat-label">Копилка</span>
         </div>
-        <div class="stat-pill" id="pill-tech" data-stat="tech">
+        <div class="stat-pill" id="pill-tech" data-stat="tech" role="button" tabindex="0" aria-label="Бодрость: узнать подробнее">
           <div class="stat-dot" id="dot-tech"></div>
           <div class="stat-jar" id="jar-tech">
             <div class="stat-fill" id="fill-tech"></div>
             <span class="stat-icon">⚡</span>
           </div>
-          <span class="stat-val" id="val-tech">50</span>
+          <span class="stat-val" id="val-tech">50</span><span class="stat-label">Бодрость</span>
         </div>
-        <div class="stat-pill" id="pill-trust" data-stat="trust">
+        <div class="stat-pill" id="pill-trust" data-stat="trust" role="button" tabindex="0" aria-label="Дружба: узнать подробнее">
           <div class="stat-dot" id="dot-trust"></div>
           <div class="stat-jar" id="jar-trust">
             <div class="stat-fill" id="fill-trust"></div>
             <span class="stat-icon">❤️</span>
           </div>
-          <span class="stat-val" id="val-trust">50</span>
+          <span class="stat-val" id="val-trust">50</span><span class="stat-label">Дружба</span>
         </div>
-        <div class="stat-pill" id="pill-team" data-stat="team">
+        <div class="stat-pill" id="pill-team" data-stat="team" role="button" tabindex="0" aria-label="Смекалка: узнать подробнее">
           <div class="stat-dot" id="dot-team"></div>
           <div class="stat-jar" id="jar-team">
             <div class="stat-fill" id="fill-team"></div>
             <span class="stat-icon">🧠</span>
           </div>
-          <span class="stat-val" id="val-team">50</span>
+          <span class="stat-val" id="val-team">50</span><span class="stat-label">Смекалка</span>
         </div>
       </div>
 
-      <button class="icon-btn" id="soundBtn" type="button" aria-label="Звук">🔇</button>
-      <button class="icon-btn" id="closeBtn" type="button" aria-label="Выйти">✕</button>
+
+
     </div>
 
     <!-- КАПСУЛА МЕЧТЫ -->
     <div class="dream-capsule" id="dreamCapsule">
       <div class="dream-icon-box" id="dreamMainIcon">🛴</div>
       <div class="dream-progress-area">
+        <div class="dream-caption">Твоя мечта <span id="dreamName">Самокат мечты</span></div>
         <div class="dream-parts-row">
           <div class="part-node unlocked" id="part-0">🛞</div>
           <div class="part-node" id="part-1">🛹</div>
@@ -130,7 +142,7 @@
   <!-- МАСКОТ ВОЛЬТИК -->
   <div class="mascot-dock">
     <div class="streak-pill" id="streakPill">🔥 КОМБО x2</div>
-    <div class="mascot-avatar" id="mascotAvatar" title="Нажми для совета Вольтика!"></div>
+    <button class="mascot-avatar" id="mascotAvatar" type="button" aria-label="Подсказка Вольтика" title="Нажми для совета Вольтика!"></button><span class="mascot-caption">Вольтик поможет <span>нажми на меня ↗</span></span>
     <div class="mascot-bubble" id="mascotBubble">🤔</div>
   </div>
 
@@ -150,7 +162,7 @@
           <span>👆</span>
           <span>→</span>
         </div>
-        <div class="tut-caption">Тяни карточку влево или вправо!</div>
+        <div class="tut-caption">Листай или нажми кнопку внизу</div>
       </div>
 
       <div class="card-art-zone" id="cardArtZone">
@@ -176,18 +188,18 @@
   <!-- КНОПКИ ВНИЗУ -->
   <div class="controls-row">
     <button class="choice-btn left" id="btnLeft" type="button">
-      <span>👈</span>
+      <span class="choice-arrow" aria-hidden="true">←</span>
       <span id="btnLeftLabel">Вариант 1</span>
     </button>
     <button class="choice-btn right" id="btnRight" type="button">
       <span id="btnRightLabel">Вариант 2</span>
-      <span>👉</span>
+      <span class="choice-arrow" aria-hidden="true">→</span>
     </button>
   </div>
 </div>
 
 <!-- ОВЕРЛЕЙ МИНИ-ИГР (15 секунд) -->
-<div class="overlay-screen" id="minigameOverlay">
+<div class="overlay-screen" id="minigameOverlay" role="dialog" aria-modal="true" aria-labelledby="mgTitle">
   <div class="minigame-box">
     <div>
       <div class="mg-top">
@@ -208,7 +220,7 @@
 </div>
 
 <!-- МОДАЛКА КОНЦА ИГРЫ С АЧИВКАМИ И ДИПЛОМОМ СБЕРKIDS -->
-<div class="overlay-screen" id="endModal">
+<div class="overlay-screen" id="endModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="dialog-box">
     <div style="font-size: 50px; margin-bottom: 2px;" id="modalArt">🏆</div>
     <div class="rank-pill" id="modalRank">👑 Титул: Финансовый Профи</div>
@@ -233,5 +245,6 @@
   <script src="./js/graphics-vfx.js"></script>
   <script src="./js/minigames.js"></script>
   <script src="./js/game.js"></script>
+  <script src="./js/accessibility.js"></script>
 </body>
 </html>

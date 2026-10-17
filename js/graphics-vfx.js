@@ -1,7 +1,7 @@
 // Графика: фоны, комикс-штампы, SVG-маскот Вольтик 2.0, SVG-сцены карточек и движок частиц VFX
 function shiftBackground(stepIdx) {
   const theme = BG_THEMES[stepIdx % BG_THEMES.length];
-  document.body.style.backgroundColor = theme.body;
+  document.body.style.setProperty('--scene-accent', theme.s2);
   const s1 = document.getElementById('bgShape1');
   const s2 = document.getElementById('bgShape2');
   const s3 = document.getElementById('bgShape3');
@@ -21,9 +21,9 @@ const comicPop = document.getElementById('comicPop');
 const screenFlash = document.getElementById('screenFlash');
 let popTimer = null;
 
-const GOOD_WORDS = ['КРАСАВА! 🔥', 'МЕГА-МОЗГ! 🧠', 'ТОП-ХОД! ⚡', 'В ЯБЛОЧКО! 🎯', 'ГЕНИЙ! 🌟'];
-const BAD_WORDS  = ['ОЙ, ОШИБКА! 💥', 'МИМО КАССЫ! 💸', 'ОСТОРОЖНЕЕ! ⚠️'];
-const THINK_WORDS = ['КОМПРОМИСС! ⚖️', 'ВЫБОР 50/50! 🤔'];
+const GOOD_WORDS = ['ЗДОРОВО! ✦', 'ОТЛИЧНЫЙ ХОД! ⚡', 'ТАК ДЕРЖАТЬ! 🌟', 'ПОЛУЧИЛОСЬ! 🎯'];
+const BAD_WORDS  = ['ПОПРОБУЕМ ЕЩЁ! ✦', 'УЧИМСЯ ВМЕСТЕ! 💡'];
+const THINK_WORDS = ['ЕСТЬ НАД ЧЕМ ПОДУМАТЬ! 💡', 'ИНТЕРЕСНЫЙ ВЫБОР! ✦'];
 
 function triggerComicJuice(type) {
   let word = THINK_WORDS[Math.floor(Math.random() * THINK_WORDS.length)];
@@ -41,7 +41,7 @@ function triggerComicJuice(type) {
   }
 
   screenFlash.style.backgroundColor = flashColor;
-  screenFlash.style.opacity = '1';
+  screenFlash.style.opacity = '0.18';
   setTimeout(() => { screenFlash.style.opacity = '0'; }, 160);
 
   const angle = (Math.random() * 14 - 7).toFixed(1);
@@ -152,57 +152,21 @@ function resetIdleHintTimer() {
 }
 
 function buildCardSVG(type, mainEmoji) {
-  let backdrop = '';
-  if (type === 'scam') {
-    backdrop = `
-      <circle cx="60" cy="60" r="52" fill="#ffe4e6" stroke="#f43f5e" stroke-width="3.5" stroke-dasharray="9 5"/>
-      <rect x="10" y="14" width="28" height="18" rx="6" fill="#f43f5e" transform="rotate(-12 24 23)"/>
-      <text x="24" y="27" font-size="10" font-weight="900" fill="#ffffff" text-anchor="middle">SOS!</text>
-      <circle cx="100" cy="24" r="11" fill="#fef08a" stroke="#f59e0b" stroke-width="2.5"/>
-      <text x="100" y="28" font-size="13" font-weight="900" fill="#b45309" text-anchor="middle">⚠️</text>
-      <path d="M26 42 L60 26 L94 42 L88 82 Q60 94 32 82 Z" fill="#1e293b" stroke="#0f172a" stroke-width="3" stroke-linejoin="round"/>
-      <polygon points="36,52 54,56 52,62 36,59" fill="#fb7185"/>
-      <polygon points="84,52 66,56 68,62 84,59" fill="#fb7185"/>`;
-  } else if (type === 'shop') {
-    backdrop = `
-      <circle cx="60" cy="60" r="52" fill="#fef3c7" stroke="#f59e0b" stroke-width="3.5"/>
-      <circle cx="18" cy="26" r="10" fill="#fde047" stroke="#d97706" stroke-width="2"/>
-      <text x="18" y="30" font-size="11" font-weight="900" fill="#92400e" text-anchor="middle">🪙</text>
-      <rect x="84" y="14" width="28" height="17" rx="5" fill="#10b981" transform="rotate(10 98 22)"/>
-      <text x="98" y="26" font-size="9" font-weight="900" fill="#ffffff" text-anchor="middle">SALE</text>
-      <path d="M22 34 H98 L104 46 H16 Z" fill="#f59e0b" stroke="#0f172a" stroke-width="2.8" stroke-linejoin="round"/>
-      <rect x="26" y="45" width="68" height="44" rx="14" fill="#ffffff" stroke="#0f172a" stroke-width="2.8"/>`;
-  } else if (type === 'friend') {
-    backdrop = `
-      <circle cx="60" cy="60" r="52" fill="#dcfce7" stroke="#10b981" stroke-width="3.5"/>
-      <circle cx="20" cy="24" r="10" fill="#fda4af"/>
-      <text x="20" y="28" font-size="11" text-anchor="middle">❤️</text>
-      <circle cx="100" cy="26" r="10" fill="#bae6fd"/>
-      <text x="100" y="30" font-size="11" text-anchor="middle">🤝</text>
-      <circle cx="60" cy="62" r="36" fill="#ffffff" stroke="#10b981" stroke-width="3"/>`;
-  } else if (type === 'tech') {
-    backdrop = `
-      <circle cx="60" cy="60" r="52" fill="#dbeafe" stroke="#3b82f6" stroke-width="3.5"/>
-      <circle cx="20" cy="24" r="10" fill="#93c5fd" stroke="#2563eb" stroke-width="2"/>
-      <text x="20" y="28" font-size="11" text-anchor="middle">⚙️</text>
-      <circle cx="100" cy="24" r="10" fill="#fde047" stroke="#d97706" stroke-width="2"/>
-      <text x="100" y="28" font-size="11" text-anchor="middle">⚡</text>
-      <rect x="26" y="30" width="68" height="58" rx="16" fill="#1e293b" stroke="#0f172a" stroke-width="3"/>
-      <rect x="33" y="37" width="54" height="44" rx="11" fill="#eff6ff"/>`;
-  } else {
-    backdrop = `
-      <circle cx="60" cy="60" r="52" fill="#f3e8ff" stroke="#8b5cf6" stroke-width="3.5" stroke-dasharray="8 5"/>
-      <circle cx="20" cy="24" r="10" fill="#fde047" stroke="#d97706" stroke-width="2"/>
-      <text x="20" y="28" font-size="12" font-weight="900" fill="#92400e" text-anchor="middle">?</text>
-      <circle cx="100" cy="24" r="10" fill="#a7f3d0" stroke="#059669" stroke-width="2"/>
-      <text x="100" y="28" font-size="11" text-anchor="middle">💡</text>
-      <circle cx="60" cy="62" r="36" fill="#ffffff" stroke="#8b5cf6" stroke-width="3"/>`;
-  }
-  return `<svg viewBox="0 0 120 120">
-    <ellipse cx="60" cy="112" rx="34" ry="5" fill="rgba(15,23,42,0.12)"/>
-    ${backdrop}
-    <circle cx="60" cy="65" r="26" fill="#ffffff" stroke="#0f172a" stroke-width="2.5"/>
-    <text x="60" y="79" font-size="40" text-anchor="middle">${mainEmoji}</text>
+  const colors = { shop: ['#fff5b5', '#ffc45a'], friend: ['#e7ffb5', '#92d787'], scam: ['#ffdbd9', '#f49ba7'], tech: ['#d8f8ff', '#8fc8f7'], quiz: ['#efdcff', '#be9aef'] };
+  const [light, deep] = colors[type] || colors.quiz;
+  return `<svg viewBox="0 0 220 180" aria-hidden="true">
+    <defs>
+      <radialGradient id="orb-${type}" cx=".32" cy=".18" r=".9"><stop stop-color="#fff"/><stop offset=".3" stop-color="${light}"/><stop offset="1" stop-color="${deep}"/></radialGradient>
+      <linearGradient id="rim-${type}" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff"/><stop offset=".6" stop-color="${light}"/><stop offset="1" stop-color="${deep}"/></linearGradient>
+    </defs>
+    <ellipse cx="111" cy="159" rx="66" ry="9" fill="#392550" opacity=".13"/>
+    <ellipse cx="110" cy="90" rx="74" ry="70" fill="url(#rim-${type})" transform="rotate(-13 110 90)"/>
+    <circle cx="110" cy="85" r="63" fill="url(#orb-${type})" stroke="#fff" stroke-opacity=".65" stroke-width="2"/>
+    <path d="M65 59 Q76 34 104 33" stroke="white" stroke-opacity=".8" stroke-width="6" stroke-linecap="round" fill="none"/>
+    <text x="110" y="112" font-size="68" text-anchor="middle">${mainEmoji}</text>
+    <g transform="rotate(-18 33 117)"><rect x="16" y="100" width="35" height="35" rx="12" fill="url(#rim-${type})" stroke="white" stroke-width="2"/><path d="M25 117 L31 123 L42 110" stroke="#665183" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>
+    <path d="M181 31 L185 43 L198 47 L185 51 L181 64 L177 51 L164 47 L177 43 Z" fill="${deep}" stroke="white" stroke-width="1.5"/>
+    <circle cx="183" cy="129" r="8" fill="url(#rim-${type})" stroke="white" stroke-width="2"/>
   </svg>`;
 }
 

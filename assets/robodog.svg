@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 220"><defs>
+ <linearGradient id="purple" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#f5eaff"/><stop offset=".4" stop-color="#bf99ff"/><stop offset="1" stop-color="#7648d6"/></linearGradient>
+ <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="white"/><stop offset=".4" stop-color="#e3e6f1"/><stop offset="1" stop-color="#8c92ae"/></linearGradient>
+ <linearGradient id="dark" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#626179"/><stop offset=".55" stop-color="#302d42"/><stop offset="1" stop-color="#171522"/></linearGradient>
+ <linearGradient id="lime" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#f3ffac"/><stop offset=".45" stop-color="#c3f64e"/><stop offset="1" stop-color="#78b421"/></linearGradient>
+ <linearGradient id="orange" x1="0" y1="0" x2=".7" y2="1"><stop stop-color="#ffe6b1"/><stop offset=".35" stop-color="#ffb85c"/><stop offset="1" stop-color="#f07840"/></linearGradient>
+ <radialGradient id="fur" cx=".3" cy=".2" r=".85"><stop stop-color="#ffe0ab"/><stop offset=".45" stop-color="#ffa55c"/><stop offset="1" stop-color="#e46a3b"/></radialGradient>
+ <radialGradient id="white" cx=".35" cy=".2" r=".9"><stop stop-color="white"/><stop offset=".7" stop-color="#f1e5df"/><stop offset="1" stop-color="#d1b9b9"/></radialGradient>
+ </defs><ellipse cx="120" cy="192" rx="78" ry="10" fill="#71452e" opacity=".17"/>
+ <g transform="rotate(7 120 115)"><path d="M156 133 Q205 103 198 136" stroke="url(#purple)" stroke-width="13" stroke-linecap="round" fill="none"/>
+ <rect x="91" y="112" width="75" height="53" rx="25" fill="url(#metal)"/>
+ <rect x="94" y="147" width="19" height="37" rx="9" fill="url(#purple)"/><rect x="142" y="147" width="19" height="37" rx="9" fill="url(#purple)"/>
+ <rect x="86" y="174" width="29" height="14" rx="7" fill="url(#dark)"/><rect x="139" y="174" width="28" height="14" rx="7" fill="url(#dark)"/>
+ <path d="M63 61 Q37 44 42 82 L52 110 L73 94 Z" fill="url(#purple)"/><path d="M139 61 Q162 39 164 77 L153 103 L135 93 Z" fill="url(#purple)"/>
+ <rect x="53" y="54" width="98" height="83" rx="33" fill="url(#metal)" stroke="#e9e7f3" stroke-width="2"/>
+ <rect x="64" y="70" width="77" height="43" rx="19" fill="url(#dark)"/>
+ <ellipse cx="85" cy="90" rx="6" ry="10" fill="#d4ff73"/><ellipse cx="121" cy="90" rx="6" ry="10" fill="#d4ff73"/>
+ <path d="M96 103 Q103 109 110 103" stroke="#c3f674" stroke-width="3" fill="none" stroke-linecap="round"/>
+ <ellipse cx="102" cy="124" rx="9" ry="5" fill="url(#purple)"/>
+ <path d="M75 63 Q89 58 111 61" stroke="white" stroke-width="5" fill="none" stroke-linecap="round"/>
+ <circle cx="128" cy="137" r="10" fill="url(#lime)"/><path d="M129 131 L124 137 H130 L126 144" stroke="#567e2c" stroke-width="2" fill="none"/>
+ </g></svg>
