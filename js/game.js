@@ -1,9 +1,7 @@
-// Основной игровой цикл, состояние, свайпы, «Лупа Вольтика» и диплом СберKids
+// Основной игровой цикл, состояние, свайпы, подсказки Вольтика и диплом
 let currentDream = DREAMS.scooter;
 const mascotAvatar = document.getElementById("mascotAvatar");
-const mascotBubble = document.getElementById("mascotBubble");
 let idleHintTimer = null;
-let idleHintActive = false;
 
 // 9. СОСТОЯНИЕ ИГРЫ
 let activeDeck = DECK_SCOOTER;
@@ -23,7 +21,6 @@ const cardShine = document.getElementById('cardShine');
 const badgeL = document.getElementById('badgeLeft');
 const badgeR = document.getElementById('badgeRight');
 const spriteWrap = document.getElementById('spriteContainer');
-const streakPill = document.getElementById('streakPill');
 const tutorialHand = document.getElementById('tutorialHand');
 
 function clamp(n) { return Math.max(0, Math.min(100, Math.round(n))); }
@@ -44,9 +41,6 @@ mascotAvatar.addEventListener('pointerdown', (e) => {
   void mascotAvatar.offsetWidth;
   mascotAvatar.classList.add('boing');
 
-  const tipEl = document.getElementById('cardTip');
-  tipEl.classList.add('highlight-tip');
-
   // Ищем самый просевший показатель, чтобы Вольтик подсказал, что беречь
   const names = { money: '🪙 Копилку', tech: '⚡ Бодрость', trust: '❤️ Дружбу', team: '🧠 Смекалку' };
   let lowestKey = 'money';
@@ -56,10 +50,10 @@ mascotAvatar.addEventListener('pointerdown', (e) => {
 
   const c = activeCardData;
   if (stats[lowestKey] <= 32) {
-    renderMascot('happy', '💡 Совет!', 0, true);
+    renderMascot('happy');
     flashBanner(`🦊 Вольтик: «Береги ${names[lowestKey]} (${stats[lowestKey]})! ${c ? c.tip : ''}»`, 3400);
   } else {
-    renderMascot('happy', '🦊 Подсказка!', 0, true);
+    renderMascot('happy');
     flashBanner(`🦊 Вольтик: «${c ? c.tip : 'Держи баланс всех 4 показателей!'}»`, 3200);
   }
 
@@ -120,13 +114,6 @@ function syncUI() {
   document.getElementById('dreamBarFill').style.width = dreamPct + '%';
   document.getElementById('dreamScoreText').textContent = `🌟 ${dreamPct}%`;
 
-  if (streak >= 2) {
-    streakPill.textContent = streak >= 4 ? `💎 МЕГА x${streak}` : `🔥 КОМБО x${streak}`;
-    streakPill.classList.add('show');
-  } else {
-    streakPill.classList.remove('show');
-  }
-
   const thresholds = [15, 35, 55, 75, currentDream.winDream];
   thresholds.forEach((t, i) => {
     const node = document.getElementById('part-' + i);
@@ -181,23 +168,6 @@ function resolveCard(i) {
   };
 }
 
-const inspectBtn = document.getElementById('inspectBtn');
-const inspectBtnLabel = document.getElementById('inspectBtnLabel');
-if (inspectBtn) {
-  inspectBtn.addEventListener('pointerdown', (e) => e.stopPropagation());
-  inspectBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    Sound.boing();
-    inspectBtn.classList.add('active');
-    inspectBtnLabel.textContent = 'Улика найдена!';
-    const tipEl = document.getElementById('cardTip');
-    tipEl.classList.add('highlight-tip');
-    renderMascot('detective', '🔍 Подсказка внизу!', 0, true);
-    const r = inspectBtn.getBoundingClientRect();
-    spawnBurst(r.left + 24, r.top, ['🔍', '💡', '✨'], 4);
-  });
-}
-
 function showCard() {
   activeCardData = resolveCard(idx);
   const c = activeCardData;
@@ -208,16 +178,11 @@ function showCard() {
   document.getElementById('condBadge').classList.toggle('show', !!c.isCond);
   document.getElementById('cardTitle').textContent = c.title;
   document.getElementById('cardDesc').textContent = c.desc;
-  document.getElementById('cardTip').textContent = c.tip;
+  document.querySelector('.card-text-zone').scrollTop = 0;
   const artThemes = { shop: '#f8e8bb', friend: '#dcefc4', scam: '#f5d4dd', tech: '#d6e7f7', quiz: '#e5d4f5' };
   document.getElementById('cardArtZone').style.background = `radial-gradient(ellipse at 35% 15%, #fffcf6, ${artThemes[c.type] || artThemes.quiz})`;
   spriteWrap.innerHTML = buildCardSVG(c.type, c.emoji);
   spriteWrap.style.transform = '';
-
-  if (inspectBtn) {
-    inspectBtn.classList.remove('active');
-    inspectBtnLabel.textContent = c.type === 'scam' ? 'Проверить' : 'Разбор';
-  }
 
   badgeL.textContent = c.left.text;
   badgeR.textContent = c.right.text;
@@ -228,7 +193,7 @@ function showCard() {
   badgeR.style.opacity = 0;
   cardShine.style.transform = 'translateX(0px)';
   showDots(null);
-  renderMascot('normal', null, 0);
+  renderMascot('normal');
 
   tutorialHand.classList.toggle('visible', idx === 0 && !hasSwipedOnce);
 
@@ -345,16 +310,16 @@ function applyDecision(dir) {
   if (choice.mascot === 'happy') {
     streak++;
     if (streak >= 3) dreamGain += 1;
-    renderMascot('happy', '🤩', 0);
+    renderMascot('happy');
     Sound.coin();
     spawnBurst(cx, cy, ['🪙', '🌟', '✨', '🔥'], 6);
   } else if (choice.mascot === 'scared') {
     streak = 0;
-    renderMascot('scared', '😱', 0);
+    renderMascot('scared');
     Sound.bad();
     spawnBurst(cx, cy, ['💥', '⚠️', '💸'], 5);
   } else {
-    renderMascot('think', '🤔', 0);
+    renderMascot('think');
     Sound.swipe();
     spawnBurst(cx, cy, ['⚖️', '✨', '⭐'], 5);
   }
@@ -425,7 +390,7 @@ function finishGame(won, icon, title, text, isExitOnly) {
     if (won) {
       skillBox.innerHTML = `🎓 <b>Навык освоен:</b> ты умеешь распознавать уловки мошенников, проверять выгоду покупок и держать баланс ресурсов (${currentDream.name} — ${dreamPct}%)!`;
     } else {
-      skillBox.innerHTML = `💡 <b>Принцип баланса:</b> перед выбором проверяй подсказку Вольтика 🔍 и следи, чтобы ни одна из 4 колб не опускалась до нуля!`;
+      skillBox.innerHTML = `💡 <b>Принцип баланса:</b> перед выбором нажми на Вольтика, если нужен совет, и следи за четырьмя показателями!`;
     }
   }
   renderFinalAchievements(isExitOnly);
@@ -442,13 +407,13 @@ function finishGame(won, icon, title, text, isExitOnly) {
 
 // 13. ФИЗИКА ПЕРЕТАСКИВАНИЯ + ПАРАЛЛАКС ИЛЛЮСТРАЦИИ
 let dragging = false;
+let gestureAxis = null;
 let startX = 0, startY = 0, dx = 0;
 
 cardEl.addEventListener('pointerdown', (e) => {
-  if (busy) return;
-  const textArea = e.target.closest('.card-text-zone');
-  if (textArea && textArea.scrollHeight > textArea.clientHeight) return;
+  if (busy || e.isPrimary === false || e.button > 0) return;
   dragging = true;
+  gestureAxis = null;
   startX = e.clientX;
   startY = e.clientY;
   dx = 0;
@@ -458,8 +423,19 @@ cardEl.addEventListener('pointerdown', (e) => {
 
 window.addEventListener('pointermove', (e) => {
   if (!dragging || busy) return;
-  dx = e.clientX - startX;
-  const dy = (e.clientY - startY) * 0.25;
+  const moveX = e.clientX - startX;
+  const moveY = e.clientY - startY;
+  if (!gestureAxis) {
+    if (Math.max(Math.abs(moveX), Math.abs(moveY)) < 8) return;
+    if (Math.abs(moveY) > Math.abs(moveX) * 1.2) {
+      dragging = false;
+      return;
+    }
+    if (Math.abs(moveX) < Math.abs(moveY) * 1.2) return;
+    gestureAxis = 'horizontal';
+  }
+  dx = moveX;
+  const dy = moveY * 0.25;
   const rot = dx * 0.055;
   cardEl.style.transform = `translate3d(${dx}px, ${dy}px, 0) rotate(${rot}deg)`;
   cardShine.style.transform = `translateX(${220 + dx * 1.6}px)`;
@@ -471,29 +447,29 @@ window.addEventListener('pointermove', (e) => {
     badgeL.style.opacity = ratio;
     badgeR.style.opacity = 0;
     showDots(c.left);
-    renderMascot('normal', '👀', -1);
+    renderMascot('normal', -1);
   } else if (dx > 14) {
     badgeR.style.opacity = ratio;
     badgeL.style.opacity = 0;
     showDots(c.right);
-    renderMascot('normal', '👀', 1);
+    renderMascot('normal', 1);
   } else {
     badgeL.style.opacity = 0;
     badgeR.style.opacity = 0;
     showDots(null);
-    renderMascot('normal', idleHintActive ? '💡 Нажми на меня!' : null, 0, idleHintActive);
+    renderMascot('normal');
   }
 });
 
-function endDrag() {
+function endDrag(cancelled = false) {
   if (!dragging) return;
   dragging = false;
   if (busy) return;
 
-  if (dx < -65) {
+  if (!cancelled && dx < -65) {
     Sound.swipe();
     applyDecision('left');
-  } else if (dx > 65) {
+  } else if (!cancelled && dx > 65) {
     Sound.swipe();
     applyDecision('right');
   } else {
@@ -504,13 +480,13 @@ function endDrag() {
     badgeL.style.opacity = 0;
     badgeR.style.opacity = 0;
     showDots(null);
-    renderMascot('normal', idleHintActive ? '💡 Нажми на меня!' : null, 0, idleHintActive);
+    renderMascot('normal');
     if (idx === 0 && !hasSwipedOnce) tutorialHand.classList.add('visible');
   }
 }
 
-window.addEventListener('pointerup', endDrag);
-window.addEventListener('pointercancel', endDrag);
+window.addEventListener('pointerup', () => endDrag());
+window.addEventListener('pointercancel', () => endDrag(true));
 
 document.getElementById('btnLeft').addEventListener('click', () => { Sound.swipe(); applyDecision('left'); });
 document.getElementById('btnRight').addEventListener('click', () => { Sound.swipe(); applyDecision('right'); });
