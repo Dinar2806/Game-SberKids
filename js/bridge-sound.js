@@ -35,7 +35,7 @@ window.Sound = {
     const audio = this.ensureBgm();
     if (!audio) return;
     if (this.enabled && !document.hidden) {
-      audio.volume = 0.34;
+      audio.volume = 0.02; //music master volume
       const p = audio.play();
       if (p && typeof p.catch === 'function') p.catch(() => {});
     } else {
