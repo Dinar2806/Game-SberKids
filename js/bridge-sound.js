@@ -1,5 +1,8 @@
-// 1. МОСТ СБЕРKIDS WEBVIEW И СИНТЕЗАТОР ЗВУКА (WebAudio API)
+// 1. МОСТ СБЕРKIDS WEBVIEW, ФОНОВАЯ МУЗЫКА И СИНТЕЗАТОР ЗВУКА (WebAudio API)
 window.sendEvent = function sendEvent(type, extra) {
+  if (type === 'CLOSE_EVENT' && window.Sound) {
+    window.Sound.stopBgm();
+  }
   const msg = Object.assign({ type: type }, extra || {});
   try { window.postMessage(msg, '*'); } catch (_) {}
   try { if (window.parent && window.parent !== window) window.parent.postMessage(msg, '*'); } catch (_) {}
@@ -8,8 +11,48 @@ window.sendEvent = function sendEvent(type, extra) {
 window.Sound = {
   enabled: false,
   ctx: null,
+  bgm: null,
+  ensureBgm() {
+    if (!this.bgm) {
+      const domAudio = document.getElementById('bgmAudio');
+      if (domAudio) {
+        domAudio.loop = true;
+        domAudio.volume = 0.34;
+        this.bgm = domAudio;
+      } else {
+        try {
+          const audio = new Audio('./assets/audio.mp3');
+          audio.loop = true;
+          audio.preload = 'none';
+          audio.volume = 0.34;
+          this.bgm = audio;
+        } catch (_) {}
+      }
+    }
+    return this.bgm;
+  },
+  syncBgm() {
+    const audio = this.ensureBgm();
+    if (!audio) return;
+    if (this.enabled && !document.hidden) {
+      audio.volume = 0.02; //music master volume
+      const p = audio.play();
+      if (p && typeof p.catch === 'function') p.catch(() => {});
+    } else {
+      try { audio.pause(); } catch (_) {}
+    }
+  },
+  stopBgm() {
+    const audio = this.bgm || document.getElementById('bgmAudio');
+    if (!audio) return;
+    try { audio.pause(); } catch (_) {}
+  },
   tone(freq, type, dur, endFreq) {
     if (!this.enabled) return;
+    if (this.bgm && this.bgm.paused && !document.hidden) {
+      const p = this.bgm.play();
+      if (p && typeof p.catch === 'function') p.catch(() => {});
+    }
     try {
       const AC = window.AudioContext || window.webkitAudioContext;
       if (!AC) return;
@@ -36,14 +79,36 @@ window.Sound = {
 };
 
 window.initSoundButton = function initSoundButton() {
-  const soundBtn = document.getElementById('soundBtn');
-  if (!soundBtn) return;
-  soundBtn.addEventListener('click', () => {
-    Sound.enabled = !Sound.enabled;
-    soundBtn.textContent = Sound.enabled ? '🔊' : '🔇';
-    soundBtn.classList.toggle('sound-on', Sound.enabled);
-    soundBtn.setAttribute('aria-pressed', String(Sound.enabled));
-    soundBtn.setAttribute('aria-label', Sound.enabled ? 'Выключить звук' : 'Включить звук');
-    if (Sound.enabled) Sound.coin();
+  const btns = [
+    document.getElementById('soundBtn'),
+    document.getElementById('welcomeSoundBtn')
+  ].filter(Boolean);
+  if (!btns.length) return;
+
+  function syncSoundButtons() {
+    btns.forEach(btn => {
+      btn.textContent = Sound.enabled ? '🔊' : '🔇';
+      btn.classList.toggle('sound-on', Sound.enabled);
+      btn.setAttribute('aria-pressed', String(Sound.enabled));
+      btn.setAttribute('aria-label', Sound.enabled ? 'Выключить звук и музыку' : 'Включить звук и музыку');
+    });
+  }
+
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      Sound.enabled = !Sound.enabled;
+      syncSoundButtons();
+      Sound.syncBgm();
+      if (Sound.enabled) Sound.coin();
+    });
   });
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      Sound.stopBgm();
+    } else if (Sound.enabled) {
+      Sound.syncBgm();
+    }
+  });
+  window.addEventListener('pagehide', () => Sound.stopBgm());
 };

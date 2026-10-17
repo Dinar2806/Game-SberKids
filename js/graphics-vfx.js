@@ -164,6 +164,7 @@ const ctx = canvas.getContext('2d');
 let particles = [];
 let confetti = [];
 let statFloats = [];
+let shockwaves = [];
 let vfxRunning = false;
 
 const CONFETTI_COLORS = ['#f43f5e', '#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899', '#fde047'];
@@ -184,6 +185,16 @@ function startVFXLoop() {
 
 function spawnBurst(x, y, symbols, count) {
   if (particles.length > 16) return;
+
+  if (shockwaves.length < 3) {
+    shockwaves.push({
+      x, y,
+      r: 14,
+      maxR: 75 + count * 6,
+      alpha: 0.65,
+      color: count >= 5 ? '#d0f77a' : '#d8c4fc'
+    });
+  }
 
   for (let i = 0; i < count; i++) {
     const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.65;
@@ -249,6 +260,19 @@ function spawnStatFloat(targetEl, delta, pillEl) {
 function loopVFX() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+  for (let i = shockwaves.length - 1; i >= 0; i--) {
+    const sw = shockwaves[i];
+    sw.r += (sw.maxR - sw.r) * 0.16 + 1.8;
+    sw.alpha -= 0.032;
+    if (sw.alpha <= 0) { shockwaves.splice(i, 1); continue; }
+    ctx.globalAlpha = sw.alpha;
+    ctx.strokeStyle = sw.color;
+    ctx.lineWidth = 3.5;
+    ctx.beginPath();
+    ctx.arc(sw.x, sw.y, sw.r, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
   for (let i = confetti.length - 1; i >= 0; i--) {
     const c = confetti[i];
     c.x += c.vx;
@@ -277,15 +301,15 @@ function loopVFX() {
     ctx.fillText(p.text, p.x, p.y);
   }
 
-  ctx.font = '900 15px -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.font = '900 18px -apple-system, BlinkMacSystemFont, sans-serif';
   for (let i = statFloats.length - 1; i >= 0; i--) {
     const sf = statFloats[i];
     sf.y += sf.vy;
     sf.alpha -= sf.decay;
     if (sf.alpha <= 0) { statFloats.splice(i, 1); continue; }
     ctx.globalAlpha = sf.alpha;
-    ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 3.5;
+    ctx.strokeStyle = '#19171f';
+    ctx.lineWidth = 4;
     ctx.strokeText(sf.text, sf.x, sf.y);
     ctx.fillStyle = sf.color;
     ctx.fillText(sf.text, sf.x, sf.y);
@@ -293,7 +317,7 @@ function loopVFX() {
 
   ctx.globalAlpha = 1;
 
-  if (particles.length > 0 || confetti.length > 0 || statFloats.length > 0) {
+  if (particles.length > 0 || confetti.length > 0 || statFloats.length > 0 || shockwaves.length > 0) {
     requestAnimationFrame(loopVFX);
   } else {
     vfxRunning = false;

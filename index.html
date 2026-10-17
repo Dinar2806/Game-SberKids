@@ -12,13 +12,30 @@
 </head>
 <body>
 
-<div class="bg-decor">
+<audio id="bgmAudio" src="./assets/audio.mp3" loop preload="none"></audio>
+
+<div class="bg-decor" aria-hidden="true">
   <div class="bg-shape s1" id="bgShape1"></div>
   <div class="bg-shape s2" id="bgShape2"></div>
   <div class="bg-shape s3" id="bgShape3"></div>
+  <div class="fireflies">
+    <span class="firefly f1"></span>
+    <span class="firefly f2"></span>
+    <span class="firefly f3"></span>
+    <span class="firefly f4"></span>
+    <span class="firefly f5"></span>
+    <span class="firefly f6"></span>
+    <span class="firefly f7"></span>
+    <span class="firefly f8"></span>
+    <span class="firefly f9"></span>
+    <span class="firefly f10"></span>
+    <span class="firefly f11"></span>
+    <span class="firefly f12"></span>
+  </div>
 </div>
 
 <div class="screen-flash" id="screenFlash"></div>
+<div class="edge-glow" id="edgeGlow" aria-hidden="true"></div>
 <div class="comic-pop" id="comicPop">КРАСАВА!</div>
 <canvas id="vfxCanvas"></canvas>
 <div class="reward-banner" id="rewardBanner" role="status" aria-live="polite">✨ Отличный ход!</div>
@@ -28,7 +45,10 @@
   <div class="welcome-shell">
     <header class="welcome-header">
       <span class="wordmark"><span class="brand-spark" aria-hidden="true">✳</span> сбер<span>kids</span></span>
-      <span class="game-label">ИГРА ПРО МЕЧТЫ</span>
+      <div class="welcome-header-right">
+        <span class="game-label">ИГРА ПРО МЕЧТЫ</span>
+        <button class="icon-btn" id="welcomeSoundBtn" type="button" aria-label="Включить звук и музыку" aria-pressed="false">🔇</button>
+      </div>
     </header>
     <section class="welcome-hero">
       <div class="hero-copy">
@@ -83,34 +103,34 @@
       <div class="stats-row">
         <div class="stat-pill" id="pill-money" data-stat="money" role="button" tabindex="0" aria-label="Копилка: узнать подробнее">
           <div class="stat-dot" id="dot-money"></div>
-          <div class="stat-jar" id="jar-money">
+          <div class="stat-jar" id="jar-money" aria-hidden="true">
             <div class="stat-fill" id="fill-money"></div>
-            <span class="stat-icon">🪙</span>
           </div>
+          <span class="stat-icon">🪙</span>
           <span class="stat-val" id="val-money">50</span><span class="stat-label">Копилка</span>
         </div>
         <div class="stat-pill" id="pill-tech" data-stat="tech" role="button" tabindex="0" aria-label="Бодрость: узнать подробнее">
           <div class="stat-dot" id="dot-tech"></div>
-          <div class="stat-jar" id="jar-tech">
+          <div class="stat-jar" id="jar-tech" aria-hidden="true">
             <div class="stat-fill" id="fill-tech"></div>
-            <span class="stat-icon">⚡</span>
           </div>
+          <span class="stat-icon">⚡</span>
           <span class="stat-val" id="val-tech">50</span><span class="stat-label">Бодрость</span>
         </div>
         <div class="stat-pill" id="pill-trust" data-stat="trust" role="button" tabindex="0" aria-label="Дружба: узнать подробнее">
           <div class="stat-dot" id="dot-trust"></div>
-          <div class="stat-jar" id="jar-trust">
+          <div class="stat-jar" id="jar-trust" aria-hidden="true">
             <div class="stat-fill" id="fill-trust"></div>
-            <span class="stat-icon">❤️</span>
           </div>
+          <span class="stat-icon">❤️</span>
           <span class="stat-val" id="val-trust">50</span><span class="stat-label">Дружба</span>
         </div>
         <div class="stat-pill" id="pill-team" data-stat="team" role="button" tabindex="0" aria-label="Смекалка: узнать подробнее">
           <div class="stat-dot" id="dot-team"></div>
-          <div class="stat-jar" id="jar-team">
+          <div class="stat-jar" id="jar-team" aria-hidden="true">
             <div class="stat-fill" id="fill-team"></div>
-            <span class="stat-icon">🧠</span>
           </div>
+          <span class="stat-icon">🧠</span>
           <span class="stat-val" id="val-team">50</span><span class="stat-label">Смекалка</span>
         </div>
       </div>
@@ -119,8 +139,11 @@
 
     </div>
 
-    <!-- КАПСУЛА МЕЧТЫ -->
+    <!-- КАПСУЛА МЕЧТЫ (ШКАЛА ВО ВСЮ ВКЛАДКУ) -->
     <div class="dream-capsule" id="dreamCapsule">
+      <div class="dream-bar-track" aria-hidden="true">
+        <div class="dream-bar-fill" id="dreamBarFill"></div>
+      </div>
       <div class="dream-icon-box" id="dreamMainIcon">🛴</div>
       <div class="dream-progress-area">
         <div class="dream-caption"><span id="dreamName">Самокат мечты</span></div>
@@ -130,9 +153,6 @@
           <div class="part-node" id="part-2">🕹️</div>
           <div class="part-node" id="part-3">🔋</div>
           <div class="part-node" id="part-4">🚀</div>
-        </div>
-        <div class="dream-bar-track">
-          <div class="dream-bar-fill" id="dreamBarFill"></div>
         </div>
       </div>
       <div class="dream-score-badge" id="dreamScoreText">🌟 10%</div>

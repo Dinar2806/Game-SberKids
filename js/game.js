@@ -1,4 +1,4 @@
-// Основной игровой цикл, состояние, свайпы, подсказки Вольтика и диплом
+// Основной игровой цикл, состояние, свайпы, подсказки Вольтика и диплом СберKids
 let currentDream = DREAMS.scooter;
 const mascotAvatar = document.getElementById("mascotAvatar");
 let idleHintTimer = null;
@@ -22,6 +22,77 @@ const badgeL = document.getElementById('badgeLeft');
 const badgeR = document.getElementById('badgeRight');
 const spriteWrap = document.getElementById('spriteContainer');
 const tutorialHand = document.getElementById('tutorialHand');
+const edgeGlow = document.getElementById('edgeGlow');
+const btnLeftEl = document.getElementById('btnLeft');
+const btnRightEl = document.getElementById('btnRight');
+
+// Плавный счётчик чисел (60 FPS, без лишних аллокаций)
+const displayedValues = { money: 55, tech: 55, trust: 55, team: 55, dream: 15 };
+let counterRafId = 0;
+
+function animateCounters(instant) {
+  if (instant) {
+    if (counterRafId) { cancelAnimationFrame(counterRafId); counterRafId = 0; }
+    ['money', 'tech', 'trust', 'team'].forEach(k => {
+      displayedValues[k] = stats[k];
+      document.getElementById('val-' + k).textContent = stats[k];
+    });
+    displayedValues.dream = dreamPct;
+    document.getElementById('dreamScoreText').textContent = `🌟 ${dreamPct}%`;
+    return;
+  }
+
+  const startVals = {
+    money: displayedValues.money,
+    tech: displayedValues.tech,
+    trust: displayedValues.trust,
+    team: displayedValues.team,
+    dream: displayedValues.dream
+  };
+  const targetVals = {
+    money: stats.money,
+    tech: stats.tech,
+    trust: stats.trust,
+    team: stats.team,
+    dream: dreamPct
+  };
+  const startTime = performance.now();
+  const duration = 320;
+
+  if (counterRafId) cancelAnimationFrame(counterRafId);
+
+  function step(now) {
+    const t = Math.min(1, (now - startTime) / duration);
+    const ease = 1 - Math.pow(1 - t, 3);
+    ['money', 'tech', 'trust', 'team'].forEach(k => {
+      const v = Math.round(startVals[k] + (targetVals[k] - startVals[k]) * ease);
+      if (v !== displayedValues[k]) {
+        displayedValues[k] = v;
+        document.getElementById('val-' + k).textContent = v;
+      }
+    });
+    const dv = Math.round(startVals.dream + (targetVals.dream - startVals.dream) * ease);
+    if (dv !== displayedValues.dream) {
+      displayedValues.dream = dv;
+      document.getElementById('dreamScoreText').textContent = `🌟 ${dv}%`;
+    }
+    if (t < 1) {
+      counterRafId = requestAnimationFrame(step);
+    } else {
+      counterRafId = 0;
+    }
+  }
+  counterRafId = requestAnimationFrame(step);
+}
+
+function clearDragPostFX() {
+  if (edgeGlow) {
+    edgeGlow.style.opacity = '0';
+    edgeGlow.classList.remove('left', 'right');
+  }
+  if (btnLeftEl) btnLeftEl.classList.remove('drag-preview');
+  if (btnRightEl) btnRightEl.classList.remove('drag-preview');
+}
 
 function clamp(n) { return Math.max(0, Math.min(100, Math.round(n))); }
 
@@ -103,16 +174,17 @@ function applyDreamTheme(dreamKey) {
   });
 }
 
-function syncUI() {
+function syncUI(instant = false) {
   ['money', 'tech', 'trust', 'team'].forEach(k => {
-    document.getElementById('val-' + k).textContent = stats[k];
     document.getElementById('fill-' + k).style.height = stats[k] + '%';
     document.getElementById('pill-' + k).classList.toggle('low-warn', stats[k] <= 22);
   });
 
   dreamPct = clamp(dreamPct);
   document.getElementById('dreamBarFill').style.width = dreamPct + '%';
-  document.getElementById('dreamScoreText').textContent = `🌟 ${dreamPct}%`;
+  animateCounters(instant || idx === 0 && !hasSwipedOnce);
+
+  cardEl.classList.toggle('combo-glow', streak >= 2);
 
   const thresholds = [15, 35, 55, 75, currentDream.winDream];
   thresholds.forEach((t, i) => {
@@ -197,7 +269,7 @@ function showCard() {
 
   tutorialHand.classList.toggle('visible', idx === 0 && !hasSwipedOnce);
 
-  cardEl.className = 'game-card enter';
+  cardEl.className = 'game-card enter' + (streak >= 2 ? ' combo-glow' : '');
   cardEl.style.transform = 'translate3d(0,0,0) rotate(0deg)';
   cardEl.style.opacity = '1';
 
@@ -331,6 +403,7 @@ function applyDecision(dir) {
   }
 
   triggerComicJuice(choice.mascot);
+  clearDragPostFX();
   syncUI();
   showDots(null);
   flashBanner(choice.msg);
@@ -428,7 +501,7 @@ window.addEventListener('pointermove', (e) => {
   if (!gestureAxis) {
     if (Math.max(Math.abs(moveX), Math.abs(moveY)) < 8) return;
     if (Math.abs(moveY) > Math.abs(moveX) * 1.2) {
-      dragging = false;
+      endDrag(true);
       return;
     }
     if (Math.abs(moveX) < Math.abs(moveY) * 1.2) return;
@@ -446,16 +519,31 @@ window.addEventListener('pointermove', (e) => {
   if (dx < -14) {
     badgeL.style.opacity = ratio;
     badgeR.style.opacity = 0;
+    if (edgeGlow) {
+      edgeGlow.classList.add('left');
+      edgeGlow.classList.remove('right');
+      edgeGlow.style.opacity = (ratio * 0.9).toFixed(2);
+    }
+    if (btnLeftEl) btnLeftEl.classList.add('drag-preview');
+    if (btnRightEl) btnRightEl.classList.remove('drag-preview');
     showDots(c.left);
     renderMascot('normal', -1);
   } else if (dx > 14) {
     badgeR.style.opacity = ratio;
     badgeL.style.opacity = 0;
+    if (edgeGlow) {
+      edgeGlow.classList.add('right');
+      edgeGlow.classList.remove('left');
+      edgeGlow.style.opacity = (ratio * 0.9).toFixed(2);
+    }
+    if (btnRightEl) btnRightEl.classList.add('drag-preview');
+    if (btnLeftEl) btnLeftEl.classList.remove('drag-preview');
     showDots(c.right);
     renderMascot('normal', 1);
   } else {
     badgeL.style.opacity = 0;
     badgeR.style.opacity = 0;
+    clearDragPostFX();
     showDots(null);
     renderMascot('normal');
   }
@@ -473,12 +561,13 @@ function endDrag(cancelled = false) {
     Sound.swipe();
     applyDecision('right');
   } else {
-    cardEl.className = 'game-card smooth-return';
+    cardEl.className = 'game-card smooth-return' + (streak >= 2 ? ' combo-glow' : '');
     cardEl.style.transform = 'translate3d(0,0,0) rotate(0deg)';
     cardShine.style.transform = 'translateX(0px)';
     spriteWrap.style.transform = '';
     badgeL.style.opacity = 0;
     badgeR.style.opacity = 0;
+    clearDragPostFX();
     showDots(null);
     renderMascot('normal');
     if (idx === 0 && !hasSwipedOnce) tutorialHand.classList.add('visible');
