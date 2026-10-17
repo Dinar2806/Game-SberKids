@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 220"><defs>
+ <linearGradient id="purple" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#f5eaff"/><stop offset=".4" stop-color="#bf99ff"/><stop offset="1" stop-color="#7648d6"/></linearGradient>
+ <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="white"/><stop offset=".4" stop-color="#e3e6f1"/><stop offset="1" stop-color="#8c92ae"/></linearGradient>
+ <linearGradient id="dark" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#626179"/><stop offset=".55" stop-color="#302d42"/><stop offset="1" stop-color="#171522"/></linearGradient>
+ <linearGradient id="lime" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#f3ffac"/><stop offset=".45" stop-color="#c3f64e"/><stop offset="1" stop-color="#78b421"/></linearGradient>
+ <linearGradient id="orange" x1="0" y1="0" x2=".7" y2="1"><stop stop-color="#ffe6b1"/><stop offset=".35" stop-color="#ffb85c"/><stop offset="1" stop-color="#f07840"/></linearGradient>
+ <radialGradient id="fur" cx=".3" cy=".2" r=".85"><stop stop-color="#ffe0ab"/><stop offset=".45" stop-color="#ffa55c"/><stop offset="1" stop-color="#e46a3b"/></radialGradient>
+ <radialGradient id="white" cx=".35" cy=".2" r=".9"><stop stop-color="white"/><stop offset=".7" stop-color="#f1e5df"/><stop offset="1" stop-color="#d1b9b9"/></radialGradient>
+ </defs><defs><linearGradient id="water" x2=".3" y2="1"><stop stop-color="#c9f8ff"/><stop offset="1" stop-color="#59bad7"/></linearGradient></defs>
+<ellipse cx="120" cy="190" rx="88" ry="11" fill="#584175" opacity=".18"/>
+<rect x="37" y="45" width="169" height="134" rx="18" fill="#7c599f"/><rect x="32" y="38" width="169" height="134" rx="18" fill="url(#water)" stroke="#ecfaff" stroke-width="4"/>
+<path d="M35 69 Q64 60 93 69 T151 69 T198 69 V55 Q198 40 183 40 H50 Q35 40 35 55 Z" fill="#f4fdff" opacity=".65"/>
+<path d="M35 150 Q78 138 118 150 T198 151 V158 Q198 170 183 170 H50 Q35 169 35 158 Z" fill="#ead9b1"/>
+<path d="M65 151 Q51 130 62 100 M65 137 Q78 124 73 111 M172 153 Q159 131 171 105 M171 139 Q185 126 182 116" fill="none" stroke="#80b94f" stroke-width="8" stroke-linecap="round"/>
+<path d="M95 105 Q112 82 141 105 Q113 127 95 105 L80 93 V118 Z" fill="url(#orange)" stroke="#ffe4aa" stroke-width="2"/><circle cx="132" cy="102" r="3" fill="#50425e"/>
+<g fill="#f2fcff" opacity=".85"><circle cx="150" cy="80" r="5"/><circle cx="145" cy="64" r="3"/><circle cx="151" cy="51" r="2"/></g>
+<path d="M46 59 V130" stroke="#fff" opacity=".5" stroke-width="5" stroke-linecap="round"/>
+<rect x="28" y="30" width="177" height="17" rx="8" fill="url(#purple)"/><rect x="28" y="165" width="177" height="16" rx="7" fill="url(#purple)"/>
+</svg>
