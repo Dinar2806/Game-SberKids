@@ -16,6 +16,7 @@ const GameData = (() => {
     hard: { label: 'Сложная', className: 'diff-hard' }
   };
   const eventCache = new Map();
+  const JSON_TIMEOUT_MS = 15000;
 
   function requireValue(ok, path, message) {
     if (!ok) throw new Error(`${path}: ${message}`);
@@ -132,9 +133,23 @@ const GameData = (() => {
   }
 
   async function readJSON(path, baseURL) {
-    const response = await fetch(new URL(path, baseURL));
-    if (!response.ok) throw new Error(`${path}: HTTP ${response.status}`);
-    return response.json();
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), JSON_TIMEOUT_MS);
+    try {
+      const response = await fetch(new URL(path, baseURL), { signal: controller.signal });
+      if (!response.ok) throw new Error(`${path}: HTTP ${response.status}`);
+      // Дожидаемся тела ответа здесь, чтобы таймаут покрывал всю загрузку JSON.
+      return await response.json();
+    } catch (error) {
+      if (controller.signal.aborted) {
+        const timeoutError = new Error(`${path}: загрузка превысила ${JSON_TIMEOUT_MS / 1000} секунд`);
+        timeoutError.name = 'TimeoutError';
+        throw timeoutError;
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeout);
+    }
   }
   async function loadCatalog(baseURL = document.baseURI) {
     return validateCatalog(await readJSON('./data/campaigns.json', baseURL));

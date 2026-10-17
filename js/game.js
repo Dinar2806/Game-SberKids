@@ -148,7 +148,9 @@ function showDots(choice) {
   ['money', 'tech', 'trust', 'team'].forEach(k => {
     const dot = document.getElementById('dot-' + k);
     const pill = document.getElementById('pill-' + k);
-    const v = choice && choice.effects ? (choice.effects[k] || 0) : 0;
+    const v = choice && choice.effects
+      ? GameData.scaleEffect(choice.effects[k] || 0, currentDream.balance.multipliers, 'resource')
+      : 0;
     dot.className = 'stat-dot';
     pill.classList.remove('preview-up', 'preview-down');
     if (v !== 0) {
@@ -537,7 +539,9 @@ function setCampaignLoading(loading) {
 
 function showCampaignError(error) {
   console.error('Не удалось загрузить кампании:', error);
-  campaignStatus.textContent = 'Не удалось загрузить приключение. Проверьте соединение и попробуйте ещё раз.';
+  campaignStatus.textContent = error.name === 'TimeoutError'
+    ? 'Загрузка затянулась. Проверьте соединение и попробуйте ещё раз.'
+    : 'Не удалось загрузить приключение. Проверьте соединение и попробуйте ещё раз.';
   campaignStatus.hidden = false;
   campaignRetryBtn.hidden = false;
 }
