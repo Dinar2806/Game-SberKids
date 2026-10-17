@@ -541,7 +541,7 @@ window.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowRight') { Sound.swipe(); applyDecision('right'); }
 });
 
-// Каталог не ограничен тремя кампаниями; порядок кнопок соответствует JSON.
+// От лёгких кампаний к сложным; внутри сложности сохраняем порядок из JSON.
 const campaignList = document.getElementById('campaignList');
 const campaignStatus = document.getElementById('campaignLoadStatus');
 const campaignRetryBtn = document.getElementById('campaignRetryBtn');
@@ -564,11 +564,26 @@ function showCampaignError(error) {
 
 function renderCampaignList() {
   campaignList.replaceChildren();
-  campaigns.forEach((campaign, index) => {
+  const orderedCampaigns = ['easy', 'medium', 'hard'].flatMap(difficulty =>
+    campaigns.filter(campaign => campaign.difficulty === difficulty)
+  );
+  const groupTitles = { easy: 'Лёгкий старт', medium: 'Держим баланс', hard: 'Большие планы' };
+  orderedCampaigns.forEach((campaign, index) => {
+    if (index === 0 || campaign.difficulty !== orderedCampaigns[index - 1].difficulty) {
+      const heading = document.createElement('h3');
+      heading.className = 'campaign-group-title';
+      heading.dataset.difficulty = campaign.difficulty;
+      heading.textContent = groupTitles[campaign.difficulty];
+      campaignList.append(heading);
+    }
     const difficulty = GameData.difficulties[campaign.difficulty];
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = 'dream-option ' + (index === 0 ? 'dream-featured' : campaign.difficulty === 'medium' ? 'dream-console' : campaign.difficulty === 'hard' ? 'dream-robot' : 'dream-standard');
+    // Светлые оттенки проходят от мяты через фиолетовый к розово-красному.
+    const progress = index / Math.max(1, orderedCampaigns.length - 1);
+    const hue = progress <= 0.5 ? 150 + progress * 240 : 270 + (progress - 0.5) * 168;
+    btn.className = 'dream-option' + (index === 0 ? ' dream-featured' : '');
+    btn.style.setProperty('--campaign-hue', Math.round(hue));
     btn.dataset.dream = campaign.id;
     // Сохраняем оформление visual, все значения из JSON вставляются как текст.
     btn.innerHTML = '<div class="dream-option-copy"><span class="dream-opt-title"></span><span class="dream-meta"></span></div><span class="dream-opt-sub"></span><span class="dream-go" aria-hidden="true">↗</span>';
