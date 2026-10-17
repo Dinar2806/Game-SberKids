@@ -12,6 +12,13 @@
 }
 .overlay-screen.active { display: flex; }
 
+#dreamSelectScreen .dialog-box {
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+}
+
+.dream-option:disabled { cursor: wait; opacity: 0.65; }
+
 .dialog-box {
   width: 100%;
   max-width: 384px;

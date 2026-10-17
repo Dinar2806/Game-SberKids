@@ -1,12 +1,15 @@
 // Основной игровой цикл, состояние, свайпы, «Лупа Вольтика» и диплом СберKids
-let currentDream = DREAMS.scooter;
+let currentDream = null;
+let campaigns = [];
+let campaignLoading = false;
+let retryCampaignId = null;
 const mascotAvatar = document.getElementById("mascotAvatar");
 const mascotBubble = document.getElementById("mascotBubble");
 let idleHintTimer = null;
 let idleHintActive = false;
 
 // 9. СОСТОЯНИЕ ИГРЫ
-let activeDeck = DECK_SCOOTER;
+let activeDeck = [];
 let stats = { money: 55, tech: 55, trust: 55, team: 55 };
 let dreamPct = 15;
 let streak = 0;
@@ -14,7 +17,7 @@ let scamMistakes = 0;
 let hasSwipedOnce = false;
 let idx = 0;
 let activeCardData = null;
-let busy = false;
+let busy = true;
 let bannerTimer = null;
 let sideFlipMap = [];
 
@@ -88,23 +91,22 @@ const STAT_TOOLTIPS = {
 
 document.getElementById('dreamCapsule').addEventListener('pointerdown', function(e) {
   e.stopPropagation();
+  if (!currentDream) return;
   Sound.boing();
   const r = document.getElementById('dreamMainIcon').getBoundingClientRect();
   spawnBurst(r.left + 22, r.top + 22, [currentDream.icon, '🌟'], 3);
-  flashBanner(`${currentDream.icon} ${currentDream.name}: собрано ${dreamPct}% (нужно ${currentDream.winDream}% для победы)!`);
+  flashBanner(`${currentDream.icon} ${currentDream.name}: собрано ${dreamPct}% (нужно ${currentDream.balance.winDream}% для победы)!`);
 });
 
 function buildFlipMap() {
   sideFlipMap = activeDeck.map((_, i) => (i % 2 === 0 ? Math.random() < 0.6 : Math.random() < 0.4));
 }
 
-function applyDreamTheme(dreamKey) {
-  currentDream = DREAMS[dreamKey] || DREAMS.scooter;
-  activeDeck = CAMPAIGNS[currentDream.key] || DECK_SCOOTER;
-  document.getElementById('dreamMainIcon').innerHTML = `<img src="./assets/${currentDream.key}.svg" alt="" width="64" height="58">`;
-  const dreamNames = { scooter: 'Самокат мечты', console: 'Игровая приставка', robodog: 'Робо-пёс и друзья' };
-  document.getElementById('dreamName').textContent = dreamNames[currentDream.key];
-  currentDream.parts.forEach((p, i) => {
+function applyDreamTheme(campaign) {
+  currentDream = campaign;
+  document.getElementById('dreamMainIcon').textContent = currentDream.icon;
+  document.getElementById('dreamName').textContent = currentDream.name;
+  currentDream.progressIcons.forEach((p, i) => {
     document.getElementById('part-' + i).textContent = p;
   });
 }
@@ -127,7 +129,7 @@ function syncUI() {
     streakPill.classList.remove('show');
   }
 
-  const thresholds = [15, 35, 55, 75, currentDream.winDream];
+  const thresholds = [15, 35, 55, 75, currentDream.balance.winDream];
   thresholds.forEach((t, i) => {
     const node = document.getElementById('part-' + i);
     const wasUnlocked = node.classList.contains('unlocked');
@@ -172,7 +174,8 @@ function showDots(choice) {
 
 function resolveCard(i) {
   const raw = activeDeck[i];
-  const base = raw.dynamic ? raw.dynamic(stats) : raw;
+  const resolved = GameData.resolveEvent(raw, stats);
+  const base = { ...resolved, bg: BG_PAL[resolved.type] };
   const flip = sideFlipMap[i];
   return {
     ...base,
@@ -279,7 +282,7 @@ function renderFinalAchievements(isExitOnly) {
   ];
 
   const earnedCount = badges.filter(b => b.earned).length;
-  if (earnedCount === 3 && dreamPct >= currentDream.winDream) {
+  if (earnedCount === 3 && dreamPct >= currentDream.balance.winDream) {
     rankEl.textContent = '👑 Титул: Легенда Финансов';
   } else if (earnedArmor && dreamPct >= 70) {
     rankEl.textContent = '🛡️ Титул: Гроза Мошенников';
@@ -306,7 +309,7 @@ function renderFinalAchievements(isExitOnly) {
 
 // 12. ПРИМЕНЕНИЕ ВЫБОРА С УЧЁТОМ КОЭФФИЦИЕНТА СЛОЖНОСТИ
 function applyDecision(dir) {
-  if (busy || document.querySelector('.overlay-screen.active')) return;
+  if (busy || !activeCardData || document.querySelector('.overlay-screen.active')) return;
   busy = true;
   hasSwipedOnce = true;
   clearTimeout(idleHintTimer);
@@ -329,10 +332,9 @@ function applyDecision(dir) {
   cardEl.style.transform = `translate3d(${flyX}px, 20px, 0) rotate(${flyRot}deg)`;
   cardEl.style.opacity = '0';
 
-  // Масштабируем урон от минусов в зависимости от выбранной сложности Мечты
+  // Применяем индивидуальные множители кампании к базовым эффектам события
   Object.keys(choice.effects).forEach(k => {
-    let d = choice.effects[k];
-    if (d < 0) d = Math.round(d * currentDream.negMult);
+    const d = GameData.scaleEffect(choice.effects[k], currentDream.balance.multipliers, 'resource');
     if (d !== 0) {
       stats[k] = clamp(stats[k] + d);
       const jar = document.getElementById('jar-' + k);
@@ -341,7 +343,7 @@ function applyDecision(dir) {
     }
   });
 
-  let dreamGain = choice.dream || 0;
+  let dreamGain = GameData.scaleEffect(choice.dream, currentDream.balance.multipliers, 'dream');
   if (choice.mascot === 'happy') {
     streak++;
     if (streak >= 3) dreamGain += 1;
@@ -390,14 +392,14 @@ function applyDecision(dir) {
     if (idx >= activeDeck.length - 1) {
       Sound.unlock();
       spawnBurst(window.innerWidth / 2, window.innerHeight / 2, [currentDream.icon, '🏆', '🎉', '🌟'], 10);
-      const won = dreamPct >= currentDream.winDream;
+      const won = dreamPct >= currentDream.balance.winDream;
       finishGame(
         won,
         won ? currentDream.icon : '🌟',
         won ? `${currentDream.name} у тебя!` : 'Почти у цели!',
         won
           ? `Ура! Ты прошёл все ${activeDeck.length} карточек кампании и собрал Мечту на ${dreamPct}%!`
-          : `Ты выдержал все ${activeDeck.length} карточек и собрал Мечту на ${dreamPct}% (нужно ${currentDream.winDream}%). Попробуй ещё раз!`,
+          : `Ты выдержал все ${activeDeck.length} карточек и собрал Мечту на ${dreamPct}% (нужно ${currentDream.balance.winDream}%). Попробуй ещё раз!`,
         false
       );
       busy = false;
@@ -423,7 +425,8 @@ function finishGame(won, icon, title, text, isExitOnly) {
   if (skillBox) {
     skillBox.style.display = isExitOnly ? 'none' : 'block';
     if (won) {
-      skillBox.innerHTML = `🎓 <b>Навык освоен:</b> ты умеешь распознавать уловки мошенников, проверять выгоду покупок и держать баланс ресурсов (${currentDream.name} — ${dreamPct}%)!`;
+      skillBox.innerHTML = '🎓 <b>Навык освоен:</b> ';
+      skillBox.append(document.createTextNode(`ты умеешь распознавать уловки мошенников, проверять выгоду покупок и держать баланс ресурсов (${currentDream.name} — ${dreamPct}%)!`));
     } else {
       skillBox.innerHTML = `💡 <b>Принцип баланса:</b> перед выбором проверяй подсказку Вольтика 🔍 и следи, чтобы ни одна из 4 колб не опускалась до нуля!`;
     }
@@ -520,28 +523,105 @@ window.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowRight') { Sound.swipe(); applyDecision('right'); }
 });
 
-// Старт выбранной кампании
-document.querySelectorAll('.dream-option').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const key = btn.getAttribute('data-dream');
-    applyDreamTheme(key);
-    const s = currentDream.initStat;
-    stats = { money: s, tech: s, trust: s, team: s };
-    dreamPct = currentDream.initDream;
+// Каталог не ограничен тремя кампаниями; порядок кнопок соответствует JSON.
+const campaignList = document.getElementById('campaignList');
+const campaignStatus = document.getElementById('campaignLoadStatus');
+const campaignRetryBtn = document.getElementById('campaignRetryBtn');
+
+function setCampaignLoading(loading) {
+  campaignLoading = loading;
+  campaignList.setAttribute('aria-busy', String(loading));
+  campaignList.querySelectorAll('button').forEach(btn => { btn.disabled = loading; });
+  if (loading) campaignRetryBtn.hidden = true;
+}
+
+function showCampaignError(error) {
+  console.error('Не удалось загрузить кампании:', error);
+  campaignStatus.textContent = 'Не удалось загрузить приключение. Проверьте соединение и попробуйте ещё раз.';
+  campaignStatus.hidden = false;
+  campaignRetryBtn.hidden = false;
+}
+
+function renderCampaignList() {
+  campaignList.replaceChildren();
+  campaigns.forEach(campaign => {
+    const difficulty = GameData.difficulties[campaign.difficulty];
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'dream-option';
+    btn.dataset.dream = campaign.id;
+    // Разметка постоянная, все значения из JSON вставляются как текст.
+    btn.innerHTML = '<div class="dream-opt-icon"></div><div style="flex:1;"><div class="dream-opt-head"><span class="dream-opt-title"></span><span class="diff-tag"></span></div><div class="dream-opt-sub"></div></div>';
+    btn.querySelector('.dream-opt-icon').textContent = campaign.icon;
+    btn.querySelector('.dream-opt-title').textContent = campaign.name;
+    btn.querySelector('.dream-opt-sub').textContent = campaign.description;
+    const badge = btn.querySelector('.diff-tag');
+    badge.classList.add(difficulty.className);
+    badge.textContent = difficulty.label;
+    btn.addEventListener('click', () => startCampaign(campaign.id));
+    campaignList.appendChild(btn);
+  });
+}
+
+async function loadCampaignCatalog() {
+  setCampaignLoading(true);
+  retryCampaignId = null;
+  campaignStatus.hidden = false;
+  campaignStatus.textContent = 'Загружаем приключения…';
+  try {
+    campaigns = await GameData.loadCatalog();
+    renderCampaignList();
+    campaignStatus.hidden = true;
+    initSoundButton();
+  } catch (error) {
+    showCampaignError(error);
+  } finally {
+    setCampaignLoading(false);
+  }
+}
+
+async function startCampaign(id) {
+  if (campaignLoading) return;
+  const campaign = campaigns.find(item => item.id === id);
+  if (!campaign) return;
+  setCampaignLoading(true);
+  retryCampaignId = id;
+  campaignStatus.hidden = false;
+  campaignStatus.textContent = 'Загружаем приключение…';
+  try {
+    const events = await GameData.loadEvents(campaign);
+    activeDeck = events;
+    applyDreamTheme(campaign);
+    stats = { ...campaign.balance.initialStats };
+    dreamPct = campaign.balance.initialDream;
     streak = 0;
     scamMistakes = 0;
     hasSwipedOnce = false;
     idx = 0;
     busy = false;
     buildFlipMap();
+    const badge = Array.from(campaignList.children).find(btn => btn.dataset.dream === id).querySelector('.diff-tag');
+    badge.textContent = GameData.difficulties[campaign.difficulty].label + ' · ' + events.length + ' карт';
     document.getElementById('dreamSelectScreen').classList.remove('active');
+    campaignStatus.hidden = true;
     syncUI();
     showCard();
     Sound.coin();
-  });
+  } catch (error) {
+    showCampaignError(error);
+  } finally {
+    setCampaignLoading(false);
+  }
+}
+
+campaignRetryBtn.addEventListener('click', () => {
+  if (retryCampaignId) startCampaign(retryCampaignId);
+  else loadCampaignCatalog();
 });
 
 document.getElementById('restartBtn').addEventListener('click', () => {
+  busy = true;
+  clearTimeout(idleHintTimer);
   document.getElementById('endModal').classList.remove('active');
   document.getElementById('dreamSelectScreen').classList.add('active');
 });
@@ -560,13 +640,10 @@ if (shareBtn) {
 
 function closeApp() {
   sendEvent('CLOSE_EVENT');
+  if (!currentDream) return;
   finishGame(false, '👋', 'До новой встречи!', 'Сигнал о выходе отправлен в приложение.', true);
 }
 document.getElementById('closeBtn').addEventListener('click', closeApp);
 document.getElementById('exitBtn').addEventListener('click', closeApp);
 
-applyDreamTheme('scooter');
-buildFlipMap();
-syncUI();
-initSoundButton();
-showCard();
+loadCampaignCatalog();

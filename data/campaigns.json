@@ -1,0 +1,100 @@
+{
+  "campaigns": [
+    {
+      "id": "scooter",
+      "name": "Электро-Самокат",
+      "icon": "🛴",
+      "description": "Карманные деньги, прогулки и базовые правила",
+      "difficulty": "easy",
+      "progressIcons": [
+        "🛞",
+        "🛹",
+        "🕹️",
+        "🔋",
+        "🚀"
+      ],
+      "eventsFile": "./data/events/scooter.json",
+      "balance": {
+        "initialStats": {
+          "money": 55,
+          "tech": 55,
+          "trust": 55,
+          "team": 55
+        },
+        "initialDream": 15,
+        "winDream": 75,
+        "multipliers": {
+          "resourceLoss": 0.9,
+          "resourceGain": 1,
+          "dreamLoss": 1,
+          "dreamGain": 1
+        },
+        "miniGameMaxBonus": 12
+      }
+    },
+    {
+      "id": "console",
+      "name": "Игровая Приставка",
+      "icon": "🎮",
+      "description": "Подписки, онлайн-покупки, друзья и копилка",
+      "difficulty": "medium",
+      "progressIcons": [
+        "📺",
+        "🕹️",
+        "💾",
+        "🎧",
+        "👑"
+      ],
+      "eventsFile": "./data/events/console.json",
+      "balance": {
+        "initialStats": {
+          "money": 50,
+          "tech": 50,
+          "trust": 50,
+          "team": 50
+        },
+        "initialDream": 10,
+        "winDream": 80,
+        "multipliers": {
+          "resourceLoss": 1,
+          "resourceGain": 1,
+          "dreamLoss": 1,
+          "dreamGain": 1
+        },
+        "miniGameMaxBonus": 10
+      }
+    },
+    {
+      "id": "robodog",
+      "name": "Умный Робо-Пёс",
+      "icon": "🤖",
+      "description": "Хардкорный баланс ресурсов, деталей и энергии!",
+      "difficulty": "hard",
+      "progressIcons": [
+        "🐾",
+        "⚙️",
+        "👀",
+        "🔋",
+        "🐕"
+      ],
+      "eventsFile": "./data/events/robodog.json",
+      "balance": {
+        "initialStats": {
+          "money": 45,
+          "tech": 45,
+          "trust": 45,
+          "team": 45
+        },
+        "initialDream": 5,
+        "winDream": 85,
+        "multipliers": {
+          "resourceLoss": 1.22,
+          "resourceGain": 1,
+          "dreamLoss": 1,
+          "dreamGain": 1
+        },
+        "miniGameMaxBonus": 8
+      }
+    }
+  ]
+}
