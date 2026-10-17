@@ -48,7 +48,7 @@ const GameData = (() => {
     data.campaigns.forEach((c, i) => {
       const p = `campaigns[${i}]`;
       object(c, p);
-      knownKeys(c, ['id', 'name', 'icon', 'description', 'difficulty', 'progressIcons', 'eventsFile', 'balance'], p);
+      knownKeys(c, ['id', 'name', 'icon', 'description', 'difficulty', 'progressIcons', 'eventsFile', 'balance', 'endings'], p);
       id(c.id, `${p}.id`, seen);
       for (const key of ['name', 'icon', 'description']) text(c[key], `${p}.${key}`);
       requireValue(Object.hasOwn(difficulties, c.difficulty), `${p}.difficulty`, 'допустимы easy, medium, hard');
@@ -68,6 +68,19 @@ const GameData = (() => {
       const keys = ['resourceLoss', 'resourceGain', 'dreamLoss', 'dreamGain'];
       knownKeys(b.multipliers, keys, `${p}.balance.multipliers`);
       keys.forEach(key => number(b.multipliers[key], `${p}.balance.multipliers.${key}`, 0));
+      // Заготовки сюжетных концовок; игровой цикл пока их не использует.
+      if (Object.hasOwn(c, 'endings')) {
+        object(c.endings, `${p}.endings`);
+        const outcomes = [...stats, 'victory', 'incomplete'];
+        knownKeys(c.endings, outcomes, `${p}.endings`);
+        outcomes.forEach(outcome => {
+          const ep = `${p}.endings.${outcome}`;
+          const ending = c.endings[outcome];
+          object(ending, ep);
+          knownKeys(ending, ['title', 'text', 'tip'], ep);
+          for (const field of ['title', 'text', 'tip']) text(ending[field], `${ep}.${field}`);
+        });
+      }
     });
     return data.campaigns;
   }
