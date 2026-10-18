@@ -21,8 +21,6 @@ let bannerTimer = null;
 let sideFlipMap = [];
 
 const cardEl = document.getElementById('activeCard');
-const badgeL = document.getElementById('badgeLeft');
-const badgeR = document.getElementById('badgeRight');
 const spriteWrap = document.getElementById('spriteContainer');
 const streakPill = document.getElementById('streakPill');
 const tutorialHand = document.getElementById('tutorialHand');
@@ -395,6 +393,7 @@ function resolveCard(i) {
 }
 
 function showCard() {
+  delete cardEl.dataset.dragging;
   emphasizeChoice();
   closeMascotHint();
   followCardWithMascot();
@@ -412,13 +411,9 @@ function showCard() {
   spriteWrap.innerHTML = buildCardSVG(c.type, c.emoji);
   spriteWrap.style.transform = '';
 
-  badgeL.textContent = c.left.text;
-  badgeR.textContent = c.right.text;
   document.getElementById('btnLeftLabel').textContent = c.left.text;
   document.getElementById('btnRightLabel').textContent = c.right.text;
 
-  badgeL.style.opacity = 0;
-  badgeR.style.opacity = 0;
   showDots(null);
   renderMascot('normal', null, 0);
 
@@ -638,7 +633,7 @@ let dragging = false;
 let startX = 0, startY = 0, dx = 0;
 
 function emphasizeChoice(offset = 0) {
-  const amount = Math.min(1, Math.max(0, (Math.abs(offset) - 10) / 55));
+  const amount = Math.min(1, Math.abs(offset) / 65);
   const bias = Math.sign(offset) * amount;
   cardEl.style.setProperty('--choice-left', `${1 - bias}fr`);
   cardEl.style.setProperty('--choice-right', `${1 + bias}fr`);
@@ -653,6 +648,7 @@ cardEl.addEventListener('pointerdown', (e) => {
   const textArea = e.target.closest('.card-text-zone');
   if (textArea && textArea.scrollHeight > textArea.clientHeight) return;
   dragging = true;
+  cardEl.dataset.dragging = 'true';
   startX = e.clientX;
   startY = e.clientY;
   dx = 0;
@@ -672,20 +668,13 @@ window.addEventListener('pointermove', (e) => {
   spriteWrap.style.transform = `translate3d(${dx * 0.08}px, ${dy * 0.08}px, 0) rotate(${dx * 0.03}deg)`;
 
   const c = activeCardData;
-  const ratio = Math.min(1, Math.abs(dx) / 75);
   if (dx < -14) {
-    badgeL.style.opacity = ratio;
-    badgeR.style.opacity = 0;
     showDots(c.left);
     renderMascot('normal', '👀', -1);
   } else if (dx > 14) {
-    badgeR.style.opacity = ratio;
-    badgeL.style.opacity = 0;
     showDots(c.right);
     renderMascot('normal', '👀', 1);
   } else {
-    badgeL.style.opacity = 0;
-    badgeR.style.opacity = 0;
     showDots(null);
     renderMascot('normal', idleHintActive ? '💡 Нажми на меня!' : null, 0, idleHintActive);
   }
@@ -694,6 +683,7 @@ window.addEventListener('pointermove', (e) => {
 function endDrag(event) {
   if (!dragging) return;
   dragging = false;
+  delete cardEl.dataset.dragging;
   followCardWithMascot();
   if (busy) return;
 
@@ -708,8 +698,6 @@ function endDrag(event) {
     cardEl.className = 'game-card smooth-return';
     cardEl.style.transform = 'translate3d(0,0,0) rotate(0deg)';
     spriteWrap.style.transform = '';
-    badgeL.style.opacity = 0;
-    badgeR.style.opacity = 0;
     showDots(null);
     renderMascot('normal', idleHintActive ? '💡 Нажми на меня!' : null, 0, idleHintActive);
     if (idx === 0 && !hasSwipedOnce) tutorialHand.classList.add('visible');
