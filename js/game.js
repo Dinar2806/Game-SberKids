@@ -548,9 +548,11 @@ function renderFinalAchievements(isExitOnly) {
 
   if (isExitOnly) {
     rankEl.style.display = 'none';
+    listEl.style.display = 'none';
     return;
   }
   rankEl.style.display = 'inline-block';
+  listEl.style.display = 'grid';
 
   const earnedArmor = scamMistakes === 0 && idx >= 2;
   const earnedPiggy = stats.money >= 50;
@@ -597,7 +599,7 @@ function renderFinalAchievements(isExitOnly) {
         <div class="ach-title">${b.title}</div>
         <div class="ach-desc">${b.desc}</div>
       </div>
-      <span class="ach-status">${b.earned ? '✨ Получено!' : 'Закрыто'}</span>
+      <span class="ach-status">${b.earned ? '✨ Получено!' : 'Впереди'}</span>
     `;
     listEl.appendChild(card);
   });
@@ -681,18 +683,45 @@ function applyDecision(dir) {
 
   setTimeout(() => {
     if (run !== campaignRun) return;
-    // Проверяем, какой именно показатель упал до нуля
-    const failReasons = {
-      money: '🪙 Копилка опустела до нуля! Не забывай пополнять бюджет и беречь монеты.',
-      tech:  '⚡ Бодрость на нуле — ты совсем выбился из сил! Чередуй труд с отдыхом и сном.',
-      trust: '❤️ Дружба упала до нуля — все друзья обиделись! Деньги важны, но о друзьях забывать нельзя.',
-      team:  '🧠 Смекалка упала до нуля из-за ловушек и поспешных решений! Проверяй чеки, схемы и ссылки.'
+    // Проверяем, какой именно показатель опустел, и даём доброе наставление без ощущения проигрыша
+    const pauseMoments = {
+      money: {
+        icon: '🪙',
+        title: 'Копилке нужна подзарядка!',
+        text: 'Ты здорово двигался к цели, но монетки закончились чуть раньше времени.',
+        tip: 'Оставляй часть монет про запас — тогда на пути к мечте не страшны никакие сюрпризы!'
+      },
+      tech: {
+        icon: '⚡',
+        title: 'Время уютного привала!',
+        text: 'Ты так старался успеть всё сразу, что силы подошли к концу. Даже героям нужен отдых!',
+        tip: 'Чередуй полезные дела со сном и передышкой, чтобы бодрости хватило до самой мечты.'
+      },
+      trust: {
+        icon: '❤️',
+        title: 'Друзья ждут тебя во дворе!',
+        text: 'В спешке за целью друзьям не хватило твоего внимания, и без компании стало скучно.',
+        tip: 'Для дружбы не обязательно тратить монеты: доброе слово и помощь друзьям делают путь радостнее!'
+      },
+      team: {
+        icon: '🧭',
+        title: 'Хитрый поворот на маршруте!',
+        text: 'Попалось несколько запутанных предложений, поэтому самое время сделать паузу и осмотреться.',
+        tip: 'Не спеши верить громким акциям и таймерам: проверяй условия и советуйся со взрослыми.'
+      }
     };
     for (const k of ['money', 'tech', 'trust', 'team']) {
       if (stats[k] <= 0) {
         const ending = storyDirector && currentDream.endings && currentDream.endings[k];
-        finishGame(false, '🔧', ending ? ending.title : 'Баланс нарушен!',
-          ending ? `${ending.text} ${ending.tip}` : failReasons[k], false);
+        const fallback = pauseMoments[k];
+        finishGame(
+          false,
+          fallback.icon,
+          ending ? ending.title : fallback.title,
+          ending ? ending.text : fallback.text,
+          false,
+          ending ? ending.tip : fallback.tip
+        );
         busy = false;
         return;
       }
@@ -705,15 +734,21 @@ function applyDecision(dir) {
         spawnBurst(window.innerWidth / 2, window.innerHeight / 2, [currentDream.icon, '🏆', '🎉', '🌟'], 10);
       }
       const ending = storyDirector && currentDream.endings && currentDream.endings[won ? 'victory' : 'incomplete'];
-      const completedCards = idx + 1;
       finishGame(
         won,
         won ? currentDream.icon : '🌟',
-        ending ? ending.title : won ? `${currentDream.name} у тебя!` : 'Почти у цели!',
-        ending ? `${ending.text} ${ending.tip}` : won
-          ? `Ура! Ты прошёл все ${completedCards} карточек кампании и собрал Мечту на ${dreamPct}%!`
-          : `Ты выдержал все ${completedCards} карточек и собрал Мечту на ${dreamPct}% (нужно ${currentDream.balance.winDream}%). Попробуй ещё раз!`,
-        false
+        ending ? ending.title : won ? `${currentDream.name} у тебя!` : 'Мечта уже совсем близко!',
+        ending
+          ? ending.text
+          : won
+            ? `Ура! Ты прошёл всё приключение и собрал мечту «${currentDream.name}» на ${dreamPct}%!`
+            : `Ты прошёл всю историю и собрал мечту уже на ${dreamPct}%! Осталось совсем чуть-чуть до цели.`,
+        false,
+        ending
+          ? ending.tip
+          : won
+            ? 'Ты отлично держал баланс между копилкой, отдыхом, друзьями и смекалкой!'
+            : 'В новой попытке чаще выбирай шаги, которые приближают мечту, и заглядывай в мини-игры!'
       );
       busy = false;
       return;
@@ -732,20 +767,23 @@ function applyDecision(dir) {
 
 let completedSent = false;
 
-function finishGame(won, icon, title, text, isExitOnly) {
+function finishGame(won, icon, title, text, isExitOnly, customTip = '') {
   clearTimeout(idleHintTimer);
   document.getElementById('modalArt').textContent = icon;
   document.getElementById('modalTitle').textContent = title;
   document.getElementById('modalText').textContent = text;
+  const restartBtn = document.getElementById('restartBtn');
+  if (restartBtn) {
+    restartBtn.textContent = won ? 'Выбрать новую Мечту ↻' : 'Попробовать ещё раз ↻';
+  }
   const skillBox = document.getElementById('skillSummaryBox');
   if (skillBox) {
     skillBox.style.display = isExitOnly ? 'none' : 'block';
-    if (won) {
-      skillBox.innerHTML = '🎓 <b>Навык освоен:</b> ';
-      skillBox.append(document.createTextNode(`ты умеешь распознавать уловки мошенников, проверять выгоду покупок и держать баланс ресурсов (${currentDream.name} — ${dreamPct}%)!`));
-    } else {
-      skillBox.innerHTML = `💡 <b>Принцип баланса:</b> перед выбором проверяй подсказку Вольтика 🔍 и следи, чтобы ни одна из 4 колб не опускалась до нуля!`;
-    }
+    const adviceText = customTip || (won
+      ? 'Ты умеешь распознавать уловки, проверять выгоду покупок и беречь баланс ресурсов!'
+      : 'Заглядывай в подсказку Вольтика и следи, чтобы все четыре показателя оставались в плюсе.');
+    skillBox.innerHTML = won ? '🎓 <b>Чему мы научились:</b> ' : '🦊 <b>Совет Вольтика:</b> ';
+    skillBox.append(document.createTextNode(adviceText));
   }
   renderFinalAchievements(isExitOnly);
   document.getElementById('endModal').classList.add('active');
@@ -1187,18 +1225,6 @@ document.getElementById('restartBtn').addEventListener('click', () => {
   document.getElementById('endModal').classList.remove('active');
   document.getElementById('dreamSelectScreen').classList.add('active');
 });
-
-const shareBtn = document.getElementById('shareBtn');
-if (shareBtn) {
-  shareBtn.addEventListener('click', () => {
-    Sound.coin();
-    const rankText = document.getElementById('modalRank').textContent;
-    sendEvent('SHARING_EVENT', {
-      text: `Я прошёл игру «Твоя Мечта» с лисёнком Вольтиком и собрал ${currentDream.name} на ${dreamPct}%! (${rankText})`
-    });
-    flashBanner('📤 Диплом отправлен в меню «Поделиться»!');
-  });
-}
 
 function closeApp() {
   campaignRun++;

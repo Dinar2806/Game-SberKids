@@ -277,9 +277,8 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
 .mg-hole { background: #e5d9f1; border: 1px solid #c7b5dc; }
 .mem-card, .sorter-card, .detective-row { border-color: #c8b3dd; box-shadow: 0 3px 0 #b9a1d0; }
 #mgSkipBtn { min-height: 44px; }
-.btn-main { background: linear-gradient(#d6f99f, #bce17a); color: #33481e; border: 1px solid #d9fbb0; box-shadow: 0 4px 0 #7e9e4c; min-height: 52px; font-size: 15px; }
-.btn-share { background: #ecdefb; border: 1px solid #c8abeb; color: #563978; box-shadow: 0 3px 0 #ab8bc9; min-height: 48px; }
-.btn-sub { background: #eee9f3; border: 1px solid #d2c5de; color: #60516e; box-shadow: 0 3px 0 #b6a6c3; min-height: 48px; }
+.btn-main { background: linear-gradient(#d6f99f, #bce17a); color: #33481e; border: 1px solid #d9fbb0; box-shadow: 0 4px 0 #7e9e4c; min-height: 52px; font-size: 15px; margin-bottom: 8px; }
+.btn-sub { background: #eee9f3; border: 1px solid #d2c5de; color: #60516e; box-shadow: 0 3px 0 #b6a6c3; min-height: 44px; }
 .rank-pill { background: #e9ddfb; border: 1px solid #c5a8ea; color: #664188; box-shadow: 0 2px 0 #b99ad5; font-size: 10px; text-transform: none; }
 .skill-summary-box { background: #ece4f6; border: 1px solid #d1bfe5; color: #59416f; padding: 11px; font-size: 12px; line-height: 1.5; }
 .ach-card { padding: 10px; background: #eee8f4; border: 1px solid #d8cbe5; opacity: .7; }
