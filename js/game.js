@@ -771,8 +771,72 @@ function renderCampaignList() {
     campaigns.filter(campaign => campaign.difficulty === difficulty)
   );
   const groupTitles = { easy: 'Лёгкий старт', medium: 'Держим баланс', hard: 'Большие планы' };
+  const rowMates = new Map();
+  let previousInRow = null;
+  let campaignMotion = [];
+  let campaignGhosts = [];
+  let motionVersion = 0;
+  function animateCampaignChange(change) {
+    const version = ++motionVersion;
+    const cards = [...campaignList.children].filter(card => !card.classList.contains('campaign-ghost'));
+    const before = new Map(cards.filter(card => card.getClientRects().length).map(card => [card, card.getBoundingClientRect()]));
+    const snapshots = new Map([...before.keys()].map(card => [card, card.cloneNode(true)]));
+    campaignMotion.forEach(animation => animation.cancel());
+    campaignGhosts.forEach(ghost => ghost.remove());
+    campaignMotion = [];
+    campaignGhosts = [];
+    campaignList.classList.add('is-animating');
+    change();
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      campaignList.classList.remove('is-animating');
+      return;
+    }
+    const listBounds = campaignList.getBoundingClientRect();
+    function fadePreviousCard(card, old) {
+        const ghost = snapshots.get(card);
+        ghost.classList.remove('is-covered');
+        ghost.classList.add('campaign-ghost');
+        ghost.style.transform = 'none';
+        ghost.style.transition = 'none';
+        ghost.removeAttribute('id');
+        ghost.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+        ghost.setAttribute('aria-hidden', 'true');
+        ghost.inert = true;
+        Object.assign(ghost.style, { left: `${old.left - listBounds.left}px`, top: `${old.top - listBounds.top}px`, width: `${old.width}px`, height: `${old.height}px` });
+        campaignList.append(ghost);
+        campaignGhosts.push(ghost);
+        const fade = ghost.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, fill: 'forwards' });
+        fade.finished.then(() => ghost.remove(), () => ghost.remove());
+        campaignMotion.push(fade);
+    }
+    cards.forEach(card => {
+      const old = before.get(card);
+      if (!card.getClientRects().length) {
+        if (old) fadePreviousCard(card, old);
+        return;
+      }
+      const next = card.getBoundingClientRect();
+      const resized = old && (Math.abs(old.width - next.width) > 1 || Math.abs(old.height - next.height) > 1);
+      let frames;
+      if (resized) {
+        fadePreviousCard(card, old);
+        // Меняем границы видимой области, сохраняя естественный размер текста.
+        const inset = `${Math.max(0, old.top - next.top)}px ${Math.max(0, next.right - old.right)}px ${Math.max(0, next.bottom - old.bottom)}px ${Math.max(0, old.left - next.left)}px`;
+        frames = [{ opacity: 0, clipPath: `inset(${inset} round 25px)` }, { opacity: 1, clipPath: 'inset(0px round 25px)' }];
+      } else if (old) {
+        frames = [{ transform: `translate(${old.left - next.left}px, ${old.top - next.top}px)` }, { transform: 'none' }];
+      } else {
+        frames = [{ opacity: 0 }, { opacity: 1 }];
+      }
+      campaignMotion.push(card.animate(frames, { duration: 260, easing: 'cubic-bezier(.22, 1, .36, 1)' }));
+    });
+    Promise.allSettled(campaignMotion.map(animation => animation.finished)).then(() => {
+      if (version === motionVersion) campaignList.classList.remove('is-animating');
+    });
+  }
   orderedCampaigns.forEach((campaign, index) => {
     if (index === 0 || campaign.difficulty !== orderedCampaigns[index - 1].difficulty) {
+      previousInRow = null;
       const heading = document.createElement('h3');
       heading.className = 'campaign-group-title';
       heading.dataset.difficulty = campaign.difficulty;
@@ -780,8 +844,7 @@ function renderCampaignList() {
       campaignList.append(heading);
     }
     const difficulty = GameData.difficulties[campaign.difficulty];
-    const btn = document.createElement('button');
-    btn.type = 'button';
+    const btn = document.createElement('article');
     // Светлые оттенки проходят от мяты через фиолетовый к розово-красному.
     const progress = index / Math.max(1, orderedCampaigns.length - 1);
     const hue = progress <= 0.5 ? 150 + progress * 240 : 270 + (progress - 0.5) * 168;
@@ -789,7 +852,7 @@ function renderCampaignList() {
     btn.style.setProperty('--campaign-hue', Math.round(hue));
     btn.dataset.dream = campaign.id;
     // Сохраняем оформление visual, все значения из JSON вставляются как текст.
-    btn.innerHTML = '<div class="dream-option-copy"><span class="dream-opt-title"></span><span class="dream-meta"></span></div><span class="dream-opt-sub"></span><span class="dream-go" aria-hidden="true">↗</span>';
+    btn.innerHTML = '<div class="dream-option-copy"><span class="dream-opt-title"></span><span class="dream-meta"></span></div><span class="dream-opt-sub"></span><button class="campaign-toggle" type="button" aria-expanded="false"></button><button class="campaign-close" type="button" aria-label="Свернуть карточку" hidden>×</button><button class="campaign-start" type="button" hidden>Начать приключение</button>';
     btn.prepend(createCampaignArt(campaign, 'dream-toy', 240, 220));
     if (index === 0) {
       const kicker = document.createElement('span');
@@ -801,7 +864,47 @@ function renderCampaignList() {
     btn.querySelector('.dream-opt-sub').textContent = campaign.description;
     const badge = btn.querySelector('.dream-meta');
     badge.textContent = difficulty.label;
-    btn.addEventListener('click', () => startCampaign(campaign.id));
+    const toggle = btn.querySelector('.campaign-toggle');
+    const start = btn.querySelector('.campaign-start');
+    const close = btn.querySelector('.campaign-close');
+    const description = btn.querySelector('.dream-opt-sub');
+    description.id = `campaign-description-${campaign.id}`;
+    toggle.setAttribute('aria-controls', description.id);
+    toggle.setAttribute('aria-label', `Подробнее: ${campaign.name}`);
+    toggle.addEventListener('click', () => {
+      if (campaignLoading) return;
+      const expanded = !btn.classList.contains('is-expanded');
+      animateCampaignChange(() => {
+      campaignList.querySelectorAll('.dream-option.is-expanded').forEach(card => {
+        card.classList.remove('is-expanded');
+        card.querySelector('.campaign-toggle').setAttribute('aria-expanded', 'false');
+        card.querySelector('.campaign-start').hidden = true;
+        card.querySelector('.campaign-close').hidden = true;
+      });
+      campaignList.querySelectorAll('.dream-option.is-covered').forEach(card => {
+        card.classList.remove('is-covered');
+      });
+      btn.classList.toggle('is-expanded', expanded);
+      toggle.setAttribute('aria-expanded', String(expanded));
+      start.hidden = !expanded;
+      close.hidden = !expanded;
+      if (expanded) rowMates.get(btn)?.classList.add('is-covered');
+      });
+    });
+    close.addEventListener('click', () => {
+      toggle.click();
+      toggle.focus({ preventScroll: true });
+    });
+    start.addEventListener('click', () => startCampaign(campaign.id));
+    if (index !== 0) {
+      if (previousInRow) {
+        rowMates.set(btn, previousInRow);
+        rowMates.set(previousInRow, btn);
+        previousInRow = null;
+      } else {
+        previousInRow = btn;
+      }
+    }
     campaignList.appendChild(btn);
   });
 }
