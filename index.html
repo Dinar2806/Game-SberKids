@@ -2179,17 +2179,15 @@ const StoryDirector = (() => {
         const chapter = config.chapters[chapterIndex];
         const eligible = id => matches((config.events[id] || {}).requires, state);
         const repeats = chapter.repeatable.filter(eligible);
-        const urgent = repeats.filter(id => {
+        const ready = repeats.filter(id => !lastSeen.has(id) || history.length - lastSeen.get(id) - 1 >= ((config.events[id] || {}).cooldown ?? 3));
+        const urgent = ready.filter(id => {
           const meta = config.events[id] || {};
           return meta.urgentWhen && matches(meta.urgentWhen, state);
         });
         const uniques = chapter.pool.filter(id => !used.has(id) && eligible(id));
-        const ready = repeats.filter(id => !lastSeen.has(id) || history.length - lastSeen.get(id) - 1 >= ((config.events[id] || {}).cooldown ?? 3));
-        let candidates = urgent.length ? urgent : uniques.length ? uniques : ready;
-        if (!candidates.length && repeats.length) {
-          const earliest = Math.min(...repeats.map(id => lastSeen.get(id)));
-          candidates = repeats.filter(id => lastSeen.get(id) === earliest);
-        }
+        // Low resources offer a chance to recover, not guaranteed protection.
+        // Recovery scenes compete with ordinary scenes and always respect cooldown.
+        const candidates = uniques.length ? [...uniques, ...urgent] : ready;
         if (candidates.length) current = { id: weighted(candidates, state), kind: 'scene' };
         else { exhausted = true; return null; }
       }
