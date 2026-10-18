@@ -1,9 +1,8 @@
 const assert = require('node:assert/strict');
-const fs = require('node:fs');
-const path = require('node:path');
 const vm = require('node:vm');
+const read = require('./read-game-code.cjs');
 
-const source = fs.readFileSync(path.join(__dirname, '../js/graphics-vfx.js'), 'utf8');
+const source = read('js/graphics-vfx.js');
 let svg = null;
 let htmlWrites = 0;
 const mascotAvatar = {
@@ -70,8 +69,8 @@ assert.equal(gazeUpdates, 6);
 
 
 // Exercise the real preview function with real campaign multipliers.
-const gameSource = fs.readFileSync(path.join(__dirname, '../js/game.js'), 'utf8');
-const gameDataSource = fs.readFileSync(path.join(__dirname, '../js/campaign-data.js'), 'utf8');
+const gameSource = read('js/game.js');
+const gameDataSource = read('js/campaign-data.js');
 const start = gameSource.indexOf('function showDots(');
 const end = gameSource.indexOf('function resolveCard(', start);
 assert(start >= 0 && end > start, 'Could not find showDots in game.js');

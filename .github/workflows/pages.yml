@@ -35,7 +35,8 @@ jobs:
 
       - name: Check JavaScript syntax
         run: |
-          for file in js/*.js scripts/*.cjs; do
+          node -e "const vm = require('node:vm'); const read = require('./scripts/read-game-code.cjs'); for (const name of ['viewport', 'bridge-sound', 'data', 'story-director', 'campaign-data', 'graphics-vfx', 'minigames', 'game', 'accessibility']) new vm.Script(read('js/' + name + '.js'), { filename: 'index.html#game-' + name });"
+          for file in scripts/*.cjs; do
             node --check "$file"
           done
 
@@ -49,7 +50,7 @@ jobs:
         run: |
           mkdir _site
           cp index.html _site/
-          cp -R assets css data js _site/
+          cp -R assets data _site/
           touch _site/.nojekyll
 
       - name: Upload website

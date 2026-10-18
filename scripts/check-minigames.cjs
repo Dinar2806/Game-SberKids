@@ -1,10 +1,7 @@
 // Runs the actual mini-game runner and card transitions without browser dependencies.
 const assert = require('node:assert/strict');
-const fs = require('node:fs');
-const path = require('node:path');
 const vm = require('node:vm');
-const root = path.resolve(__dirname, '..');
-const read = file => fs.readFileSync(path.join(root, file), 'utf8');
+const read = require('./read-game-code.cjs');
 const runnerSource = read('js/minigames.js');
 const gameSource = read('js/game.js');
 const GameData = vm.runInNewContext(read('js/campaign-data.js') + '; GameData');

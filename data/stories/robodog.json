@@ -9,7 +9,9 @@
     "mechanism-ready",
     "sensors-ready",
     "battery-ready",
-    "robot-ready"
+    "robot-ready",
+    "robodog-plan-a",
+    "robodog-plan-b"
   ],
   "maxTurns": 60,
   "chapters": [
@@ -37,7 +39,8 @@
         "robodog-010",
         "robodog-012",
         "robodog-013",
-        "robodog-016"
+        "robodog-016",
+        "robodog-plan-choice"
       ],
       "repeatable": [
         "robodog-046",
@@ -81,7 +84,10 @@
         "robodog-027",
         "robodog-028",
         "robodog-044",
-        "robodog-045"
+        "robodog-045",
+        "robodog-plan-choice",
+        "robodog-plan-personal",
+        "robodog-plan-shared"
       ],
       "repeatable": [
         "robodog-046",
@@ -132,7 +138,10 @@
         "robodog-024",
         "robodog-025",
         "robodog-029",
-        "robodog-030"
+        "robodog-030",
+        "robodog-plan-choice",
+        "robodog-plan-personal",
+        "robodog-plan-shared"
       ],
       "repeatable": [
         "robodog-046",
@@ -188,7 +197,10 @@
         "robodog-031",
         "robodog-033",
         "robodog-034",
-        "robodog-035"
+        "robodog-035",
+        "robodog-plan-choice",
+        "robodog-plan-personal",
+        "robodog-plan-shared"
       ],
       "repeatable": [
         "robodog-046",
@@ -249,7 +261,10 @@
         "robodog-036",
         "robodog-037",
         "robodog-038",
-        "robodog-039"
+        "robodog-039",
+        "robodog-plan-choice",
+        "robodog-plan-personal",
+        "robodog-plan-shared"
       ],
       "repeatable": [
         "robodog-046",
@@ -576,6 +591,43 @@
             "operator": "<=",
             "value": 25
           }
+        ]
+      }
+    },
+    "robodog-plan-choice": {
+      "weight": 3,
+      "choices": {
+        "optA": {
+          "set": [
+            "robodog-plan-a"
+          ],
+          "clear": [
+            "robodog-plan-b"
+          ]
+        },
+        "optB": {
+          "set": [
+            "robodog-plan-b"
+          ],
+          "clear": [
+            "robodog-plan-a"
+          ]
+        }
+      }
+    },
+    "robodog-plan-personal": {
+      "weight": 4,
+      "requires": {
+        "all": [
+          "robodog-plan-a"
+        ]
+      }
+    },
+    "robodog-plan-shared": {
+      "weight": 4,
+      "requires": {
+        "all": [
+          "robodog-plan-b"
         ]
       }
     }

@@ -9,7 +9,9 @@
     "stage-2-ready",
     "stage-3-ready",
     "stage-4-ready",
-    "stage-5-ready"
+    "stage-5-ready",
+    "boardgame-plan-a",
+    "boardgame-plan-b"
   ],
   "maxTurns": 60,
   "chapters": [
@@ -39,7 +41,8 @@
         "boardgame-009",
         "boardgame-010",
         "boardgame-022",
-        "boardgame-023"
+        "boardgame-023",
+        "boardgame-plan-choice"
       ],
       "repeatable": [
         "boardgame-018",
@@ -75,7 +78,10 @@
         "boardgame-009",
         "boardgame-010",
         "boardgame-022",
-        "boardgame-023"
+        "boardgame-023",
+        "boardgame-plan-choice",
+        "boardgame-plan-personal",
+        "boardgame-plan-shared"
       ],
       "repeatable": [
         "boardgame-018",
@@ -111,7 +117,10 @@
         "boardgame-009",
         "boardgame-010",
         "boardgame-022",
-        "boardgame-023"
+        "boardgame-023",
+        "boardgame-plan-choice",
+        "boardgame-plan-personal",
+        "boardgame-plan-shared"
       ],
       "repeatable": [
         "boardgame-018",
@@ -147,7 +156,10 @@
         "boardgame-009",
         "boardgame-010",
         "boardgame-022",
-        "boardgame-023"
+        "boardgame-023",
+        "boardgame-plan-choice",
+        "boardgame-plan-personal",
+        "boardgame-plan-shared"
       ],
       "repeatable": [
         "boardgame-018",
@@ -183,7 +195,10 @@
         "boardgame-009",
         "boardgame-010",
         "boardgame-022",
-        "boardgame-023"
+        "boardgame-023",
+        "boardgame-plan-choice",
+        "boardgame-plan-personal",
+        "boardgame-plan-shared"
       ],
       "repeatable": [
         "boardgame-018",
@@ -481,6 +496,43 @@
           "factor": 2
         }
       ]
+    },
+    "boardgame-plan-choice": {
+      "weight": 3,
+      "choices": {
+        "optA": {
+          "set": [
+            "boardgame-plan-a"
+          ],
+          "clear": [
+            "boardgame-plan-b"
+          ]
+        },
+        "optB": {
+          "set": [
+            "boardgame-plan-b"
+          ],
+          "clear": [
+            "boardgame-plan-a"
+          ]
+        }
+      }
+    },
+    "boardgame-plan-personal": {
+      "weight": 4,
+      "requires": {
+        "all": [
+          "boardgame-plan-a"
+        ]
+      }
+    },
+    "boardgame-plan-shared": {
+      "weight": 4,
+      "requires": {
+        "all": [
+          "boardgame-plan-b"
+        ]
+      }
     }
   }
 }

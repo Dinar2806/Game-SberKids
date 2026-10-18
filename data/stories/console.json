@@ -9,7 +9,9 @@
     "gamepad-ready",
     "games-ready",
     "headphones-ready",
-    "play-ready"
+    "play-ready",
+    "console-plan-a",
+    "console-plan-b"
   ],
   "maxTurns": 60,
   "chapters": [
@@ -35,7 +37,8 @@
         "console-006",
         "console-008",
         "console-009",
-        "console-012"
+        "console-012",
+        "console-plan-choice"
       ],
       "repeatable": [
         "console-036",
@@ -73,7 +76,10 @@
         "console-013",
         "console-015",
         "console-018",
-        "console-021"
+        "console-021",
+        "console-plan-choice",
+        "console-plan-personal",
+        "console-plan-shared"
       ],
       "repeatable": [
         "console-036",
@@ -118,7 +124,10 @@
         "console-025",
         "console-026",
         "console-034",
-        "console-035"
+        "console-035",
+        "console-plan-choice",
+        "console-plan-personal",
+        "console-plan-shared"
       ],
       "repeatable": [
         "console-036",
@@ -167,7 +176,10 @@
         "console-017",
         "console-023",
         "console-027",
-        "console-028"
+        "console-028",
+        "console-plan-choice",
+        "console-plan-personal",
+        "console-plan-shared"
       ],
       "repeatable": [
         "console-036",
@@ -218,7 +230,10 @@
         "console-027",
         "console-028",
         "console-022",
-        "console-029"
+        "console-029",
+        "console-plan-choice",
+        "console-plan-personal",
+        "console-plan-shared"
       ],
       "repeatable": [
         "console-036",
@@ -517,6 +532,43 @@
             "operator": "<=",
             "value": 25
           }
+        ]
+      }
+    },
+    "console-plan-choice": {
+      "weight": 3,
+      "choices": {
+        "optA": {
+          "set": [
+            "console-plan-a"
+          ],
+          "clear": [
+            "console-plan-b"
+          ]
+        },
+        "optB": {
+          "set": [
+            "console-plan-b"
+          ],
+          "clear": [
+            "console-plan-a"
+          ]
+        }
+      }
+    },
+    "console-plan-personal": {
+      "weight": 4,
+      "requires": {
+        "all": [
+          "console-plan-a"
+        ]
+      }
+    },
+    "console-plan-shared": {
+      "weight": 4,
+      "requires": {
+        "all": [
+          "console-plan-b"
         ]
       }
     }

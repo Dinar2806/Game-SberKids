@@ -9,7 +9,9 @@
     "mount-ready",
     "scope-ready",
     "moon-ready",
-    "planets-ready"
+    "planets-ready",
+    "telescope-plan-a",
+    "telescope-plan-b"
   ],
   "maxTurns": 60,
   "chapters": [
@@ -37,7 +39,8 @@
         "telescope-007",
         "telescope-008",
         "telescope-009",
-        "telescope-010"
+        "telescope-010",
+        "telescope-plan-choice"
       ],
       "repeatable": [
         "telescope-019",
@@ -73,7 +76,10 @@
         "telescope-009",
         "telescope-010",
         "telescope-023",
-        "telescope-024"
+        "telescope-024",
+        "telescope-plan-choice",
+        "telescope-plan-personal",
+        "telescope-plan-shared"
       ],
       "repeatable": [
         "telescope-019",
@@ -109,7 +115,10 @@
         "telescope-009",
         "telescope-010",
         "telescope-023",
-        "telescope-024"
+        "telescope-024",
+        "telescope-plan-choice",
+        "telescope-plan-personal",
+        "telescope-plan-shared"
       ],
       "repeatable": [
         "telescope-019",
@@ -145,7 +154,10 @@
         "telescope-009",
         "telescope-010",
         "telescope-023",
-        "telescope-024"
+        "telescope-024",
+        "telescope-plan-choice",
+        "telescope-plan-personal",
+        "telescope-plan-shared"
       ],
       "repeatable": [
         "telescope-019",
@@ -181,7 +193,10 @@
         "telescope-009",
         "telescope-010",
         "telescope-023",
-        "telescope-024"
+        "telescope-024",
+        "telescope-plan-choice",
+        "telescope-plan-personal",
+        "telescope-plan-shared"
       ],
       "repeatable": [
         "telescope-019",
@@ -422,6 +437,43 @@
           "factor": 3
         }
       ]
+    },
+    "telescope-plan-choice": {
+      "weight": 3,
+      "choices": {
+        "optA": {
+          "set": [
+            "telescope-plan-a"
+          ],
+          "clear": [
+            "telescope-plan-b"
+          ]
+        },
+        "optB": {
+          "set": [
+            "telescope-plan-b"
+          ],
+          "clear": [
+            "telescope-plan-a"
+          ]
+        }
+      }
+    },
+    "telescope-plan-personal": {
+      "weight": 4,
+      "requires": {
+        "all": [
+          "telescope-plan-a"
+        ]
+      }
+    },
+    "telescope-plan-shared": {
+      "weight": 4,
+      "requires": {
+        "all": [
+          "telescope-plan-b"
+        ]
+      }
     }
   }
 }

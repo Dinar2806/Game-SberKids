@@ -2,6 +2,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
+const read = require('./read-game-code.cjs');
 
 const root = path.resolve(__dirname, '..');
 const stats = { money: '🪙 Копилка', tech: '⚡ Бодрость', trust: '❤️ Дружба', team: '🧠 Смекалка', dream: '🌟 Мечта, п.п.' };
@@ -31,8 +32,8 @@ function options(args) {
 }
 
 function runtime(name) {
-  const file = path.join(root, 'js', name + '.js');
-  return vm.runInNewContext(fs.readFileSync(file, 'utf8') + `; ${name === 'campaign-data' ? 'GameData' : 'StoryDirector'}`, {}, { filename: file });
+  const section = 'js/' + name + '.js';
+  return vm.runInNewContext(read(section) + `; ${name === 'campaign-data' ? 'GameData' : 'StoryDirector'}`, {}, { filename: `index.html#game-${name}` });
 }
 
 function variants(event) {

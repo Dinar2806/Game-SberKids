@@ -9,7 +9,9 @@
     "gears-ready",
     "bike-ready",
     "helmet-ready",
-    "route-ready"
+    "route-ready",
+    "bicycle-plan-a",
+    "bicycle-plan-b"
   ],
   "maxTurns": 60,
   "chapters": [
@@ -37,7 +39,8 @@
         "bicycle-007",
         "bicycle-008",
         "bicycle-009",
-        "bicycle-010"
+        "bicycle-010",
+        "bicycle-plan-choice"
       ],
       "repeatable": [
         "bicycle-019",
@@ -73,7 +76,10 @@
         "bicycle-009",
         "bicycle-010",
         "bicycle-023",
-        "bicycle-024"
+        "bicycle-024",
+        "bicycle-plan-choice",
+        "bicycle-plan-personal",
+        "bicycle-plan-shared"
       ],
       "repeatable": [
         "bicycle-019",
@@ -109,7 +115,10 @@
         "bicycle-009",
         "bicycle-010",
         "bicycle-023",
-        "bicycle-024"
+        "bicycle-024",
+        "bicycle-plan-choice",
+        "bicycle-plan-personal",
+        "bicycle-plan-shared"
       ],
       "repeatable": [
         "bicycle-019",
@@ -145,7 +154,10 @@
         "bicycle-009",
         "bicycle-010",
         "bicycle-023",
-        "bicycle-024"
+        "bicycle-024",
+        "bicycle-plan-choice",
+        "bicycle-plan-personal",
+        "bicycle-plan-shared"
       ],
       "repeatable": [
         "bicycle-019",
@@ -181,7 +193,10 @@
         "bicycle-009",
         "bicycle-010",
         "bicycle-023",
-        "bicycle-024"
+        "bicycle-024",
+        "bicycle-plan-choice",
+        "bicycle-plan-personal",
+        "bicycle-plan-shared"
       ],
       "repeatable": [
         "bicycle-019",
@@ -422,6 +437,43 @@
           "factor": 3
         }
       ]
+    },
+    "bicycle-plan-choice": {
+      "weight": 3,
+      "choices": {
+        "optA": {
+          "set": [
+            "bicycle-plan-a"
+          ],
+          "clear": [
+            "bicycle-plan-b"
+          ]
+        },
+        "optB": {
+          "set": [
+            "bicycle-plan-b"
+          ],
+          "clear": [
+            "bicycle-plan-a"
+          ]
+        }
+      }
+    },
+    "bicycle-plan-personal": {
+      "weight": 4,
+      "requires": {
+        "all": [
+          "bicycle-plan-a"
+        ]
+      }
+    },
+    "bicycle-plan-shared": {
+      "weight": 4,
+      "requires": {
+        "all": [
+          "bicycle-plan-b"
+        ]
+      }
     }
   }
 }

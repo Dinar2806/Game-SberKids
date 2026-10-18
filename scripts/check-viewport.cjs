@@ -1,9 +1,8 @@
 const assert = require('node:assert/strict');
-const fs = require('node:fs');
-const path = require('node:path');
 const vm = require('node:vm');
+const read = require('./read-game-code.cjs');
 
-const source = fs.readFileSync(path.join(__dirname, '../js/viewport.js'), 'utf8');
+const source = read('js/viewport.js');
 
 function createEnvironment(visualHeight, innerHeight, includeVisualViewport = true) {
   const windowEvents = new Map();

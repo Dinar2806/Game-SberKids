@@ -9,7 +9,9 @@
     "deck-ready",
     "controls-ready",
     "battery-ready",
-    "ride-ready"
+    "ride-ready",
+    "scooter-plan-a",
+    "scooter-plan-b"
   ],
   "maxTurns": 60,
   "chapters": [
@@ -35,7 +37,8 @@
         "scooter-009",
         "scooter-011",
         "scooter-013",
-        "scooter-015"
+        "scooter-015",
+        "scooter-plan-choice"
       ],
       "repeatable": [
         "scooter-025",
@@ -71,7 +74,10 @@
         "scooter-006",
         "scooter-010",
         "scooter-021",
-        "scooter-022"
+        "scooter-022",
+        "scooter-plan-choice",
+        "scooter-plan-personal",
+        "scooter-plan-shared"
       ],
       "repeatable": [
         "scooter-025",
@@ -109,7 +115,10 @@
         "scooter-012",
         "scooter-014",
         "scooter-021",
-        "scooter-022"
+        "scooter-022",
+        "scooter-plan-choice",
+        "scooter-plan-personal",
+        "scooter-plan-shared"
       ],
       "repeatable": [
         "scooter-025",
@@ -148,7 +157,10 @@
         "scooter-014",
         "scooter-018",
         "scooter-021",
-        "scooter-022"
+        "scooter-022",
+        "scooter-plan-choice",
+        "scooter-plan-personal",
+        "scooter-plan-shared"
       ],
       "repeatable": [
         "scooter-025",
@@ -188,7 +200,10 @@
         "scooter-018",
         "scooter-019",
         "scooter-021",
-        "scooter-022"
+        "scooter-022",
+        "scooter-plan-choice",
+        "scooter-plan-personal",
+        "scooter-plan-shared"
       ],
       "repeatable": [
         "scooter-025",
@@ -443,6 +458,43 @@
             "operator": "<=",
             "value": 25
           }
+        ]
+      }
+    },
+    "scooter-plan-choice": {
+      "weight": 3,
+      "choices": {
+        "optA": {
+          "set": [
+            "scooter-plan-a"
+          ],
+          "clear": [
+            "scooter-plan-b"
+          ]
+        },
+        "optB": {
+          "set": [
+            "scooter-plan-b"
+          ],
+          "clear": [
+            "scooter-plan-a"
+          ]
+        }
+      }
+    },
+    "scooter-plan-personal": {
+      "weight": 4,
+      "requires": {
+        "all": [
+          "scooter-plan-a"
+        ]
+      }
+    },
+    "scooter-plan-shared": {
+      "weight": 4,
+      "requires": {
+        "all": [
+          "scooter-plan-b"
         ]
       }
     }

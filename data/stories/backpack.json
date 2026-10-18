@@ -9,7 +9,9 @@
     "stage-2-ready",
     "stage-3-ready",
     "stage-4-ready",
-    "stage-5-ready"
+    "stage-5-ready",
+    "backpack-plan-a",
+    "backpack-plan-b"
   ],
   "maxTurns": 60,
   "chapters": [
@@ -39,7 +41,8 @@
         "backpack-009",
         "backpack-010",
         "backpack-022",
-        "backpack-023"
+        "backpack-023",
+        "backpack-plan-choice"
       ],
       "repeatable": [
         "backpack-018",
@@ -75,7 +78,10 @@
         "backpack-009",
         "backpack-010",
         "backpack-022",
-        "backpack-023"
+        "backpack-023",
+        "backpack-plan-choice",
+        "backpack-plan-personal",
+        "backpack-plan-shared"
       ],
       "repeatable": [
         "backpack-018",
@@ -111,7 +117,10 @@
         "backpack-009",
         "backpack-010",
         "backpack-022",
-        "backpack-023"
+        "backpack-023",
+        "backpack-plan-choice",
+        "backpack-plan-personal",
+        "backpack-plan-shared"
       ],
       "repeatable": [
         "backpack-018",
@@ -147,7 +156,10 @@
         "backpack-009",
         "backpack-010",
         "backpack-022",
-        "backpack-023"
+        "backpack-023",
+        "backpack-plan-choice",
+        "backpack-plan-personal",
+        "backpack-plan-shared"
       ],
       "repeatable": [
         "backpack-018",
@@ -183,7 +195,10 @@
         "backpack-009",
         "backpack-010",
         "backpack-022",
-        "backpack-023"
+        "backpack-023",
+        "backpack-plan-choice",
+        "backpack-plan-personal",
+        "backpack-plan-shared"
       ],
       "repeatable": [
         "backpack-018",
@@ -481,6 +496,43 @@
           "factor": 2
         }
       ]
+    },
+    "backpack-plan-choice": {
+      "weight": 3,
+      "choices": {
+        "optA": {
+          "set": [
+            "backpack-plan-a"
+          ],
+          "clear": [
+            "backpack-plan-b"
+          ]
+        },
+        "optB": {
+          "set": [
+            "backpack-plan-b"
+          ],
+          "clear": [
+            "backpack-plan-a"
+          ]
+        }
+      }
+    },
+    "backpack-plan-personal": {
+      "weight": 4,
+      "requires": {
+        "all": [
+          "backpack-plan-a"
+        ]
+      }
+    },
+    "backpack-plan-shared": {
+      "weight": 4,
+      "requires": {
+        "all": [
+          "backpack-plan-b"
+        ]
+      }
     }
   }
 }

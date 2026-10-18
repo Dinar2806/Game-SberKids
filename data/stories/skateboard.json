@@ -9,7 +9,9 @@
     "wheels-ready",
     "mounts-ready",
     "protection-ready",
-    "trick-ready"
+    "trick-ready",
+    "skateboard-plan-a",
+    "skateboard-plan-b"
   ],
   "maxTurns": 60,
   "chapters": [
@@ -37,7 +39,8 @@
         "skateboard-007",
         "skateboard-008",
         "skateboard-009",
-        "skateboard-010"
+        "skateboard-010",
+        "skateboard-plan-choice"
       ],
       "repeatable": [
         "skateboard-019",
@@ -73,7 +76,10 @@
         "skateboard-009",
         "skateboard-010",
         "skateboard-023",
-        "skateboard-024"
+        "skateboard-024",
+        "skateboard-plan-choice",
+        "skateboard-plan-personal",
+        "skateboard-plan-shared"
       ],
       "repeatable": [
         "skateboard-019",
@@ -109,7 +115,10 @@
         "skateboard-009",
         "skateboard-010",
         "skateboard-023",
-        "skateboard-024"
+        "skateboard-024",
+        "skateboard-plan-choice",
+        "skateboard-plan-personal",
+        "skateboard-plan-shared"
       ],
       "repeatable": [
         "skateboard-019",
@@ -145,7 +154,10 @@
         "skateboard-009",
         "skateboard-010",
         "skateboard-023",
-        "skateboard-024"
+        "skateboard-024",
+        "skateboard-plan-choice",
+        "skateboard-plan-personal",
+        "skateboard-plan-shared"
       ],
       "repeatable": [
         "skateboard-019",
@@ -181,7 +193,10 @@
         "skateboard-009",
         "skateboard-010",
         "skateboard-023",
-        "skateboard-024"
+        "skateboard-024",
+        "skateboard-plan-choice",
+        "skateboard-plan-personal",
+        "skateboard-plan-shared"
       ],
       "repeatable": [
         "skateboard-019",
@@ -422,6 +437,43 @@
           "factor": 3
         }
       ]
+    },
+    "skateboard-plan-choice": {
+      "weight": 3,
+      "choices": {
+        "optA": {
+          "set": [
+            "skateboard-plan-a"
+          ],
+          "clear": [
+            "skateboard-plan-b"
+          ]
+        },
+        "optB": {
+          "set": [
+            "skateboard-plan-b"
+          ],
+          "clear": [
+            "skateboard-plan-a"
+          ]
+        }
+      }
+    },
+    "skateboard-plan-personal": {
+      "weight": 4,
+      "requires": {
+        "all": [
+          "skateboard-plan-a"
+        ]
+      }
+    },
+    "skateboard-plan-shared": {
+      "weight": 4,
+      "requires": {
+        "all": [
+          "skateboard-plan-b"
+        ]
+      }
     }
   }
 }

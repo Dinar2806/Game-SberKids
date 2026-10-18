@@ -9,7 +9,9 @@
     "stage-2-ready",
     "stage-3-ready",
     "stage-4-ready",
-    "stage-5-ready"
+    "stage-5-ready",
+    "aquarium-plan-a",
+    "aquarium-plan-b"
   ],
   "maxTurns": 60,
   "chapters": [
@@ -39,7 +41,8 @@
         "aquarium-009",
         "aquarium-010",
         "aquarium-022",
-        "aquarium-023"
+        "aquarium-023",
+        "aquarium-plan-choice"
       ],
       "repeatable": [
         "aquarium-018",
@@ -75,7 +78,10 @@
         "aquarium-009",
         "aquarium-010",
         "aquarium-022",
-        "aquarium-023"
+        "aquarium-023",
+        "aquarium-plan-choice",
+        "aquarium-plan-personal",
+        "aquarium-plan-shared"
       ],
       "repeatable": [
         "aquarium-018",
@@ -111,7 +117,10 @@
         "aquarium-009",
         "aquarium-010",
         "aquarium-022",
-        "aquarium-023"
+        "aquarium-023",
+        "aquarium-plan-choice",
+        "aquarium-plan-personal",
+        "aquarium-plan-shared"
       ],
       "repeatable": [
         "aquarium-018",
@@ -147,7 +156,10 @@
         "aquarium-009",
         "aquarium-010",
         "aquarium-022",
-        "aquarium-023"
+        "aquarium-023",
+        "aquarium-plan-choice",
+        "aquarium-plan-personal",
+        "aquarium-plan-shared"
       ],
       "repeatable": [
         "aquarium-018",
@@ -183,7 +195,10 @@
         "aquarium-009",
         "aquarium-010",
         "aquarium-022",
-        "aquarium-023"
+        "aquarium-023",
+        "aquarium-plan-choice",
+        "aquarium-plan-personal",
+        "aquarium-plan-shared"
       ],
       "repeatable": [
         "aquarium-018",
@@ -481,6 +496,43 @@
           "factor": 2
         }
       ]
+    },
+    "aquarium-plan-choice": {
+      "weight": 3,
+      "choices": {
+        "optA": {
+          "set": [
+            "aquarium-plan-a"
+          ],
+          "clear": [
+            "aquarium-plan-b"
+          ]
+        },
+        "optB": {
+          "set": [
+            "aquarium-plan-b"
+          ],
+          "clear": [
+            "aquarium-plan-a"
+          ]
+        }
+      }
+    },
+    "aquarium-plan-personal": {
+      "weight": 4,
+      "requires": {
+        "all": [
+          "aquarium-plan-a"
+        ]
+      }
+    },
+    "aquarium-plan-shared": {
+      "weight": 4,
+      "requires": {
+        "all": [
+          "aquarium-plan-b"
+        ]
+      }
     }
   }
 }
