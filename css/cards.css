@@ -148,7 +148,9 @@
   font-weight: 900;
   box-shadow: 0 6px 16px rgba(0,0,0,0.18);
   animation: handSwipeHint 1.9s ease-in-out infinite;
+  animation-play-state: paused;
 }
+.tutorial-hand.visible .tut-pill { animation-play-state: running; }
 .tut-caption {
   background: rgba(255, 255, 255, 0.92);
   color: #1e293b;

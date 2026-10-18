@@ -56,7 +56,16 @@ function triggerComicJuice(type) {
   }, 650);
 }
 
+let renderedMascotMood = null;
+
 function renderMascot(mood, bubbleText, lookDir = 0, isHintBubble = false) {
+  const transform = `rotate(${lookDir * 6}deg) scale(${mood === 'happy' ? 1.08 : 1})`;
+  if (mascotAvatar.style.transform !== transform) mascotAvatar.style.transform = transform;
+  // A swipe changes the pose and gaze, but not the SVG artwork on every move.
+  if (renderedMascotMood === mood) {
+    updateMascotGaze();
+    return;
+  }
   let visorColor = '#38bdf8';
   let visorStroke = '#0284c7';
   let badgeAddon = '';
@@ -103,7 +112,6 @@ function renderMascot(mood, bubbleText, lookDir = 0, isHintBubble = false) {
     badgeAddon = `<g transform="translate(68, 44)"><circle cx="10" cy="10" r="8" fill="rgba(56,189,248,0.35)" stroke="#0284c7" stroke-width="2.6"/><line x1="16" y1="16" x2="22" y2="22" stroke="#0f172a" stroke-width="3.2" stroke-linecap="round"/></g>`;
   }
 
-  mascotAvatar.style.transform = `rotate(${lookDir * 6}deg) scale(${mood === 'happy' ? 1.08 : 1})`;
   mascotAvatar.innerHTML = `<svg viewBox="0 0 100 90">
     <defs>
       <linearGradient id="vFur" x1="0" y1="0" x2="1" y2="1">
@@ -126,6 +134,7 @@ function renderMascot(mood, bubbleText, lookDir = 0, isHintBubble = false) {
     <ellipse cx="74" cy="81" rx="9" ry="5.5" fill="#f97316" stroke="#9a3412" stroke-width="2.5"/>
     ${badgeAddon}
   </svg>`;
+  renderedMascotMood = mood;
   updateMascotGaze();
 
 }

@@ -224,6 +224,10 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
 
 /* Mini-games and results belong to the same toy collection. */
 .overlay-screen { background: #110c1bdc; overflow-y: auto; overscroll-behavior: contain; padding: max(56px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom)); }
+/* The opaque catalog covers the game completely; resume its animations on start. */
+#dreamSelectScreen.active ~ .app *,
+#dreamSelectScreen.active ~ .app *::before,
+#dreamSelectScreen.active ~ .app *::after { animation-play-state: paused !important; }
 .dialog-box { max-width: 400px; max-height: 100%; overflow-y: auto; background: #faf7ff; border: 1px solid #e4d7f5; border-radius: 28px; padding: 24px 20px; box-shadow: 0 6px 0 #9c81ba, 0 20px 55px #0005; }
 .minigame-box { height: min(550px, 100%); min-height: 320px; max-width: 400px; background: #faf7ff; border: 2px solid #d9bdf5; box-shadow: 0 5px 0 #8d6baa; padding: 16px; }
 .mg-top { background: #e9ddf9; border: 1px solid #d2b8ed; color: #51316b; font-size: 12px; padding: 9px; }

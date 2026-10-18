@@ -357,26 +357,30 @@ function showDots(choice) {
     const v = choice && choice.effects
       ? GameData.scaleEffect(choice.effects[k] || 0, currentDream.balance.multipliers, 'resource')
       : 0;
-    dot.className = 'stat-dot';
-    pill.classList.remove('preview-up', 'preview-down');
+    let classes = 'stat-dot';
+    let text = '';
+    let previewUp = false;
+    let previewDown = false;
     if (v !== 0) {
-      dot.classList.add('active');
-      if (Math.abs(v) >= 12) dot.classList.add('big');
+      classes += ' active';
+      if (Math.abs(v) >= 12) classes += ' big';
       if (isScamCard) {
-        dot.classList.add('mystery');
-        dot.textContent = '?';
+        classes += ' mystery';
+        text = '?';
       } else if (v > 0) {
-        dot.classList.add('up');
-        dot.textContent = Math.abs(v) >= 12 ? '▲▲' : '▲';
-        pill.classList.add('preview-up');
+        classes += ' up';
+        text = Math.abs(v) >= 12 ? '▲▲' : '▲';
+        previewUp = true;
       } else {
-        dot.classList.add('down');
-        dot.textContent = Math.abs(v) >= 12 ? '▼▼' : '▼';
-        pill.classList.add('preview-down');
+        classes += ' down';
+        text = Math.abs(v) >= 12 ? '▼▼' : '▼';
+        previewDown = true;
       }
-    } else {
-      dot.textContent = '';
     }
+    if (dot.className !== classes) dot.className = classes;
+    if (dot.textContent !== text) dot.textContent = text;
+    if (pill.classList.contains('preview-up') !== previewUp) pill.classList.toggle('preview-up', previewUp);
+    if (pill.classList.contains('preview-down') !== previewDown) pill.classList.toggle('preview-down', previewDown);
   });
 }
 
