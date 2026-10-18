@@ -1,7 +1,7 @@
 // Refresh the offline snapshot without changing the source JSON configuration.
 const fs = require('node:fs');
 const path = require('node:path');
-const root = path.resolve(__dirname, '..');
+const root = path.resolve(__dirname, '../..');
 const snapshot = {};
 
 function collect(directory) {

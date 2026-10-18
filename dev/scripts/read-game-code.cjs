@@ -1,7 +1,7 @@
 // Read runtime code from the single-file game, or other files from the project.
 const fs = require('node:fs');
 const path = require('node:path');
-const root = path.resolve(__dirname, '..');
+const root = path.resolve(__dirname, '../..');
 
 module.exports = function read(file) {
   const match = /^js\/([a-z0-9-]+)\.js$/.exec(file);

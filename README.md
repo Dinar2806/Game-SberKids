@@ -75,17 +75,17 @@ Game-SberKids/
 │       ├── boardgame.json      # 23 события про настольную игру
 │       ├── aquarium.json       # 23 события про аквариум
 │       └── backpack.json       # 23 события про походное снаряжение
-├── scripts/
-│   ├── check-data.cjs         # Проверка всех кампаний и событий перед публикацией
-│   ├── check-viewport.cjs     # Проверка нулевой высоты WebView и изменения размера
-│   ├── check-rendering.cjs    # Повторное использование SVG и предпросмотр ресурсов
-│   ├── check-minigames.cjs    # Проверка мини-игр
-│   ├── read-game-code.cjs     # Извлечение встроенных секций JavaScript для инструментов
-│   ├── sync-data.cjs          # Обновление встроенного снимка JSON в index.html
-│   └── export-cards.cjs       # HTML-отчёт для ручной вычитки карточек
 ├── dev/
-│   ├── mobile-preview.html   # Локальное превью размеров телефона, не публикуется
-│   └── cards-review.html     # Создаётся экспортом, игнорируется Git и не публикуется
+│   ├── scripts/
+│   │   ├── check-data.cjs         # Проверка всех кампаний и событий перед публикацией
+│   │   ├── check-viewport.cjs     # Проверка нулевой высоты WebView и изменения размера
+│   │   ├── check-rendering.cjs    # Повторное использование SVG и предпросмотр ресурсов
+│   │   ├── check-minigames.cjs    # Проверка мини-игр
+│   │   ├── read-game-code.cjs     # Извлечение встроенных секций JavaScript для инструментов
+│   │   ├── sync-data.cjs          # Обновление встроенного снимка JSON в index.html
+│   │   └── export-cards.cjs       # HTML-отчёт для ручной вычитки карточек
+│   ├── mobile-preview.html        # Локальное превью, игнорируется Git и не публикуется
+│   └── cards-review.html          # Создаётся экспортом, игнорируется Git и не публикуется
 ├── .gitignore                 # Исключения из Git
 └── README.md                  # Эта инструкция
 ```
@@ -102,7 +102,7 @@ Game-SberKids/
 | Пять иконок деталей мечты | Массив `progressIcons` в `data/campaigns.json` |
 | Текст ситуации, два решения, подсказку и последствия выбора | Файл нужной кампании в [`data/events/`](data/events/), поля события и его `optA` / `optB` |
 | Условие появления одной из двух версий ситуации | `condition`, `then`, `else` в том же файле событий |
-| Формат отчёта для вычитки карточек | `scripts/export-cards.cjs`; отчёт создаётся в `dev/cards-review.html` |
+| Формат отчёта для вычитки карточек | `dev/scripts/export-cards.cjs`; отчёт создаётся в `dev/cards-review.html` |
 | Порядок вех, случайные события и последствия решений | `data/stories/<campaign>.json` и секция `game-story-director` файла `index.html`; сценарии подключены для всех девяти кампаний |
 | Пороги этапов, закрепления и предел длины попытки | `chapters[].completeWhen` и `maxTurns` в `data/stories/<campaign>.json`; `checkpoint` в секции `game-story-director` файла `index.html` и `clampDreamProgress` в секции `game-game` файла `index.html` |
 | Сюжетные концовки | Шесть исходов `endings` каждой кампании в `data/campaigns.json` |
@@ -141,9 +141,9 @@ Game-SberKids/
 python3 -m http.server 8000
 ```
 
-Мобильное превью: http://localhost:8000/dev/mobile-preview.html — переключение
+Локальное мобильное превью, если файл создан: http://localhost:8000/dev/mobile-preview.html — переключение
 между 360 × 800, 390 × 844 и 412 × 915 CSS-пикселями в масштабе 1:1.
-Страница хранится в `dev/` и не входит в публикацию GitHub Pages.
+Файл хранится в `dev/`, игнорируется Git и не входит в публикацию GitHub Pages.
 
 Откройте http://localhost:8000/. По HTTP игра загружает актуальные конфигурации
 из `data/`; при изменении этих JSON обновите страницу. На GitHub Pages
@@ -158,7 +158,7 @@ python3 -m http.server 8000
 запуском через `file://` или отправкой `index.html`:
 
 ```sh
-node scripts/sync-data.cjs
+node dev/scripts/sync-data.cjs
 ```
 
 Скрипт обновляет `window.BUILTIN_JSON_DATA` в секции `game-data` по JSON из
@@ -170,7 +170,7 @@ node scripts/sync-data.cjs
 и материалы «Задачи хакатона.pdf», «СБЕРKIDS.pdf».
 Игра использует HTML, CSS и JavaScript без сторонних библиотек. Игровые ресурсы
 и JSON загружаются с того же сайта по относительным путям; внешних API, CDN,
-аналитики и переходов на другие сайты нет. `dev/mobile-preview.html` использует
+аналитики и переходов на другие сайты нет. Локальный `dev/mobile-preview.html` использует
 iframe только для разработки и не входит в публикуемую игру. Ограничение трека
 для публичных файлов — 5 МБ. Звук включается действием игрока.
 
@@ -574,7 +574,7 @@ else: { ...полная карточка без id... }
 Node.js 20 или новее:
 
 ```sh
-node scripts/export-cards.cjs
+node dev/scripts/export-cards.cjs
 ```
 
 Команда создаёт `dev/cards-review.html`. Это самодостаточный HTML-файл: его можно
@@ -585,9 +585,9 @@ node scripts/export-cards.cjs
 Можно выбрать одну или несколько кампаний и указать другой файл отчёта:
 
 ```sh
-node scripts/export-cards.cjs --campaign scooter
-node scripts/export-cards.cjs --campaign scooter,console --out dev/selected.html
-node scripts/export-cards.cjs --campaign scooter --campaign console
+node dev/scripts/export-cards.cjs --campaign scooter
+node dev/scripts/export-cards.cjs --campaign scooter,console --out dev/selected.html
+node dev/scripts/export-cards.cjs --campaign scooter --campaign console
 ```
 
 `--out` принимает путь к файлу `.html`; относительный путь считается от текущей
@@ -613,10 +613,10 @@ node scripts/export-cards.cjs --campaign scooter --campaign console
 ## Проверки (Node.js 20+)
 
 ```sh
-node scripts/check-data.cjs
-node scripts/check-viewport.cjs
-node scripts/check-rendering.cjs
-node scripts/check-minigames.cjs
+node dev/scripts/check-data.cjs
+node dev/scripts/check-viewport.cjs
+node dev/scripts/check-rendering.cjs
+node dev/scripts/check-minigames.cjs
 ```
 
 `check-viewport.cjs` проверяет начальную высоту окна, изменение размера,

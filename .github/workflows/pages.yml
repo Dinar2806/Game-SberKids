@@ -35,16 +35,16 @@ jobs:
 
       - name: Check JavaScript syntax
         run: |
-          node -e "const vm = require('node:vm'); const read = require('./scripts/read-game-code.cjs'); for (const name of ['viewport', 'bridge-sound', 'data', 'story-director', 'campaign-data', 'graphics-vfx', 'minigames', 'game', 'accessibility']) new vm.Script(read('js/' + name + '.js'), { filename: 'index.html#game-' + name });"
-          for file in scripts/*.cjs; do
+          node -e "const vm = require('node:vm'); const read = require('./dev/scripts/read-game-code.cjs'); for (const name of ['viewport', 'bridge-sound', 'data', 'story-director', 'campaign-data', 'graphics-vfx', 'minigames', 'game', 'accessibility']) new vm.Script(read('js/' + name + '.js'), { filename: 'index.html#game-' + name });"
+          for file in dev/scripts/*.cjs; do
             node --check "$file"
           done
 
       - name: Validate campaigns and events
-        run: node scripts/check-data.cjs
+        run: node dev/scripts/check-data.cjs
 
       - name: Check optional mini-game cards
-        run: node scripts/check-minigames.cjs
+        run: node dev/scripts/check-minigames.cjs
 
       - name: Package public files
         run: |

@@ -2,7 +2,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
-const root = path.resolve(__dirname, '..');
+const root = path.resolve(__dirname, '../..');
 const read = require('./read-game-code.cjs');
 const GameData = vm.runInNewContext(read('js/campaign-data.js') + '; GameData');
 const StoryDirector = vm.runInNewContext(read('js/story-director.js') + '; StoryDirector');

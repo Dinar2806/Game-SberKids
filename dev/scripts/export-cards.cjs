@@ -4,7 +4,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 const read = require('./read-game-code.cjs');
 
-const root = path.resolve(__dirname, '..');
+const root = path.resolve(__dirname, '../..');
 const stats = { money: '🪙 Копилка', tech: '⚡ Бодрость', trust: '❤️ Дружба', team: '🧠 Смекалка', dream: '🌟 Мечта, п.п.' };
 const types = { shop: 'Покупки', friend: 'Друзья', scam: 'Ловушки', tech: 'Дела и отдых', quiz: 'Задачи' };
 const moods = { happy: 'Радуется: комбо +1; при серии от 3 — ещё +1 п.п. к мечте', think: 'Размышляет: комбо сохраняется', scared: 'Тревожится: комбо сбрасывается' };
@@ -402,7 +402,7 @@ function documentHTML(campaigns, GameData) {
 try {
   const args = options(process.argv.slice(2));
   if (args.help) {
-    console.log('Отчёт по карточкам для ручной проверки. Node.js 20+, без зависимостей.\n\nnode scripts/export-cards.cjs [--campaign scooter,console] [--out файл.html]\n\nПо умолчанию: все кампании → dev/cards-review.html.\n--campaign можно повторять. Относительный --out считается от текущей папки.');
+    console.log('Отчёт по карточкам для ручной проверки. Node.js 20+, без зависимостей.\n\nnode dev/scripts/export-cards.cjs [--campaign scooter,console] [--out файл.html]\n\nПо умолчанию: все кампании → dev/cards-review.html.\n--campaign можно повторять. Относительный --out считается от текущей папки.');
   } else {
     const GameData = runtime('campaign-data');
     const StoryDirector = runtime('story-director');
