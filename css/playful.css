@@ -25,7 +25,7 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
 
 /* The welcome screen is a small game lobby, rather than an alert box. */
 #dreamSelectScreen { background: linear-gradient(165deg, #172b26 0%, #241e36 40%, #342032 67%, #4b242a 100%); background-attachment: local; overflow-y: auto; overscroll-behavior-y: contain; padding: 0; align-items: flex-start; }
-.welcome-shell { width: 100%; max-width: 440px; padding: max(24px, env(safe-area-inset-top)) 22px max(20px, env(safe-area-inset-bottom)); margin: auto; overflow: hidden; flex-shrink: 0; }
+.welcome-shell { width: 100%; max-width: 440px; padding: max(56px, env(safe-area-inset-top)) 22px max(20px, env(safe-area-inset-bottom)); margin: auto; overflow: hidden; flex-shrink: 0; }
 .welcome-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .welcome-hero { position: relative; min-height: 210px; margin-top: 18px; display: flex; align-items: center; }
 .hero-copy { position: relative; z-index: 2; pointer-events: none; }
@@ -104,7 +104,8 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
 .welcome-footer > span { display: inline; color: var(--lime); margin-right: 3px; }
 
 /* Game HUD. Every resource keeps its icon, name, value, and fill level. */
-.app { --app-inset: 18px; --app-bottom: max(18px, env(safe-area-inset-bottom)); max-width: 440px; padding: max(16px, env(safe-area-inset-top)) var(--app-inset) var(--app-bottom); height: 100%; height: 100dvh; gap: 10px; justify-content: flex-start; }
+/* Leave the host's native close/log controls above the game's own buttons. */
+.app { --app-inset: 18px; --app-bottom: max(18px, env(safe-area-inset-bottom)); max-width: 440px; padding: max(56px, env(safe-area-inset-top)) var(--app-inset) var(--app-bottom); gap: 10px; justify-content: flex-start; overflow-y: auto; overscroll-behavior: contain; }
 .game-heading { flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .game-heading .eyebrow { color: #bcb1ca; font-size: 10px; }
 .game-heading h1 { font-size: 23px; letter-spacing: -.9px; color: #fff; margin: 4px 0 0; line-height: 1.1; }
@@ -154,7 +155,7 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
 .mascot-hint::before { content: ''; position: absolute; bottom: calc(100% - 1px); left: calc(50% - 21px); width: 42px; height: 30px; background: #ead8b8; clip-path: polygon(0 100%, 62% 0, 100% 100%); pointer-events: none; }
 .mascot-hint::after { content: ''; position: absolute; bottom: calc(100% - 3px); left: calc(50% - 18px); width: 36px; height: 28px; background: #fffaf0; clip-path: polygon(0 100%, 62% 0, 100% 100%); pointer-events: none; }
 .mascot-hint-eyebrow { display: block; margin-bottom: 7px; color: #a26531; font-size: 12px; font-weight: 800; }
-.mascot-hint-content { max-height: min(300px, 38dvh); overflow-y: auto; overscroll-behavior: contain; }
+.mascot-hint-content { max-height: min(300px, calc(var(--viewport-height, 790px) * .38)); overflow-y: auto; overscroll-behavior: contain; }
 .mascot-hint-text { margin: 0; font-size: 17px; line-height: 1.5; color: #4d4057; text-align: left; }
 .mascot-hint-warning { margin: 0 0 10px; color: #945b1b; font-size: 14px; font-weight: 700; line-height: 1.45; }
 .mascot-hint-done { display: block; margin: 12px 0 0 auto; padding: 8px 15px; border: 0; border-radius: 99px; background: #eee5d5; color: #6c573b; font: inherit; font-size: 13px; font-weight: 800; cursor: pointer; }
@@ -187,7 +188,7 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
 .card-shadow-1 { background: #c5b2db; border: 0; box-shadow: 0 4px 0 #725f8c; transform: translateY(9px) scale(.95); }
 .card-shadow-2 { background: #796888; border: 0; transform: translateY(17px) scale(.9); }
 /* One viewport-based illustration height for every story, independent of copy. */
-.card-art-zone { height: clamp(88px, 18vh, 176px); height: clamp(88px, 18svh, 176px); min-height: 88px; border: 0; flex-shrink: 0; }
+.card-art-zone { height: clamp(88px, calc(var(--viewport-height, 790px) * .18), 176px); min-height: 88px; border: 0; flex-shrink: 0; }
 .card-art-zone::before, .card-art-zone::after { content: '✦'; position: absolute; color: #ffffffaa; font-size: 22px; left: 17%; top: 37%; transform: rotate(15deg); }
 .card-art-zone::after { left: auto; right: 17%; top: 65%; font-size: 13px; }
 .sprite-wrapper { width: 180px; height: 100%; max-height: 180px; }
@@ -222,7 +223,7 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
 .comic-pop { font-size: 18px; background: #52346f; background-image: none; border: 2px solid #fff; border-radius: 18px; max-width: 90vw; white-space: normal; text-align: center; }
 
 /* Mini-games and results belong to the same toy collection. */
-.overlay-screen { background: #110c1bdc; overflow-y: auto; overscroll-behavior: contain; padding: max(18px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom)); }
+.overlay-screen { background: #110c1bdc; overflow-y: auto; overscroll-behavior: contain; padding: max(56px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom)); }
 .dialog-box { max-width: 400px; max-height: 100%; overflow-y: auto; background: #faf7ff; border: 1px solid #e4d7f5; border-radius: 28px; padding: 24px 20px; box-shadow: 0 6px 0 #9c81ba, 0 20px 55px #0005; }
 .minigame-box { height: min(550px, 100%); min-height: 320px; max-width: 400px; background: #faf7ff; border: 2px solid #d9bdf5; box-shadow: 0 5px 0 #8d6baa; padding: 16px; }
 .mg-top { background: #e9ddf9; border: 1px solid #d2b8ed; color: #51316b; font-size: 12px; padding: 9px; }
@@ -261,7 +262,7 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
   .choice-btn { padding: 10px 8px; font-size: 14px; gap: 5px; }
 }
 @media (max-height: 740px) {
-  .app { overflow-y: auto; overscroll-behavior: contain; --app-bottom: max(12px, env(safe-area-inset-bottom)); padding-top: max(8px, env(safe-area-inset-top)); gap: 8px; }
+  .app { --app-bottom: max(12px, env(safe-area-inset-bottom)); gap: 8px; }
   .game-heading h1 { font-size: 21px; }
   .stat-pill { min-height: 76px; padding-top: 5px; padding-bottom: 4px; }
   .stat-jar { height: 28px; width: 32px; }
@@ -279,7 +280,6 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
   .choice-btn { min-height: 76px; }
 }
 @media (max-height: 590px) {
-  .app { overflow-y: auto; overscroll-behavior: contain; }
   .deck-area { flex-shrink: 0; height: 390px; }
 }
 @media (prefers-reduced-motion: reduce) {

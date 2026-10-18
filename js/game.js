@@ -994,13 +994,22 @@ async function startCampaign(id) {
     buildFlipMap();
     const badge = Array.from(campaignList.children).find(btn => btn.dataset.dream === id).querySelector('.dream-meta');
     badge.textContent = GameData.difficulties[campaign.difficulty].label + ' · ' + events.length + ' карт';
-    document.getElementById('dreamSelectScreen').classList.remove('active');
-    campaignStatus.hidden = true;
     syncUI();
     showCard();
+    gameApp.scrollTop = 0;
+    document.getElementById('dreamSelectScreen').classList.remove('active');
+    campaignStatus.hidden = true;
+    resetIdleHintTimer();
     Sound.coin();
   } catch (error) {
+    busy = true;
+    activeCardData = null;
+    activeDeck = [];
+    currentDream = null;
+    clearTimeout(idleHintTimer);
+    document.getElementById('dreamSelectScreen').classList.add('active');
     showCampaignError(error);
+    document.getElementById('dreamSelectScreen').scrollTop = campaignStatus.offsetTop;
   } finally {
     setCampaignLoading(false);
   }

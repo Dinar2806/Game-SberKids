@@ -97,10 +97,12 @@ html, body {
 }
 
 .app {
-  position: relative;
+  /* Android WebView can keep the root percentage height at zero after launch. */
+  position: fixed;
+  inset: 0;
   width: 100%;
   max-width: 430px;
-  height: 100%;
+  height: auto;
   margin: 0 auto;
   padding: max(6px, env(safe-area-inset-top)) 12px max(10px, env(safe-area-inset-bottom));
   display: flex;
