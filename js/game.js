@@ -21,7 +21,6 @@ let bannerTimer = null;
 let sideFlipMap = [];
 
 const cardEl = document.getElementById('activeCard');
-const cardShine = document.getElementById('cardShine');
 const badgeL = document.getElementById('badgeLeft');
 const badgeR = document.getElementById('badgeRight');
 const spriteWrap = document.getElementById('spriteContainer');
@@ -396,6 +395,7 @@ function resolveCard(i) {
 }
 
 function showCard() {
+  emphasizeChoice();
   closeMascotHint();
   followCardWithMascot();
   activeCardData = resolveCard(idx);
@@ -419,7 +419,6 @@ function showCard() {
 
   badgeL.style.opacity = 0;
   badgeR.style.opacity = 0;
-  cardShine.style.transform = 'translateX(0px)';
   showDots(null);
   renderMascot('normal', null, 0);
 
@@ -500,6 +499,7 @@ function renderFinalAchievements(isExitOnly) {
 // 12. ПРИМЕНЕНИЕ ВЫБОРА С УЧЁТОМ КОЭФФИЦИЕНТА СЛОЖНОСТИ
 function applyDecision(dir) {
   if (busy || !activeCardData || !mascotHint.hidden || document.querySelector('.overlay-screen.active')) return;
+  emphasizeChoice(dir === 'left' ? -65 : 65);
   closeMascotHint();
   followCardWithMascot();
   busy = true;
@@ -637,14 +637,26 @@ function finishGame(won, icon, title, text, isExitOnly) {
 let dragging = false;
 let startX = 0, startY = 0, dx = 0;
 
+function emphasizeChoice(offset = 0) {
+  const amount = Math.min(1, Math.max(0, (Math.abs(offset) - 10) / 55));
+  const bias = Math.sign(offset) * amount;
+  cardEl.style.setProperty('--choice-left', `${1 - bias}fr`);
+  cardEl.style.setProperty('--choice-right', `${1 + bias}fr`);
+  cardEl.style.setProperty('--choice-focus', amount);
+  cardEl.style.setProperty('--choice-left-presence', 1 - Math.max(0, bias));
+  cardEl.style.setProperty('--choice-right-presence', 1 + Math.min(0, bias));
+}
+
 cardEl.addEventListener('pointerdown', (e) => {
   if (busy) return;
+  if (e.target.closest('.controls-row')) return;
   const textArea = e.target.closest('.card-text-zone');
   if (textArea && textArea.scrollHeight > textArea.clientHeight) return;
   dragging = true;
   startX = e.clientX;
   startY = e.clientY;
   dx = 0;
+  emphasizeChoice();
   tutorialHand.classList.remove('visible');
   cardEl.className = 'game-card';
 });
@@ -652,11 +664,11 @@ cardEl.addEventListener('pointerdown', (e) => {
 window.addEventListener('pointermove', (e) => {
   if (!dragging || busy) return;
   dx = e.clientX - startX;
+  emphasizeChoice(dx);
   const dy = (e.clientY - startY) * 0.25;
   const rot = dx * 0.055;
   followCardWithMascot(dx, dy);
   cardEl.style.transform = `translate3d(${dx}px, ${dy}px, 0) rotate(${rot}deg)`;
-  cardShine.style.transform = `translateX(${220 + dx * 1.6}px)`;
   spriteWrap.style.transform = `translate3d(${dx * 0.08}px, ${dy * 0.08}px, 0) rotate(${dx * 0.03}deg)`;
 
   const c = activeCardData;
@@ -692,9 +704,9 @@ function endDrag(event) {
     Sound.swipe();
     applyDecision('right');
   } else {
+    emphasizeChoice();
     cardEl.className = 'game-card smooth-return';
     cardEl.style.transform = 'translate3d(0,0,0) rotate(0deg)';
-    cardShine.style.transform = 'translateX(0px)';
     spriteWrap.style.transform = '';
     badgeL.style.opacity = 0;
     badgeR.style.opacity = 0;

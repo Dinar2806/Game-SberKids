@@ -121,18 +121,6 @@
 .game-card.fly-away { transition: transform 0.28s ease-in, opacity 0.25s ease; }
 .game-card.enter { animation: cardPopIn 0.34s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
-.card-shine {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: -120%;
-  width: 75%;
-  background: linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.6) 50%, transparent 80%);
-  pointer-events: none;
-  z-index: 25;
-  will-change: transform;
-}
-
 .tutorial-hand {
   position: absolute;
   top: 32%;

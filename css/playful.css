@@ -157,12 +157,12 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 .streak-pill { top: 8px; right: 0; background: #e0f4a3; color: #3b501c; border: 1px solid #e4ffc0; font-size: 9px; box-shadow: 0 2px 0 #6f8249; }
-.deck-area { margin: 0 0 11px; min-height: 270px; }
-.game-card, .card-shadow-1, .card-shadow-2 { max-width: none; max-height: 510px; border-radius: 25px; }
+.deck-area { margin: 0 0 11px; min-height: 360px; }
+.game-card, .card-shadow-1, .card-shadow-2 { max-width: none; max-height: 620px; border-radius: 25px; }
 .game-card { border: 2px solid #fff; box-shadow: 0 5px 0 #b6a8c9, 0 13px 24px #07040b40; touch-action: pan-y; }
 .card-shadow-1 { background: #c5b2db; border: 0; box-shadow: 0 4px 0 #725f8c; transform: translateY(9px) scale(.95); }
 .card-shadow-2 { background: #796888; border: 0; transform: translateY(17px) scale(.9); }
-.card-art-zone { height: 35%; min-height: 88px; border: 0; flex-shrink: 0; }
+.card-art-zone { height: 30%; min-height: 88px; border: 0; flex-shrink: 0; }
 .card-art-zone::before, .card-art-zone::after { content: '✦'; position: absolute; color: #ffffffaa; font-size: 22px; left: 17%; top: 37%; transform: rotate(15deg); }
 .card-art-zone::after { left: auto; right: 17%; top: 65%; font-size: 13px; }
 .sprite-wrapper { width: 180px; height: 100%; max-height: 180px; }
@@ -175,7 +175,17 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
 .tutorial-hand { top: 22%; width: 100%; }
 .tut-pill { font-size: 16px; padding: 5px 14px; background: #30243ed9; }
 .tut-caption { background: #fffef4; border: 1px solid #d9c5e6; font-size: 10px; padding: 5px 9px; }
-.controls-row { gap: 10px; }
+.game-card .controls-row { gap: 10px; padding: 14px 12px 18px; margin-top: auto; border-top: 1px solid #eee7f3; background: #faf7fd; flex-shrink: 0; touch-action: manipulation; }
+.game-card .controls-row { container-type: inline-size; grid-template-columns: minmax(0, var(--choice-left, 1fr)) minmax(0, var(--choice-right, 1fr)); grid-template-rows: 84px; column-gap: calc(10px * (1 - var(--choice-focus, 0))); transition: grid-template-columns .16s ease-out, column-gap .16s ease-out; }
+.game-card .choice-btn { min-width: 0; min-height: 0; overflow: hidden; justify-content: center; padding-left: calc(12px * var(--choice-presence, 1)); padding-right: calc(12px * var(--choice-presence, 1)); border-width: calc(1px * var(--choice-presence, 1)); opacity: var(--choice-presence, 1); transition: opacity .16s ease-out, padding .16s ease-out, border-width .16s ease-out, transform .1s ease, box-shadow .1s ease; }
+.game-card .choice-btn.left { --choice-presence: var(--choice-left-presence, 1); }
+.game-card .choice-btn.right { --choice-presence: var(--choice-right-presence, 1); }
+/* Center the copy independently of the arrow, without reflow during a swipe. */
+.game-card .choice-btn { position: relative; gap: 0; }
+.game-card .choice-label { flex: 0 0 max(0px, calc((100cqi - 10px) / 2 - 72px)); min-width: 0; max-height: 100%; overflow: hidden; text-align: center; }
+.game-card .choice-arrow { position: absolute; top: 50%; width: 21px; text-align: center; transform: translateY(-50%); }
+.game-card .choice-btn.left .choice-arrow { left: 10px; }
+.game-card .choice-btn.right .choice-arrow { right: 10px; }
 .choice-btn { min-height: 76px; font-size: 15px; line-height: 1.3; border-radius: 19px; padding: 11px 12px; gap: 8px; }
 .choice-btn.left { background: linear-gradient(160deg, #f3eaff, #d4b9f0); border: 1px solid #e6d3ff; box-shadow: inset 0 1px 1px #fff, 0 4px 0 #8d6ab3; }
 .choice-btn.right { background: linear-gradient(160deg, #e4ffb0, #c1e78a); border: 1px solid #e9ffc8; box-shadow: inset 0 1px 1px #fff, 0 4px 0 #7c9e43; }
@@ -236,15 +246,14 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
   .dream-progress-area { gap: 4px; }
   .mascot-dock { height: 82px; margin-bottom: -22px; }
   .mascot-avatar { width: 100px; height: 90px; }
-  .deck-area { min-height: 270px; }
+  .deck-area { min-height: 360px; }
   .card-text-zone { padding: 12px; gap: 9px; }
   .card-desc { margin-top: 6px; line-height: 1.45; }
   .choice-btn { min-height: 76px; }
 }
 @media (max-height: 590px) {
   .app { overflow-y: auto; overscroll-behavior: contain; }
-  .deck-area { flex-shrink: 0; height: 300px; }
-  .controls-row { padding-bottom: 8px; }
+  .deck-area { flex-shrink: 0; height: 390px; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
