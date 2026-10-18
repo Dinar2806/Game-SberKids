@@ -286,21 +286,21 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
 .dream-caption .dream-eyebrow { color: #b9a9c6; font-size: 11px; line-height: 1.2; font-weight: 500; margin-bottom: 1px; }
 .dream-caption #dreamName { line-height: 1.2; }
 
-/* A short preparation gesture after a delay, with a long quiet pause. */
+/* Repeat more often while keeping the gesture's original pace. */
 .dream-part-slot { position: relative; overflow: hidden; }
-.dream-assembly-color { display: grid; place-items: center; width: 44px; height: 44px; animation: dream-item-inspect 10s 6s ease-in-out infinite; }
+.dream-assembly-color { display: grid; place-items: center; width: 44px; height: 44px; animation: dream-item-inspect 5s 2s ease-in-out infinite; }
 .dream-part-slot::before, .dream-part-slot::after { content: ''; position: absolute; z-index: 2; pointer-events: none; opacity: 0; background: #e1f5bd; clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); }
-.dream-part-slot::before { left: 6px; top: 6px; width: 7px; height: 7px; animation: dream-preparation-spark 10s 6.2s ease-in-out infinite; }
-.dream-part-slot::after { right: 5px; bottom: 7px; width: 5px; height: 5px; background: #dcc8f0; animation: dream-preparation-spark 10s 6.6s ease-in-out infinite; }
+.dream-part-slot::before { left: 6px; top: 6px; width: 7px; height: 7px; animation: dream-preparation-spark 5s 2.2s ease-in-out infinite; }
+.dream-part-slot::after { right: 5px; bottom: 7px; width: 5px; height: 5px; background: #dcc8f0; animation: dream-preparation-spark 5s 2.6s ease-in-out infinite; }
 @keyframes dream-item-inspect {
-  0%, 4%, 22%, 100% { transform: rotate(0) scale(1); }
-  9% { transform: rotate(-5deg) scale(1.035); }
-  15% { transform: rotate(4deg) scale(1.035); }
+  0%, 8%, 44%, 100% { transform: rotate(0) scale(1); }
+  18% { transform: rotate(-5deg) scale(1.035); }
+  30% { transform: rotate(4deg) scale(1.035); }
 }
 @keyframes dream-preparation-spark {
-  0%, 2%, 21%, 100% { opacity: 0; transform: translateY(2px) scale(.25) rotate(-15deg); }
-  7% { opacity: .9; transform: translateY(0) scale(1) rotate(0); }
-  15% { opacity: .6; transform: translateY(-2px) scale(.8) rotate(15deg); }
+  0%, 4%, 42%, 100% { opacity: 0; transform: translateY(2px) scale(.25) rotate(-15deg); }
+  14% { opacity: .9; transform: translateY(0) scale(1) rotate(0); }
+  30% { opacity: .6; transform: translateY(-2px) scale(.8) rotate(15deg); }
 }
 .dream-current-part.is-complete .dream-assembly-color { animation: none; }
 .dream-current-part.is-complete .dream-part-slot::before, .dream-current-part.is-complete .dream-part-slot::after { display: none; }
