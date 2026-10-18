@@ -44,15 +44,15 @@
           "trust": 55,
           "team": 55
         },
-        "initialDream": 15,
+        "initialDream": 5,
         "winDream": 75,
         "multipliers": {
           "resourceLoss": 0.9,
           "resourceGain": 1,
           "dreamLoss": 1,
-          "dreamGain": 1
+          "dreamGain": 0.4
         },
-        "miniGameMaxBonus": 12
+        "miniGameMaxBonus": 4
       },
       "endings": {
         "money": {
@@ -131,15 +131,15 @@
           "trust": 50,
           "team": 50
         },
-        "initialDream": 10,
+        "initialDream": 5,
         "winDream": 80,
         "multipliers": {
           "resourceLoss": 1,
           "resourceGain": 1,
           "dreamLoss": 1,
-          "dreamGain": 1
+          "dreamGain": 0.55
         },
-        "miniGameMaxBonus": 10
+        "miniGameMaxBonus": 4
       },
       "endings": {
         "money": {
@@ -225,9 +225,9 @@
           "resourceLoss": 1.22,
           "resourceGain": 1,
           "dreamLoss": 1,
-          "dreamGain": 1
+          "dreamGain": 0.85
         },
-        "miniGameMaxBonus": 8
+        "miniGameMaxBonus": 4
       },
       "endings": {
         "money": {
@@ -308,15 +308,15 @@
           "trust": 58,
           "team": 58
         },
-        "initialDream": 15,
+        "initialDream": 5,
         "winDream": 75,
         "multipliers": {
           "resourceLoss": 0.85,
           "resourceGain": 1,
           "dreamLoss": 1,
-          "dreamGain": 1
+          "dreamGain": 0.3
         },
-        "miniGameMaxBonus": 10
+        "miniGameMaxBonus": 4
       },
       "endings": {
         "money": {
@@ -396,15 +396,15 @@
           "trust": 58,
           "team": 58
         },
-        "initialDream": 15,
+        "initialDream": 5,
         "winDream": 75,
         "multipliers": {
           "resourceLoss": 0.85,
           "resourceGain": 1,
           "dreamLoss": 1,
-          "dreamGain": 1
+          "dreamGain": 0.3
         },
-        "miniGameMaxBonus": 10
+        "miniGameMaxBonus": 4
       },
       "endings": {
         "money": {
@@ -484,15 +484,15 @@
           "trust": 52,
           "team": 52
         },
-        "initialDream": 10,
+        "initialDream": 5,
         "winDream": 80,
         "multipliers": {
           "resourceLoss": 1,
           "resourceGain": 1,
           "dreamLoss": 1,
-          "dreamGain": 1
+          "dreamGain": 0.32
         },
-        "miniGameMaxBonus": 8
+        "miniGameMaxBonus": 4
       },
       "endings": {
         "money": {
@@ -572,15 +572,15 @@
           "trust": 52,
           "team": 52
         },
-        "initialDream": 10,
+        "initialDream": 5,
         "winDream": 80,
         "multipliers": {
           "resourceLoss": 1,
           "resourceGain": 1,
           "dreamLoss": 1,
-          "dreamGain": 1
+          "dreamGain": 0.45
         },
-        "miniGameMaxBonus": 8
+        "miniGameMaxBonus": 4
       },
       "endings": {
         "money": {
@@ -666,9 +666,9 @@
           "resourceLoss": 1.18,
           "resourceGain": 1,
           "dreamLoss": 1,
-          "dreamGain": 1
+          "dreamGain": 0.45
         },
-        "miniGameMaxBonus": 6
+        "miniGameMaxBonus": 4
       },
       "endings": {
         "money": {
@@ -754,9 +754,9 @@
           "resourceLoss": 1.18,
           "resourceGain": 1,
           "dreamLoss": 1,
-          "dreamGain": 1
+          "dreamGain": 0.5
         },
-        "miniGameMaxBonus": 6
+        "miniGameMaxBonus": 4
       },
       "endings": {
         "money": {
