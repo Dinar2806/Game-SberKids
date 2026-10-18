@@ -128,20 +128,13 @@ function renderMascot(mood, bubbleText, lookDir = 0, isHintBubble = false) {
     ${badgeAddon}
   </svg>`;
 
-  mascotBubble.classList.toggle('hint-mode', !!isHintBubble);
-  if (bubbleText) {
-    mascotBubble.textContent = bubbleText;
-    mascotBubble.classList.add('show');
-  } else {
-    mascotBubble.classList.remove('show');
-  }
+
 }
 
 function resetIdleHintTimer() {
   clearTimeout(idleHintTimer);
   idleHintActive = false;
   mascotAvatar.classList.remove('idle-nudge');
-  document.getElementById('cardTip').classList.remove('highlight-tip');
 
   idleHintTimer = setTimeout(() => {
     if (busy) return;

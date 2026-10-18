@@ -1,3 +1,4 @@
+@property --path-position { syntax: "<number>"; inherits: true; initial-value: 0; }
 /* Toy-like volume, a quiet graphite stage, and readable story cards.
    Local artwork and system fonts; campaign JSON loads from the same site. */
 :root {
@@ -79,9 +80,9 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
 .welcome-footer > span { display: inline; color: var(--lime); margin-right: 3px; }
 
 /* Game HUD. Every resource keeps its icon, name, value, and fill level. */
-.app { max-width: 440px; padding: max(16px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom)); height: 100%; height: 100dvh; gap: 10px; justify-content: flex-start; }
+.app { --app-inset: 18px; --app-bottom: max(18px, env(safe-area-inset-bottom)); max-width: 440px; padding: max(16px, env(safe-area-inset-top)) var(--app-inset) var(--app-bottom); height: 100%; height: 100dvh; gap: 10px; justify-content: flex-start; }
 .game-heading { flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-.game-heading .eyebrow { color: #bcb1ca; font-size: 8px; }
+.game-heading .eyebrow { color: #bcb1ca; font-size: 10px; }
 .game-heading h1 { font-size: 23px; letter-spacing: -.9px; color: #fff; margin: 4px 0 0; line-height: 1.1; }
 .game-heading h1 > span { color: var(--lime); margin-left: 8px; }
 .header-actions { display: flex; gap: 8px; }
@@ -93,57 +94,62 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
 .stat-dot { position: absolute; z-index: 5; top: -6px; right: 0; }
 .stat-jar { width: 37px; height: 34px; border-radius: 12px; border: 1px solid #ffffff55; background: #47404f; box-shadow: inset 0 2px 5px #0003, 0 2px 0 #15111c; }
 .stat-jar::after { width: 4px; height: 11px; }
-.stat-icon { font-size: 20px; }
-.stat-val { font-size: 16px; color: #faf5ff; line-height: 1.2; }
-.stat-label { font-size: 9px; color: #c6bdcf; font-weight: 700; }
-.dream-capsule { margin-top: 10px; padding: 10px; gap: 10px; background: #302936; border: 1px solid #53435e; border-radius: 20px; box-shadow: inset 0 1px 0 #ffffff0c; }
+.stat-icon { font-size: 24px; }
+.stat-val { font-size: 20px; color: #faf5ff; line-height: 1.2; }
+.stat-label { font-size: 11px; color: #c6bdcf; font-weight: 700; }
+/* Full-width footer below the choices; stays in flow so it never covers them. */
+.dream-bottom-bar { position: relative; z-index: 30; margin: 4px calc(-1 * var(--app-inset)) calc(-1 * var(--app-bottom)); padding: 12px var(--app-inset) calc(var(--app-bottom) + 6px); gap: 10px; background: #302936; border: 0; border-top: 1px solid #53435e; border-radius: 24px 24px 0 0; box-shadow: 0 -8px 24px #100c1726, inset 0 1px 0 #ffffff0c; }
+.dream-bottom-bar { cursor: pointer; transition: transform .16s ease, background-color .16s ease; }
+.dream-bottom-bar:active { transform: translateY(2px); background-color: #3b3044; }
+.dream-bottom-bar:active .dream-icon-box { transform: scale(1.04) rotate(2deg); }
 .dream-icon-box { width: 53px; height: 53px; border: 1px solid #dec8ff55; box-shadow: inset 0 2px 2px #ffffff88, 0 3px 0 #191220; background: linear-gradient(135deg, #e1ccff, #b58bdd); border-radius: 15px; }
 .dream-icon-box img { width: 64px; height: 58px; object-fit: contain; }
-.dream-caption { color: #b9a9c6; font-size: 8px; line-height: 1.4; font-weight: 600; }
-.dream-caption span { display: block; color: #eee1fc; font-size: 12px; font-weight: 800; }
+.dream-caption { color: #b9a9c6; font-size: 11px; line-height: 1.4; font-weight: 600; }
+.dream-caption span { display: block; color: #eee1fc; font-size: 15px; font-weight: 800; }
 .dream-progress-area { gap: 6px; min-width: 0; }
-.dream-parts-row { gap: 4px; }
-.part-node { height: 15px; font-size: 10px; background: #44374e; border: 0; border-radius: 4px; }
-.part-node.unlocked { background: #d7ecaa; border: 0; box-shadow: 0 1px 0 #7f9657; }
-.dream-bar-track { height: 5px; background: #52405e; box-shadow: none; }
-.dream-bar-fill { background: linear-gradient(90deg, #a7c968, #ddff99); }
-.dream-score-badge { font-size: 12px; background: #d5f6a3; border: 1px solid #e7ffbd; color: #344b20; min-width: 52px; padding: 7px; border-radius: 12px; }
+/* Full-width milestone path below the dream title. */
+.dream-bottom-bar { display: grid; grid-template-columns: 48px minmax(0, 1fr) 48px; grid-template-rows: minmax(60px, auto) 36px; column-gap: 8px; row-gap: 14px; align-items: center; }
+.dream-icon-box { grid-column: 1; grid-row: 1; align-self: center; }
+.dream-progress-area { display: contents; }
+.dream-caption { grid-column: 2; grid-row: 1; align-self: center; padding: 0; min-width: 0; }
+.dream-bar-track { grid-column: 1 / -1; grid-row: 2; position: relative; height: 36px; overflow: visible; background: none; border: 0; border-radius: 0; box-shadow: none; margin: 0 2px; transition: --path-position .45s ease; }
+.dream-bar-track::before { content: ''; position: absolute; left: 0; right: 0; top: 15px; height: 6px; background: #594660; border-radius: 50px; }
+.dream-bar-fill { position: absolute; left: 0; top: 15px; height: 6px; width: calc(var(--path-position) * 1%); border-radius: 50px; background: linear-gradient(90deg, #98bd63, #ddffab); box-shadow: 0 0 10px #b9e47b24; }
+.dream-parts-row { position: relative; height: 100%; justify-content: space-between; gap: 0; }
+.part-node { position: relative; isolation: isolate; overflow: hidden; flex: 0 0 36px; height: 36px; font-size: 21px; line-height: 1; opacity: 1; filter: none; background: #42324c; border: 2px solid #6a5377; border-radius: 50%; box-shadow: 0 0 0 4px #302936; transition: background .28s ease, border-color .28s ease, box-shadow .28s ease; }
+.part-node::before { content: ''; position: absolute; z-index: -1; left: 0; top: 0; bottom: 0; width: clamp(0px, calc(var(--track-width) * var(--path-position) / 100 - var(--circle-start)), 100%); background: linear-gradient(90deg, #b4da7e, #edffd0); }
+.part-node.unlocked { background: #42324c; border: 2px solid #eeffd5; box-shadow: 0 0 0 4px #302936, 0 0 14px #b9e47b36; transform: none; }
 
 /* A little companion beside a large story card. */
 .mascot-dock { height: 54px; margin: -3px 0 -13px; justify-content: flex-start; align-items: center; padding-left: 14px; }
 .mascot-avatar { width: 70px; height: 64px; border: 0; padding: 0; background: none; flex-shrink: 0; filter: drop-shadow(0 4px 2px #0002); }
 .mascot-avatar svg { width: 100%; height: 100%; }
-.mascot-caption { font-size: 12px; color: #e2d7ef; font-weight: 800; padding: 0 0 9px 7px; }
-.mascot-caption > span { display: block; color: #b5a7c2; font-size: 9px; font-weight: 600; margin-top: 3px; }
-.mascot-bubble, .mascot-bubble.hint-mode { left: auto; right: 0; top: 2px; white-space: normal; max-width: 138px; font-size: 10px; padding: 6px 8px; border-width: 1px; border-color: #c9b2e5; background: #eee0ff; color: #57366e; }
 .streak-pill { top: -5px; right: 5px; background: #e0f4a3; color: #3b501c; border: 1px solid #e4ffc0; font-size: 9px; box-shadow: 0 2px 0 #6f8249; }
 .deck-area { margin: 0 0 11px; min-height: 270px; }
 .game-card, .card-shadow-1, .card-shadow-2 { max-width: none; max-height: 510px; border-radius: 25px; }
 .game-card { border: 2px solid #fff; box-shadow: 0 5px 0 #b6a8c9, 0 13px 24px #07040b40; touch-action: pan-y; }
 .card-shadow-1 { background: #c5b2db; border: 0; box-shadow: 0 4px 0 #725f8c; transform: translateY(9px) scale(.95); }
 .card-shadow-2 { background: #796888; border: 0; transform: translateY(17px) scale(.9); }
-.card-art-zone { height: 43%; min-height: 102px; border: 0; flex-shrink: 0; }
+.card-art-zone { height: 35%; min-height: 88px; border: 0; flex-shrink: 0; }
 .card-art-zone::before, .card-art-zone::after { content: '✦'; position: absolute; color: #ffffffaa; font-size: 22px; left: 17%; top: 37%; transform: rotate(15deg); }
 .card-art-zone::after { left: auto; right: 17%; top: 65%; font-size: 13px; }
 .sprite-wrapper { width: 180px; height: 100%; max-height: 180px; }
-.step-badge { font-size: 10px; top: 10px; left: 11px; color: #51405e; border: 1px solid #ffffff88; background: #ffffffba; padding: 6px 10px; box-shadow: none; }
+.step-badge { font-size: 12px; top: 10px; left: 11px; color: #51405e; border: 1px solid #ffffff88; background: #ffffffba; padding: 6px 10px; box-shadow: none; }
 .cond-badge { font-size: 8px; padding: 5px; max-width: 49%; right: 7px; }
-.inspect-btn { min-height: 44px; bottom: 7px; right: 8px; font-size: 11px; padding: 6px 10px; border: 1px solid #cbb7e4; box-shadow: 0 2px 0 #b3a0c9; background: #fff9; }
-.inspect-btn.active { background: #eaf8cb; border-color: #9aba63; color: #425923; box-shadow: 0 2px 0 #95ad61; }
-.card-text-zone { text-align: left; padding: 16px; gap: 12px; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; min-height: 0; }
-.card-title { font-size: 21px; line-height: 1.12; letter-spacing: -.55px; color: #2b2236; }
-.card-desc { font-size: 14px; line-height: 1.45; margin-top: 8px; color: #5e5369; font-weight: 500; }
-.card-tip { background: #f1ebf8; border: 0; border-radius: 12px; font-size: 11px; line-height: 1.45; font-weight: 600; color: #665175; padding: 9px 10px; }
-.card-tip.highlight-tip { background: #ecf8d6; border: 1px solid #b8d98a; color: #405c25; box-shadow: none; transform: none; }
-.tutorial-hand { top: 35%; width: 100%; }
+.card-text-zone { text-align: center; padding: 16px; gap: 12px; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; min-height: 0; }
+.card-text-zone > div { flex-shrink: 0; }
+.card-title { font-size: 24px; line-height: 1.12; letter-spacing: -.55px; color: #2b2236; }
+.card-desc { font-size: 17px; line-height: 1.45; margin-top: 8px; color: #5e5369; font-weight: 500; }
+.tutorial-hand { top: 22%; width: 100%; }
 .tut-pill { font-size: 16px; padding: 5px 14px; background: #30243ed9; }
 .tut-caption { background: #fffef4; border: 1px solid #d9c5e6; font-size: 10px; padding: 5px 9px; }
 .controls-row { gap: 10px; }
-.choice-btn { min-height: 66px; font-size: 12px; line-height: 1.3; border-radius: 19px; padding: 11px 12px; gap: 8px; }
+.choice-btn { min-height: 76px; font-size: 15px; line-height: 1.3; border-radius: 19px; padding: 11px 12px; gap: 8px; }
 .choice-btn.left { background: linear-gradient(160deg, #f3eaff, #d4b9f0); border: 1px solid #e6d3ff; box-shadow: inset 0 1px 1px #fff, 0 4px 0 #8d6ab3; }
 .choice-btn.right { background: linear-gradient(160deg, #e4ffb0, #c1e78a); border: 1px solid #e9ffc8; box-shadow: inset 0 1px 1px #fff, 0 4px 0 #7c9e43; }
 .choice-arrow { font-size: 21px; font-weight: 500; flex-shrink: 0; opacity: .7; }
 .reward-banner { top: max(75px, env(safe-area-inset-top)); background: #f4eaff; color: #432c5b; font-size: 12px; line-height: 1.45; border-radius: 17px; padding: 12px 16px; border: 1px solid #d6baf4; box-shadow: 0 7px 25px #0e071950; width: max-content; max-width: min(92%, 410px); }
+.reward-banner.is-anchored { position: absolute; top: auto; bottom: calc(100% + 10px); }
 .comic-pop { font-size: 18px; background: #52346f; background-image: none; border: 2px solid #fff; border-radius: 18px; max-width: 90vw; white-space: normal; text-align: center; }
 
 /* Mini-games and results belong to the same toy collection. */
@@ -182,30 +188,26 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
   .section-heading > span { font-size: 8px; }
   .dream-opt-title { font-size: 19px; }
   .dream-meta { font-size: 8px; }
-  .app { padding-left: 12px; padding-right: 12px; gap: 8px; }
-  .choice-btn { padding: 10px 8px; font-size: 11px; gap: 5px; }
-  .card-title { font-size: 19px; }
-  .card-desc { font-size: 13px; }
+  .app { --app-inset: 12px; gap: 8px; }
+  .choice-btn { padding: 10px 8px; font-size: 14px; gap: 5px; }
 }
 @media (max-height: 740px) {
-  .app { padding-top: max(8px, env(safe-area-inset-top)); padding-bottom: max(12px, env(safe-area-inset-bottom)); gap: 8px; }
+  .app { overflow-y: auto; overscroll-behavior: contain; --app-bottom: max(12px, env(safe-area-inset-bottom)); padding-top: max(8px, env(safe-area-inset-top)); gap: 8px; }
   .game-heading h1 { font-size: 21px; }
   .stat-pill { min-height: 76px; padding-top: 5px; padding-bottom: 4px; }
   .stat-jar { height: 28px; width: 32px; }
-  .stat-val { font-size: 14px; }
-  .dream-capsule { padding: 7px 9px; margin-top: 7px; }
-  .dream-caption { font-size: 7px; }
+  .stat-val { font-size: 18px; }
+  .dream-bottom-bar { padding-top: 9px; }
+  .dream-caption { font-size: 11px; }
   .dream-icon-box { width: 43px; height: 43px; }
   .dream-icon-box img { width: 54px; height: 50px; }
   .dream-progress-area { gap: 4px; }
   .mascot-dock { height: 42px; }
   .mascot-avatar { width: 58px; height: 53px; }
-  .deck-area { min-height: 225px; }
+  .deck-area { min-height: 270px; }
   .card-text-zone { padding: 12px; gap: 9px; }
-  .card-title { font-size: 19px; }
-  .card-desc { margin-top: 6px; font-size: 13px; line-height: 1.35; }
-  .card-tip { padding: 7px 9px; font-size: 10px; }
-  .choice-btn { min-height: 58px; }
+  .card-desc { margin-top: 6px; line-height: 1.45; }
+  .choice-btn { min-height: 76px; }
 }
 @media (max-height: 590px) {
   .app { overflow-y: auto; overscroll-behavior: contain; }
@@ -214,4 +216,72 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+
+
+
+
+/* Keep the original circle styling; only the emoji becomes a cutout silhouette. */
+.part-node.is-current .part-emoji, .part-node.part-arriving .part-emoji { visibility: hidden; }
+.part-node.is-current::after, .part-node.part-arriving::after { content: ''; position: absolute; inset: 5px; background: #a795b5; -webkit-mask: var(--part-mask) center / contain no-repeat; mask: var(--part-mask) center / contain no-repeat; }
+.dream-part-flight { position: fixed; z-index: 1000; width: 48px; height: 48px; display: grid; place-items: center; font-size: 34px; line-height: 1; pointer-events: none; filter: drop-shadow(0 3px 5px #10091b55); }
+
+
+.dream-bottom-bar .dream-icon-box img { width: 56px; height: 48px; }
+
+
+
+
+/* Both illustrations share the same size and vertical center. */
+.dream-bottom-bar .dream-icon-box { width: 48px; height: 48px; border-radius: 14px; }
+.dream-current-part { grid-column: 3; grid-row: 1; width: 48px; height: 48px; align-self: center; }
+.dream-part-slot { display: grid; place-items: center; width: 48px; height: 48px; border: 1px solid #776184; border-radius: 14px; background: #40334b; box-shadow: inset 0 1px 0 #ffffff0d; }
+.dream-current-emoji { display: grid; place-items: center; width: 44px; height: 44px; font-size: 30px; line-height: 1; color: #d9f4ac; }
+.dream-part-name { margin-top: 2px; color: #cbbcd6; font-size: 12px; font-weight: 500; line-height: 1.4; }
+
+.dream-caption .dream-eyebrow { color: #b9a9c6; font-size: 11px; line-height: 1.2; font-weight: 500; margin-bottom: 1px; }
+.dream-caption #dreamName { line-height: 1.2; }
+
+/* A short preparation gesture after a delay, with a long quiet pause. */
+.dream-part-slot { position: relative; overflow: hidden; }
+.dream-assembly-color { display: grid; place-items: center; width: 44px; height: 44px; animation: dream-item-inspect 10s 6s ease-in-out infinite; }
+.dream-part-slot::before, .dream-part-slot::after { content: ''; position: absolute; z-index: 2; pointer-events: none; opacity: 0; background: #e1f5bd; clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); }
+.dream-part-slot::before { left: 6px; top: 6px; width: 7px; height: 7px; animation: dream-preparation-spark 10s 6.2s ease-in-out infinite; }
+.dream-part-slot::after { right: 5px; bottom: 7px; width: 5px; height: 5px; background: #dcc8f0; animation: dream-preparation-spark 10s 6.6s ease-in-out infinite; }
+@keyframes dream-item-inspect {
+  0%, 4%, 22%, 100% { transform: rotate(0) scale(1); }
+  9% { transform: rotate(-5deg) scale(1.035); }
+  15% { transform: rotate(4deg) scale(1.035); }
+}
+@keyframes dream-preparation-spark {
+  0%, 2%, 21%, 100% { opacity: 0; transform: translateY(2px) scale(.25) rotate(-15deg); }
+  7% { opacity: .9; transform: translateY(0) scale(1) rotate(0); }
+  15% { opacity: .6; transform: translateY(-2px) scale(.8) rotate(15deg); }
+}
+.dream-current-part.is-complete .dream-assembly-color { animation: none; }
+.dream-current-part.is-complete .dream-part-slot::before, .dream-current-part.is-complete .dream-part-slot::after { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .dream-assembly-color, .dream-part-slot::before, .dream-part-slot::after { animation: none; }
+  .dream-part-slot::before, .dream-part-slot::after { display: none; }
+}
+
+/* A separate animation name cleanly restarts each mode, including rapid taps. */
+.dream-bottom-bar.is-held .dream-current-part:not(.is-complete) .dream-assembly-color { animation: dream-held-item 1.8s ease-in-out infinite; }
+.dream-bottom-bar.is-held .dream-current-part:not(.is-complete) .dream-part-slot::before { animation: dream-held-spark 1.8s ease-in-out infinite; }
+.dream-bottom-bar.is-held .dream-current-part:not(.is-complete) .dream-part-slot::after { animation: dream-held-spark 1.8s .3s ease-in-out infinite; }
+@keyframes dream-held-item {
+  0%, 100% { transform: rotate(0) scale(1); }
+  30% { transform: rotate(-5deg) scale(1.035); }
+  65% { transform: rotate(4deg) scale(1.035); }
+}
+@keyframes dream-held-spark {
+  0%, 100% { opacity: 0; transform: translateY(2px) scale(.25) rotate(-15deg); }
+  35% { opacity: .9; transform: translateY(0) scale(1) rotate(0); }
+  70% { opacity: .6; transform: translateY(-2px) scale(.8) rotate(15deg); }
+}
+.dream-bottom-bar:focus-visible { outline: 2px solid #d5f6a3; outline-offset: -3px; }
+@media (prefers-reduced-motion: reduce) {
+  .dream-bottom-bar.is-held .dream-assembly-color,
+  .dream-bottom-bar.is-held .dream-part-slot::before,
+  .dream-bottom-bar.is-held .dream-part-slot::after { animation: none !important; }
 }

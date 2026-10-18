@@ -49,7 +49,7 @@ const GameData = (() => {
     data.campaigns.forEach((c, i) => {
       const p = `campaigns[${i}]`;
       object(c, p);
-      knownKeys(c, ['id', 'name', 'icon', 'image', 'description', 'difficulty', 'progressIcons', 'eventsFile', 'balance', 'endings'], p);
+      knownKeys(c, ['id', 'name', 'icon', 'image', 'description', 'difficulty', 'progressIcons', 'progressSteps', 'eventsFile', 'balance', 'endings'], p);
       id(c.id, `${p}.id`, seen);
       for (const key of ['name', 'icon', 'description']) text(c[key], `${p}.${key}`);
       if (Object.hasOwn(c, 'image')) {
@@ -58,6 +58,16 @@ const GameData = (() => {
       requireValue(Object.hasOwn(difficulties, c.difficulty), `${p}.difficulty`, 'допустимы easy, medium, hard');
       requireValue(Array.isArray(c.progressIcons) && c.progressIcons.length === 5, `${p}.progressIcons`, 'нужны пять иконок прогресса');
       c.progressIcons.forEach((v, j) => text(v, `${p}.progressIcons[${j}]`));
+      if (Object.hasOwn(c, 'progressSteps')) {
+        requireValue(Array.isArray(c.progressSteps) && c.progressSteps.length === 5, `${p}.progressSteps`, 'нужны пять описаний этапов');
+        c.progressSteps.forEach((step, j) => {
+          const sp = `${p}.progressSteps[${j}]`;
+          object(step, sp);
+          knownKeys(step, ['name', 'text'], sp);
+          text(step.name, `${sp}.name`);
+          text(step.text, `${sp}.text`);
+        });
+      }
       requireValue(typeof c.eventsFile === 'string' && /^\.\/data\/events\/[a-z0-9-]+\.json$/.test(c.eventsFile), `${p}.eventsFile`, 'нужен относительный путь ./data/events/<имя>.json');
       const b = c.balance;
       object(b, `${p}.balance`);
@@ -139,7 +149,7 @@ const GameData = (() => {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), JSON_TIMEOUT_MS);
     try {
-      const response = await fetch(new URL(path, baseURL), { signal: controller.signal });
+      const response = await fetch(new URL(path, baseURL), { signal: controller.signal, cache: 'no-cache' });
       if (!response.ok) throw new Error(`${path}: HTTP ${response.status}`);
       // Дожидаемся тела ответа здесь, чтобы таймаут покрывал всю загрузку JSON.
       return await response.json();

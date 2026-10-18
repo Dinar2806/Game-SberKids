@@ -1,0 +1,6 @@
+<!doctype html>
+<html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Мобильное превью игры</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#121016;color:#eee;font:14px system-ui;display:flex;align-items:center;flex-direction:column;gap:16px;padding:20px}nav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}button{font:inherit;border:1px solid #655871;color:#eee;background:#302936;padding:8px 12px;border-radius:10px;cursor:pointer}button[aria-pressed=true]{background:#d5f6a3;color:#344b20}iframe{display:block;border:0;width:390px;height:844px;flex-shrink:0;box-shadow:0 0 0 1px #53435e;border-radius:22px}p{margin:0;color:#b9a9c6}</style>
+<nav aria-label="Размер телефона"><button data-w="360" data-h="800" aria-pressed="false">360 × 800</button><button data-w="390" data-h="844" aria-pressed="true">390 × 844</button><button data-w="412" data-h="915" aria-pressed="false">412 × 915</button></nav>
+<iframe title="Игра — экран телефона" src="../"></iframe><p>Размеры в CSS-пикселях, масштаб 1:1</p>
+<script>document.querySelectorAll('button').forEach(b=>b.onclick=()=>{const f=document.querySelector('iframe');f.style.width=b.dataset.w+'px';f.style.height=b.dataset.h+'px';document.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)))})</script></html>

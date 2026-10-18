@@ -1,10 +1,9 @@
-// Основной игровой цикл, состояние, свайпы, «Лупа Вольтика» и диплом СберKids
+// Основной игровой цикл, состояние, свайпы, советы Вольтика и диплом СберKids
 let currentDream = null;
 let campaigns = [];
 let campaignLoading = false;
 let retryCampaignId = null;
 const mascotAvatar = document.getElementById("mascotAvatar");
-const mascotBubble = document.getElementById("mascotBubble");
 let idleHintTimer = null;
 let idleHintActive = false;
 
@@ -31,8 +30,11 @@ const tutorialHand = document.getElementById('tutorialHand');
 
 function clamp(n) { return Math.max(0, Math.min(100, Math.round(n))); }
 
-function flashBanner(text, dur = 2500) {
+function flashBanner(text, dur = 2500, anchor = null) {
   const b = document.getElementById('rewardBanner');
+  const parent = anchor || document.body;
+  if (b.parentElement !== parent) parent.appendChild(b);
+  b.classList.toggle('is-anchored', Boolean(anchor));
   b.textContent = text;
   b.classList.add('show');
   clearTimeout(bannerTimer);
@@ -46,9 +48,6 @@ mascotAvatar.addEventListener('pointerdown', (e) => {
   mascotAvatar.classList.remove('boing', 'idle-nudge');
   void mascotAvatar.offsetWidth;
   mascotAvatar.classList.add('boing');
-
-  const tipEl = document.getElementById('cardTip');
-  tipEl.classList.add('highlight-tip');
 
   // Ищем самый просевший показатель, чтобы Вольтик подсказал, что беречь
   const names = { money: '🪙 Копилку', tech: '⚡ Бодрость', trust: '❤️ Дружбу', team: '🧠 Смекалку' };
@@ -89,14 +88,48 @@ const STAT_TOOLTIPS = {
   });
 });
 
-document.getElementById('dreamCapsule').addEventListener('pointerdown', function(e) {
-  e.stopPropagation();
-  if (!currentDream) return;
-  Sound.boing();
-  const r = document.getElementById('dreamMainIcon').getBoundingClientRect();
-  spawnBurst(r.left + 22, r.top + 22, [currentDream.icon, '🌟'], 3);
-  flashBanner(`${currentDream.icon} ${currentDream.name}: собрано ${dreamPct}% (нужно ${currentDream.balance.winDream}% для победы)!`);
-});
+
+// Holding the panel switches CSS animation modes; no repeating JS timers.
+(() => {
+  const panel = document.getElementById('dreamCapsule');
+  let pointer = null;
+  let keyboardHeld = false;
+  const syncHeld = () => panel.classList.toggle('is-held', pointer !== null || keyboardHeld);
+  const stop = () => {
+    pointer = null;
+    keyboardHeld = false;
+    syncHeld();
+  };
+  panel.addEventListener('pointerdown', event => {
+    if (pointer !== null || (event.pointerType === 'mouse' && event.button !== 0)) return;
+    pointer = event.pointerId;
+    panel.setPointerCapture(pointer);
+    syncHeld();
+  });
+  const release = event => {
+    if (event.pointerId !== pointer) return;
+    pointer = null;
+    syncHeld();
+  };
+  panel.addEventListener('pointerup', release);
+  panel.addEventListener('pointercancel', release);
+  panel.addEventListener('lostpointercapture', release);
+  panel.addEventListener('keydown', event => {
+    if (event.key !== ' ' && event.key !== 'Enter') return;
+    event.preventDefault();
+    keyboardHeld = true;
+    syncHeld();
+  });
+  panel.addEventListener('keyup', event => {
+    if (event.key !== ' ' && event.key !== 'Enter') return;
+    event.preventDefault();
+    keyboardHeld = false;
+    syncHeld();
+  });
+  panel.addEventListener('blur', stop);
+  window.addEventListener('blur', stop);
+  document.addEventListener('visibilitychange', () => { if (document.hidden) stop(); });
+})();
 
 function buildFlipMap() {
   sideFlipMap = activeDeck.map((_, i) => (i % 2 === 0 ? Math.random() < 0.6 : Math.random() < 0.4));
@@ -118,13 +151,62 @@ function createCampaignArt(campaign, className, width, height) {
   return image;
 }
 
+// Center the visible glyph itself, rather than its font advance or baseline.
+function createCenteredEmojiMask(icon) {
+  const source = document.createElement('canvas');
+  source.width = source.height = 96;
+  const ctx = source.getContext('2d');
+  ctx.font = '64px "Apple Color Emoji", "Segoe UI Emoji", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(icon, 48, 48);
+  const pixels = ctx.getImageData(0, 0, 96, 96).data;
+  let left = 96, top = 96, right = -1, bottom = -1;
+  for (let y = 0; y < 96; y++) for (let x = 0; x < 96; x++) {
+    if (pixels[(y * 96 + x) * 4 + 3] > 0) {
+      left = Math.min(left, x); right = Math.max(right, x);
+      top = Math.min(top, y); bottom = Math.max(bottom, y);
+    }
+  }
+  const mask = document.createElement('canvas');
+  mask.width = mask.height = 64;
+  if (right >= left && bottom >= top) {
+    const width = right - left + 1, height = bottom - top + 1;
+    const scale = 60 / Math.max(width, height);
+    mask.getContext('2d').drawImage(source, left, top, width, height,
+      (64 - width * scale) / 2, (64 - height * scale) / 2, width * scale, height * scale);
+  }
+  return mask.toDataURL();
+}
+
 function applyDreamTheme(campaign) {
   currentDream = campaign;
   document.getElementById('dreamMainIcon').replaceChildren(createCampaignArt(campaign, '', 64, 58));
   document.getElementById('dreamName').textContent = currentDream.name;
   currentDream.progressIcons.forEach((p, i) => {
-    document.getElementById('part-' + i).textContent = p;
+    const node = document.getElementById('part-' + i);
+    if (node.partFlight) node.partFlight.cancel();
+    node.classList.remove('part-arriving', 'is-current');
+    const emoji = document.createElement('span');
+    emoji.className = 'part-emoji';
+    emoji.textContent = p;
+    emoji.setAttribute('aria-hidden', 'true');
+    node.replaceChildren(emoji);
+    node.style.setProperty('--part-mask', `url("${createCenteredEmojiMask(p)}")`);
   });
+}
+
+function getDreamStage() {
+  const complete = dreamPct >= currentDream.balance.winDream;
+  const track = document.querySelector('.dream-bar-track');
+  const edge = track.clientWidth * getDreamPathPercent() / 100;
+  const nodes = [...track.querySelectorAll('.part-node')];
+  const next = nodes.findIndex(node => node.offsetLeft + node.offsetWidth > edge);
+  const index = complete ? 5 : Math.max(0, next);
+  const steps = currentDream.progressSteps || currentDream.progressIcons.map((icon, i) => ({
+    name: `Этап ${i + 1}`, text: `${icon} Собираем мечту: этап ${i + 1} из 5`
+  }));
+  return { steps, index, complete };
 }
 
 function syncUI() {
@@ -135,8 +217,6 @@ function syncUI() {
   });
 
   dreamPct = clamp(dreamPct);
-  document.getElementById('dreamBarFill').style.width = dreamPct + '%';
-  document.getElementById('dreamScoreText').textContent = `🌟 ${dreamPct}%`;
 
   if (streak >= 2) {
     streakPill.textContent = streak >= 4 ? `💎 МЕГА x${streak}` : `🔥 КОМБО x${streak}`;
@@ -145,19 +225,81 @@ function syncUI() {
     streakPill.classList.remove('show');
   }
 
-  const thresholds = [15, 35, 55, 75, currentDream.balance.winDream];
-  thresholds.forEach((t, i) => {
+  const flightOrigin = document.getElementById('dreamCurrentEmoji').getBoundingClientRect();
+  const stage = getDreamStage();
+  document.getElementById('dreamPartName').textContent = stage.complete ? 'Мечта достигнута!' : stage.steps[stage.index].text;
+  document.getElementById('dreamAssemblyColor').textContent = stage.complete ? '✓' : currentDream.progressIcons[stage.index];
+  document.getElementById('dreamCurrentPart').setAttribute('aria-label', stage.complete ? 'Мечта собрана' : stage.steps[stage.index].name);
+  currentDream.progressIcons.forEach((icon, i) => {
     const node = document.getElementById('part-' + i);
     const wasUnlocked = node.classList.contains('unlocked');
-    const isNow = dreamPct >= t;
+    const isNow = stage.complete || i < stage.index;
     node.classList.toggle('unlocked', isNow);
+    const isCurrent = !stage.complete && i === stage.index;
+    node.classList.toggle('is-current', isCurrent);
+    node.setAttribute('aria-label', `${stage.steps[i].name}: ${isNow ? 'собрано' : isCurrent ? 'собираем сейчас' : 'впереди'}`);
     if (isNow && !wasUnlocked && idx > 0) {
       Sound.unlock();
-      const r = node.getBoundingClientRect();
-      spawnBurst(r.left + 12, r.top + 12, ['🌟', '✨'], 4);
+      animateDreamPartArrival(node, icon, flightOrigin);
     }
   });
+  syncDreamPathFill();
 }
+
+function animateDreamPartArrival(node, icon, origin) {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (node.partFlight) node.partFlight.cancel();
+  const destination = node.getBoundingClientRect();
+  const flight = document.createElement('div');
+  flight.className = 'dream-part-flight';
+  flight.textContent = icon;
+  flight.setAttribute('aria-hidden', 'true');
+  flight.style.left = origin.left + origin.width / 2 - 24 + 'px';
+  flight.style.top = origin.top + origin.height / 2 - 24 + 'px';
+  document.body.appendChild(flight);
+  const x = destination.left + destination.width / 2 - origin.left - origin.width / 2;
+  const y = destination.top + destination.height / 2 - origin.top - origin.height / 2;
+  node.classList.add('part-arriving');
+  const animation = flight.animate([
+    { transform: 'translate(0, 0) scale(1) rotate(-10deg)' },
+    { transform: `translate(${x * .5}px, ${Math.min(0, y) - 22}px) scale(1.12) rotate(5deg)`, offset: .45 },
+    { transform: `translate(${x}px, ${y}px) scale(.62) rotate(0)` }
+  ], { duration: 560, easing: 'cubic-bezier(.3,0,.3,1)', fill: 'forwards' });
+  node.partFlight = animation;
+  const cleanup = () => {
+    flight.remove();
+    if (node.partFlight === animation) {
+      node.partFlight = null;
+      node.classList.remove('part-arriving');
+    }
+  };
+  animation.finished.then(() => {
+    cleanup();
+    if (!node.classList.contains('unlocked')) return;
+    node.animate([{ transform: 'scale(.88)' }, { transform: 'scale(1.15)' }, { transform: 'scale(1)' }], { duration: 260 });
+    const r = node.getBoundingClientRect();
+    spawnBurst(r.left + r.width / 2, r.top + r.height / 2, ['✨'], 3);
+  }, cleanup);
+}
+
+function getDreamPathPercent() {
+  return currentDream ? Math.min(100, dreamPct / currentDream.balance.winDream * 100) : 0;
+}
+
+// Keep one continuous horizontal fill edge through the connecting line and circles.
+function syncDreamPathFill() {
+  const track = document.querySelector('.dream-bar-track');
+  track.style.setProperty('--path-position', getDreamPathPercent());
+  track.style.setProperty('--track-width', track.clientWidth + 'px');
+  track.querySelectorAll('.part-node').forEach(node => {
+    node.style.setProperty('--circle-start', (node.offsetLeft + node.clientLeft) + 'px');
+  });
+  const assembling = track.querySelector('.part-node.is-current');
+  const preview = document.getElementById('dreamCurrentPart');
+  preview.classList.toggle('is-complete', !assembling);
+
+}
+new ResizeObserver(syncDreamPathFill).observe(document.querySelector('.dream-bar-track'));
 
 function showDots(choice) {
   const isScamCard = activeCardData && activeCardData.type === 'scam';
@@ -202,23 +344,6 @@ function resolveCard(i) {
   };
 }
 
-const inspectBtn = document.getElementById('inspectBtn');
-const inspectBtnLabel = document.getElementById('inspectBtnLabel');
-if (inspectBtn) {
-  inspectBtn.addEventListener('pointerdown', (e) => e.stopPropagation());
-  inspectBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    Sound.boing();
-    inspectBtn.classList.add('active');
-    inspectBtnLabel.textContent = 'Улика найдена!';
-    const tipEl = document.getElementById('cardTip');
-    tipEl.classList.add('highlight-tip');
-    renderMascot('detective', '🔍 Подсказка внизу!', 0, true);
-    const r = inspectBtn.getBoundingClientRect();
-    spawnBurst(r.left + 24, r.top, ['🔍', '💡', '✨'], 4);
-  });
-}
-
 function showCard() {
   activeCardData = resolveCard(idx);
   const c = activeCardData;
@@ -229,16 +354,10 @@ function showCard() {
   document.getElementById('condBadge').classList.toggle('show', !!c.isCond);
   document.getElementById('cardTitle').textContent = c.title;
   document.getElementById('cardDesc').textContent = c.desc;
-  document.getElementById('cardTip').textContent = c.tip;
   const artThemes = { shop: '#f8e8bb', friend: '#dcefc4', scam: '#f5d4dd', tech: '#d6e7f7', quiz: '#e5d4f5' };
   document.getElementById('cardArtZone').style.background = `radial-gradient(ellipse at 35% 15%, #fffcf6, ${artThemes[c.type] || artThemes.quiz})`;
   spriteWrap.innerHTML = buildCardSVG(c.type, c.emoji);
   spriteWrap.style.transform = '';
-
-  if (inspectBtn) {
-    inspectBtn.classList.remove('active');
-    inspectBtnLabel.textContent = c.type === 'scam' ? 'Проверить' : 'Разбор';
-  }
 
   badgeL.textContent = c.left.text;
   badgeR.textContent = c.right.text;
@@ -381,8 +500,6 @@ function applyDecision(dir) {
 
   if (dreamGain !== 0) {
     dreamPct = clamp(dreamPct + dreamGain);
-    const scoreEl = document.getElementById('dreamScoreText');
-    spawnStatFloat(scoreEl, dreamGain, null);
   }
 
   triggerComicJuice(choice.mascot);
