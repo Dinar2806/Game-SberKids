@@ -807,11 +807,8 @@ let startX = 0, startY = 0, dx = 0;
 function emphasizeChoice(offset = 0) {
   const amount = Math.min(1, Math.abs(offset) / 65);
   const bias = Math.sign(offset) * amount;
-  cardEl.style.setProperty('--choice-left', `${1 - bias}fr`);
-  cardEl.style.setProperty('--choice-right', `${1 + bias}fr`);
-  cardEl.style.setProperty('--choice-focus', amount);
-  cardEl.style.setProperty('--choice-left-presence', 1 - Math.max(0, bias));
-  cardEl.style.setProperty('--choice-right-presence', 1 + Math.min(0, bias));
+  cardEl.style.setProperty('--choice-left-emphasis', Math.max(0, -bias));
+  cardEl.style.setProperty('--choice-right-emphasis', Math.max(0, bias));
 }
 
 cardEl.addEventListener('pointerdown', (e) => {
