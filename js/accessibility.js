@@ -33,9 +33,6 @@
       }
     });
   });
-  document.getElementById('mascotAvatar').addEventListener('click', event => {
-    if (event.detail === 0) event.currentTarget.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
-  });
   document.addEventListener('keydown', event => {
     const active = overlays.find(el => el.classList.contains('active'));
     if (!active || event.key !== 'Tab') return;

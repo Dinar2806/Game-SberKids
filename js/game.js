@@ -41,9 +41,57 @@ function flashBanner(text, dur = 2500, anchor = null) {
   bannerTimer = setTimeout(() => b.classList.remove('show'), dur);
 }
 
-// При нажатии на Вольтика даём осмысленную подсказку по текущей карточке и ресурсам!
-mascotAvatar.addEventListener('pointerdown', (e) => {
+const mascotHint = document.getElementById('mascotHint');
+const gameApp = document.querySelector('.app');
+document.getElementById('mascotOffer').addEventListener('click', event => {
+  event.stopPropagation();
+  openMascotHint();
+});
+// Считаем бездействие от последнего ввода, а не только от смены карточки.
+['pointerdown', 'pointerup', 'keydown', 'wheel', 'scroll'].forEach(type => {
+  document.addEventListener(type, event => {
+    // Не перерисовываем SVG под пальцем между pointerdown и click.
+    if (!event.target.closest?.('#mascotOffer, #mascotAvatar')) resetIdleHintTimer();
+  }, { capture: true, passive: true });
+});
+document.addEventListener('visibilitychange', resetIdleHintTimer);
+function closeMascotHint(restoreFocus = false) {
+  const wasOpen = !mascotHint.hidden;
+  mascotHint.hidden = true;
+  gameApp.classList.remove('mascot-speaking');
+  mascotAvatar.setAttribute('aria-expanded', 'false');
+  if (wasOpen) {
+    mascotAvatar.classList.remove('boing', 'idle-nudge');
+    if (!busy) renderMascot('normal', null, 0);
+  }
+  resetIdleHintTimer();
+  if (restoreFocus) {
+    mascotAvatar.focus({ preventScroll: true });
+  }
+}
+document.getElementById('mascotHintDone').addEventListener('click', () => closeMascotHint(true));
+document.addEventListener('pointerdown', event => {
+  if (!mascotHint.hidden && !mascotHint.contains(event.target) && !mascotAvatar.contains(event.target)) closeMascotHint();
+});
+mascotHint.addEventListener('keydown', event => {
+  event.stopPropagation();
+  if (event.key === 'Escape') { event.preventDefault(); closeMascotHint(true); }
+  if (event.key === 'Tab') {
+    event.preventDefault();
+    document.getElementById('mascotHintDone').focus({ preventScroll: true });
+  }
+});
+
+// Подсказка остаётся открытой, пока игрок читает её.
+mascotAvatar.addEventListener('click', (e) => {
   e.stopPropagation();
+  openMascotHint();
+});
+
+function openMascotHint() {
+  if (!mascotHint.hidden || busy || !activeCardData) return;
+  resetIdleHintTimer();
+  if (dragging) endDrag({ type: 'pointercancel' });
   Sound.boing();
   mascotAvatar.classList.remove('boing', 'idle-nudge');
   void mascotAvatar.offsetWidth;
@@ -57,17 +105,20 @@ mascotAvatar.addEventListener('pointerdown', (e) => {
   });
 
   const c = activeCardData;
-  if (stats[lowestKey] <= 32) {
-    renderMascot('happy', '💡 Совет!', 0, true);
-    flashBanner(`🦊 Вольтик: «Береги ${names[lowestKey]} (${stats[lowestKey]})! ${c ? c.tip : ''}»`, 3400);
-  } else {
-    renderMascot('happy', '🦊 Подсказка!', 0, true);
-    flashBanner(`🦊 Вольтик: «${c ? c.tip : 'Держи баланс всех 4 показателей!'}»`, 3200);
-  }
+  const warning = document.getElementById('mascotHintWarning');
+  warning.hidden = stats[lowestKey] > 32;
+  warning.textContent = `Береги ${names[lowestKey]} — осталось ${stats[lowestKey]} из 100`;
+  document.getElementById('mascotHintText').textContent = c.tip.replace(/^💡\s*/, '');
+  clearTimeout(idleHintTimer);
+  renderMascot('happy', null, 0, true);
+  mascotHint.hidden = false;
+  gameApp.classList.add('mascot-speaking');
+  mascotAvatar.setAttribute('aria-expanded', 'true');
+  document.getElementById('mascotHintDone').focus({ preventScroll: true });
 
   const r = mascotAvatar.getBoundingClientRect();
   spawnBurst(r.left + r.width / 2, r.top + 35, ['💡', '✨'], 3);
-});
+}
 
 const STAT_TOOLTIPS = {
   money: '🪙 Копилка: твои сбережения на Мечту и важные покупки!',
@@ -345,6 +396,8 @@ function resolveCard(i) {
 }
 
 function showCard() {
+  closeMascotHint();
+  followCardWithMascot();
   activeCardData = resolveCard(idx);
   const c = activeCardData;
 
@@ -376,7 +429,7 @@ function showCard() {
   cardEl.style.transform = 'translate3d(0,0,0) rotate(0deg)';
   cardEl.style.opacity = '1';
 
-  // Запускаем 15-секундный таймер подсказки на Вольтике
+  // Предлагаем помощь после 20 секунд бездействия.
   resetIdleHintTimer();
 }
 
@@ -446,7 +499,9 @@ function renderFinalAchievements(isExitOnly) {
 
 // 12. ПРИМЕНЕНИЕ ВЫБОРА С УЧЁТОМ КОЭФФИЦИЕНТА СЛОЖНОСТИ
 function applyDecision(dir) {
-  if (busy || !activeCardData || document.querySelector('.overlay-screen.active')) return;
+  if (busy || !activeCardData || !mascotHint.hidden || document.querySelector('.overlay-screen.active')) return;
+  closeMascotHint();
+  followCardWithMascot();
   busy = true;
   hasSwipedOnce = true;
   clearTimeout(idleHintTimer);
@@ -599,6 +654,7 @@ window.addEventListener('pointermove', (e) => {
   dx = e.clientX - startX;
   const dy = (e.clientY - startY) * 0.25;
   const rot = dx * 0.055;
+  followCardWithMascot(dx, dy);
   cardEl.style.transform = `translate3d(${dx}px, ${dy}px, 0) rotate(${rot}deg)`;
   cardShine.style.transform = `translateX(${220 + dx * 1.6}px)`;
   spriteWrap.style.transform = `translate3d(${dx * 0.08}px, ${dy * 0.08}px, 0) rotate(${dx * 0.03}deg)`;
@@ -623,15 +679,16 @@ window.addEventListener('pointermove', (e) => {
   }
 });
 
-function endDrag() {
+function endDrag(event) {
   if (!dragging) return;
   dragging = false;
+  followCardWithMascot();
   if (busy) return;
 
-  if (dx < -65) {
+  if (event.type !== 'pointercancel' && dx < -65) {
     Sound.swipe();
     applyDecision('left');
-  } else if (dx > 65) {
+  } else if (event.type !== 'pointercancel' && dx > 65) {
     Sound.swipe();
     applyDecision('right');
   } else {

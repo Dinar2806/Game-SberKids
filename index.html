@@ -52,6 +52,7 @@
 </div>
 
 <div class="app">
+  <div class="mascot-backdrop" aria-hidden="true"></div>
   <header class="game-heading"><div><span class="eyebrow">СБЕРKIDS · ИГРА</span><h1>Путь к мечте<span>✦</span></h1></div>
     <div class="header-actions"><button class="icon-btn" id="soundBtn" type="button" aria-label="Включить звук" aria-pressed="false">🔇</button><button class="icon-btn" id="closeBtn" type="button" aria-label="Выйти из игры">✕</button></div>
   </header>
@@ -98,7 +99,16 @@
   <!-- МАСКОТ ВОЛЬТИК -->
   <div class="mascot-dock">
     <div class="streak-pill" id="streakPill">🔥 КОМБО x2</div>
-    <button class="mascot-avatar" id="mascotAvatar" type="button" aria-label="Подсказка Вольтика" title="Нажми для совета Вольтика!"></button>
+    <button class="mascot-avatar" id="mascotAvatar" type="button" aria-label="Подсказка Вольтика" aria-expanded="false" aria-controls="mascotHint" title="Нажми для совета Вольтика!"></button>
+    <button class="mascot-offer" id="mascotOffer" type="button" aria-label="Нажми на Вольтика, чтобы открыть подсказку" hidden><span>Нажми на меня</span><small>Подскажу!</small></button>
+    <section class="mascot-hint" id="mascotHint" role="dialog" aria-labelledby="mascotHintTitle" aria-describedby="mascotHintText" hidden>
+      <span class="mascot-hint-eyebrow" id="mascotHintTitle">Вольтик</span>
+      <div class="mascot-hint-content">
+        <p class="mascot-hint-warning" id="mascotHintWarning" hidden></p>
+        <p class="mascot-hint-text" id="mascotHintText"></p>
+      </div>
+      <button class="mascot-hint-done" id="mascotHintDone" type="button">Понятно!</button>
+    </section>
   </div>
 
   <!-- КОЛОДА КАРТОЧЕК -->

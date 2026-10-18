@@ -15,11 +15,16 @@
   width: 114px;
   height: 95px;
   cursor: pointer;
+  translate: var(--mascot-follow-x, 0px) var(--mascot-follow-y, 0px);
   transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
-  will-change: transform;
+  will-change: transform, translate;
 }
 .mascot-avatar.boing { animation: jellyBoing 0.45s ease; }
 .mascot-avatar.idle-nudge { animation: gentlePulse 1.4s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mascot-avatar { translate: none; }
+}
 
 .mascot-bubble {
   position: absolute;

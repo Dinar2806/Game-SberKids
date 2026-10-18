@@ -120,11 +120,43 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
 .part-node::before { content: ''; position: absolute; z-index: -1; left: 0; top: 0; bottom: 0; width: clamp(0px, calc(var(--track-width) * var(--path-position) / 100 - var(--circle-start)), 100%); background: linear-gradient(90deg, #b4da7e, #edffd0); }
 .part-node.unlocked { background: #42324c; border: 2px solid #eeffd5; box-shadow: 0 0 0 4px #302936, 0 0 14px #b9e47b36; transform: none; }
 
-/* A little companion beside a large story card. */
-.mascot-dock { height: 54px; margin: -3px 0 -13px; justify-content: flex-start; align-items: center; padding-left: 14px; }
-.mascot-avatar { width: 70px; height: 64px; border: 0; padding: 0; background: none; flex-shrink: 0; filter: drop-shadow(0 4px 2px #0002); }
+/* Voltik peeks over the middle of the card; the overlap saves story space. */
+.mascot-dock { height: 98px; margin: -4px 0 -24px; justify-content: center; align-items: flex-end; padding: 0; pointer-events: none; }
+.mascot-avatar { width: 120px; height: 108px; border: 0; padding: 0; background: none; flex-shrink: 0; pointer-events: auto; transform-origin: 50% 85%; filter: drop-shadow(0 5px 3px #0003); }
 .mascot-avatar svg { width: 100%; height: 100%; }
-.streak-pill { top: -5px; right: 5px; background: #e0f4a3; color: #3b501c; border: 1px solid #e4ffc0; font-size: 9px; box-shadow: 0 2px 0 #6f8249; }
+/* Speech, with a long tail connecting the words to Voltik above. */
+.mascot-hint { position: absolute; top: calc(100% + 10px); left: 8px; right: 8px; padding: 18px 20px 14px; border: 2px solid #ead8b8; border-radius: 29px; background: #fffaf0; color: #362b43; box-shadow: 0 10px 25px #10091a40; pointer-events: auto; user-select: text; -webkit-user-select: text; }
+.mascot-hint[hidden] { display: none; }
+.mascot-hint::before { content: ''; position: absolute; bottom: calc(100% - 1px); left: calc(50% - 21px); width: 42px; height: 30px; background: #ead8b8; clip-path: polygon(0 100%, 62% 0, 100% 100%); pointer-events: none; }
+.mascot-hint::after { content: ''; position: absolute; bottom: calc(100% - 3px); left: calc(50% - 18px); width: 36px; height: 28px; background: #fffaf0; clip-path: polygon(0 100%, 62% 0, 100% 100%); pointer-events: none; }
+.mascot-hint-eyebrow { display: block; margin-bottom: 7px; color: #a26531; font-size: 12px; font-weight: 800; }
+.mascot-hint-content { max-height: min(300px, 38dvh); overflow-y: auto; overscroll-behavior: contain; }
+.mascot-hint-text { margin: 0; font-size: 17px; line-height: 1.5; color: #4d4057; text-align: left; }
+.mascot-hint-warning { margin: 0 0 10px; color: #945b1b; font-size: 14px; font-weight: 700; line-height: 1.45; }
+.mascot-hint-done { display: block; margin: 12px 0 0 auto; padding: 8px 15px; border: 0; border-radius: 99px; background: #eee5d5; color: #6c573b; font: inherit; font-size: 13px; font-weight: 800; cursor: pointer; }
+.mascot-hint button:focus-visible { outline: 3px solid #9470bc; outline-offset: 3px; }
+.mascot-offer { position: absolute; bottom: 18px; left: calc(50% + 62px); right: 0; padding: 10px 7px; border: 2px solid #ead8b8; border-radius: 18px 18px 18px 4px; background: #fffaf0; color: #51405d; box-shadow: 0 5px 15px #10091a30; font: inherit; text-align: center; cursor: pointer; pointer-events: auto; }
+.mascot-offer[hidden] { display: none; }
+.mascot-offer::before { content: ''; position: absolute; bottom: 3px; right: calc(100% - 1px); width: 16px; height: 18px; background: #fffaf0; clip-path: polygon(100% 0, 0 85%, 100% 100%); }
+.mascot-offer span { display: block; font-family: inherit; font-size: 14px; font-weight: 700; line-height: 1.3; }
+.mascot-offer small { display: block; margin-top: 4px; font-family: inherit; font-size: 12px; font-weight: 500; line-height: 1.35; color: #8a7254; }
+.mascot-offer:not([hidden]) { transform-origin: 0 80%; animation: mascot-offer-appear .4s cubic-bezier(.22, 1, .36, 1) both; }
+@keyframes mascot-offer-appear {
+  from { opacity: 0; transform: translateX(-8px) translateY(3px) scale(.9); }
+  to { opacity: 1; transform: translateX(0) translateY(0) scale(1); }
+}
+.mascot-offer:focus-visible { outline: 3px solid #9470bc; outline-offset: 3px; }
+/* Keep the layout still and spotlight Voltik with his speech bubble. */
+.mascot-backdrop { position: fixed; inset: 0; z-index: 40; background: #100a20a6; opacity: 0; pointer-events: none; transition: opacity .24s ease; will-change: opacity; transform: translateZ(0); }
+.app.mascot-speaking .mascot-backdrop { opacity: 1; pointer-events: auto; }
+/* Keep Voltik above the backdrop throughout its fade-out, too. */
+.mascot-dock { z-index: 41; }
+.mascot-hint:not([hidden]) { transform-origin: 50% 0; animation: mascot-speech-appear .32s cubic-bezier(.22, 1, .36, 1) both; }
+@keyframes mascot-speech-appear {
+  from { opacity: 0; transform: translateY(-10px) scale(.94); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.streak-pill { top: 8px; right: 0; background: #e0f4a3; color: #3b501c; border: 1px solid #e4ffc0; font-size: 9px; box-shadow: 0 2px 0 #6f8249; }
 .deck-area { margin: 0 0 11px; min-height: 270px; }
 .game-card, .card-shadow-1, .card-shadow-2 { max-width: none; max-height: 510px; border-radius: 25px; }
 .game-card { border: 2px solid #fff; box-shadow: 0 5px 0 #b6a8c9, 0 13px 24px #07040b40; touch-action: pan-y; }
@@ -202,8 +234,8 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
   .dream-icon-box { width: 43px; height: 43px; }
   .dream-icon-box img { width: 54px; height: 50px; }
   .dream-progress-area { gap: 4px; }
-  .mascot-dock { height: 42px; }
-  .mascot-avatar { width: 58px; height: 53px; }
+  .mascot-dock { height: 82px; margin-bottom: -22px; }
+  .mascot-avatar { width: 100px; height: 90px; }
   .deck-area { min-height: 270px; }
   .card-text-zone { padding: 12px; gap: 9px; }
   .card-desc { margin-top: 6px; line-height: 1.45; }

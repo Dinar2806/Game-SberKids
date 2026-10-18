@@ -57,7 +57,6 @@ function triggerComicJuice(type) {
 }
 
 function renderMascot(mood, bubbleText, lookDir = 0, isHintBubble = false) {
-  const pupilShift = lookDir * 3.5;
   let visorColor = '#38bdf8';
   let visorStroke = '#0284c7';
   let badgeAddon = '';
@@ -68,11 +67,11 @@ function renderMascot(mood, bubbleText, lookDir = 0, isHintBubble = false) {
     <polygon points="79,38 87,16 66,28" fill="#fde047"/>`;
   let eyes = `
     <circle cx="36" cy="52" r="6.2" fill="#ffffff" stroke="#0f172a" stroke-width="1.8"/>
-    <circle cx="${36 + pupilShift}" cy="52" r="3.6" fill="#0f172a"/>
-    <circle cx="${34.8 + pupilShift}" cy="50.4" r="1.4" fill="#ffffff"/>
+    <g class="mascot-pupil" data-eye-x="36"><circle cx="36" cy="52" r="3.6" fill="#0f172a"/>
+    <circle cx="34.8" cy="50.4" r="1.4" fill="#ffffff"/></g>
     <circle cx="64" cy="52" r="6.2" fill="#ffffff" stroke="#0f172a" stroke-width="1.8"/>
-    <circle cx="${64 + pupilShift}" cy="52" r="3.6" fill="#0f172a"/>
-    <circle cx="${62.8 + pupilShift}" cy="50.4" r="1.4" fill="#ffffff"/>`;
+    <g class="mascot-pupil" data-eye-x="64"><circle cx="64" cy="52" r="3.6" fill="#0f172a"/>
+    <circle cx="62.8" cy="50.4" r="1.4" fill="#ffffff"/></g>`;
   let mouth = `<path d="M43 64 Q50 70 57 64" stroke="#0f172a" stroke-width="3" fill="none" stroke-linecap="round"/>`;
 
   if (mood === 'happy') {
@@ -127,21 +126,74 @@ function renderMascot(mood, bubbleText, lookDir = 0, isHintBubble = false) {
     <ellipse cx="74" cy="81" rx="9" ry="5.5" fill="#f97316" stroke="#9a3412" stroke-width="2.5"/>
     ${badgeAddon}
   </svg>`;
+  updateMascotGaze();
 
+}
 
+// Цель в координатах SVG учитывает смещение и наклон самого Вольтика.
+function updateMascotGaze() {
+  const svg = mascotAvatar.querySelector('svg');
+  const matrix = svg?.getScreenCTM();
+  if (!matrix || !cardEl.getClientRects().length) return;
+  const card = cardEl.getBoundingClientRect();
+  const point = svg.createSVGPoint();
+  point.x = card.left + card.width / 2;
+  point.y = card.top + card.height * 0.42;
+  const target = point.matrixTransform(matrix.inverse());
+  svg.querySelectorAll('.mascot-pupil').forEach(pupil => {
+    const x = target.x - Number(pupil.dataset.eyeX);
+    const y = target.y - 52;
+    const distance = Math.hypot(x, y) || 1;
+    pupil.setAttribute('transform', `translate(${x / distance * 2.1} ${y / distance * 2.1})`);
+  });
+}
+
+// Отдельное смещение не мешает поворотам, прыжку и эмоциям Вольтика.
+const mascotFollow = { x: 0, y: 0, targetX: 0, targetY: 0, frame: null, time: 0 };
+
+function animateMascotFollow(time) {
+  const elapsed = Math.min(64, time - mascotFollow.time);
+  mascotFollow.time = time;
+  // Инерция сохраняет отставание даже при непрерывном движении пальца.
+  const blend = 1 - Math.exp(-elapsed / 240);
+  mascotFollow.x += (mascotFollow.targetX - mascotFollow.x) * blend;
+  mascotFollow.y += (mascotFollow.targetY - mascotFollow.y) * blend;
+  const settled = Math.abs(mascotFollow.targetX - mascotFollow.x) < 0.1
+    && Math.abs(mascotFollow.targetY - mascotFollow.y) < 0.1;
+  if (settled) {
+    mascotFollow.x = mascotFollow.targetX;
+    mascotFollow.y = mascotFollow.targetY;
+  }
+  mascotAvatar.style.setProperty('--mascot-follow-x', `${mascotFollow.x}px`);
+  mascotAvatar.style.setProperty('--mascot-follow-y', `${mascotFollow.y}px`);
+  updateMascotGaze();
+  mascotFollow.frame = settled ? null : requestAnimationFrame(animateMascotFollow);
+}
+
+function followCardWithMascot(x = 0, y = 0) {
+  mascotFollow.targetX = Math.max(-48, Math.min(48, x * 0.36));
+  mascotFollow.targetY = Math.max(-10, Math.min(10, y * 0.18));
+  if (mascotFollow.frame === null) {
+    mascotFollow.time = performance.now();
+    mascotFollow.frame = requestAnimationFrame(animateMascotFollow);
+  }
 }
 
 function resetIdleHintTimer() {
   clearTimeout(idleHintTimer);
+  const wasActive = idleHintActive;
   idleHintActive = false;
+  document.getElementById('mascotOffer').hidden = true;
   mascotAvatar.classList.remove('idle-nudge');
+  if (wasActive) renderMascot('normal', null, 0);
+  if (document.hidden || !mascotHint.hidden || document.querySelector('.overlay-screen.active')) return;
 
   idleHintTimer = setTimeout(() => {
-    if (busy) return;
+    if (busy || dragging || document.hidden || !mascotHint.hidden || document.querySelector('.overlay-screen.active')) return;
     idleHintActive = true;
-    mascotAvatar.classList.add('idle-nudge');
-    renderMascot('think', '💡 Нажми на меня!', 0, true);
-  }, 15000);
+    document.getElementById('mascotOffer').hidden = false;
+    renderMascot('normal', null, 0);
+  }, 20000);
 }
 
 function buildCardSVG(type, mainEmoji) {
