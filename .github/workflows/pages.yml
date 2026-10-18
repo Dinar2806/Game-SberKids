@@ -2,12 +2,22 @@ name: Check and deploy game
 
 on:
   push:
-    branches: [artemageddon]
+    branches: [main, artemageddon]
   pull_request:
   workflow_dispatch:
 
 permissions:
   contents: read
+
+# Обе ветки обновляют один сайт. Общая очередь включает и проверку, и публикацию,
+# чтобы медленная старая сборка не отправилась в деплой после более новой.
+# PR и ручные проверки других веток не занимают очередь публикации.
+concurrency:
+  group: >-
+    ${{ github.event_name != 'pull_request' &&
+        (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/artemageddon') &&
+        'github-pages' || format('pages-check-{0}', github.run_id) }}
+  cancel-in-progress: false
 
 jobs:
   check:
@@ -40,20 +50,17 @@ jobs:
           touch _site/.nojekyll
 
       - name: Upload website
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/artemageddon'
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/artemageddon')
         uses: actions/upload-pages-artifact@v4
         with:
           path: _site
 
   deploy:
     name: Publish to GitHub Pages
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/artemageddon'
+    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/artemageddon')
     needs: check
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    concurrency:
-      group: github-pages
-      cancel-in-progress: false
     permissions:
       pages: write
       id-token: write

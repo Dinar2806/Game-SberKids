@@ -1,0 +1,427 @@
+{
+  "version": 2,
+  "opening": "telescope-001",
+  "facts": [
+    "route-moon",
+    "route-planets",
+    "route-started",
+    "lenses-ready",
+    "mount-ready",
+    "scope-ready",
+    "moon-ready",
+    "planets-ready"
+  ],
+  "maxTurns": 60,
+  "chapters": [
+    {
+      "id": "lenses",
+      "title": "Линзы",
+      "completeWhen": {
+        "stats": [
+          {
+            "stat": "dream",
+            "operator": ">=",
+            "value": 15
+          }
+        ],
+        "all": [
+          "route-started"
+        ]
+      },
+      "pool": [
+        "telescope-002",
+        "telescope-003",
+        "telescope-004",
+        "telescope-005",
+        "telescope-006",
+        "telescope-007",
+        "telescope-008",
+        "telescope-009",
+        "telescope-010"
+      ],
+      "repeatable": [
+        "telescope-019",
+        "telescope-020",
+        "telescope-021",
+        "telescope-022"
+      ],
+      "milestone": "telescope-014"
+    },
+    {
+      "id": "mount",
+      "title": "Крепление",
+      "completeWhen": {
+        "stats": [
+          {
+            "stat": "dream",
+            "operator": ">=",
+            "value": 30
+          }
+        ],
+        "all": [
+          "lenses-ready"
+        ]
+      },
+      "pool": [
+        "telescope-002",
+        "telescope-003",
+        "telescope-004",
+        "telescope-005",
+        "telescope-006",
+        "telescope-007",
+        "telescope-008",
+        "telescope-009",
+        "telescope-010",
+        "telescope-023",
+        "telescope-024"
+      ],
+      "repeatable": [
+        "telescope-019",
+        "telescope-020",
+        "telescope-021",
+        "telescope-022"
+      ],
+      "milestone": "telescope-015"
+    },
+    {
+      "id": "scope",
+      "title": "Телескоп",
+      "completeWhen": {
+        "stats": [
+          {
+            "stat": "dream",
+            "operator": ">=",
+            "value": 45
+          }
+        ],
+        "all": [
+          "mount-ready"
+        ]
+      },
+      "pool": [
+        "telescope-002",
+        "telescope-003",
+        "telescope-004",
+        "telescope-005",
+        "telescope-006",
+        "telescope-007",
+        "telescope-008",
+        "telescope-009",
+        "telescope-010",
+        "telescope-023",
+        "telescope-024"
+      ],
+      "repeatable": [
+        "telescope-019",
+        "telescope-020",
+        "telescope-021",
+        "telescope-022"
+      ],
+      "milestone": "telescope-016"
+    },
+    {
+      "id": "moon",
+      "title": "Луна",
+      "completeWhen": {
+        "stats": [
+          {
+            "stat": "dream",
+            "operator": ">=",
+            "value": 60
+          }
+        ],
+        "all": [
+          "scope-ready"
+        ]
+      },
+      "pool": [
+        "telescope-002",
+        "telescope-003",
+        "telescope-004",
+        "telescope-005",
+        "telescope-006",
+        "telescope-007",
+        "telescope-008",
+        "telescope-009",
+        "telescope-010",
+        "telescope-023",
+        "telescope-024"
+      ],
+      "repeatable": [
+        "telescope-019",
+        "telescope-020",
+        "telescope-021",
+        "telescope-022"
+      ],
+      "milestone": "telescope-017"
+    },
+    {
+      "id": "planets",
+      "title": "Планеты",
+      "completeWhen": {
+        "stats": [
+          {
+            "stat": "dream",
+            "operator": ">=",
+            "value": 75
+          }
+        ],
+        "all": [
+          "moon-ready"
+        ]
+      },
+      "pool": [
+        "telescope-002",
+        "telescope-003",
+        "telescope-004",
+        "telescope-005",
+        "telescope-006",
+        "telescope-007",
+        "telescope-008",
+        "telescope-009",
+        "telescope-010",
+        "telescope-023",
+        "telescope-024"
+      ],
+      "repeatable": [
+        "telescope-019",
+        "telescope-020",
+        "telescope-021",
+        "telescope-022"
+      ],
+      "milestone": "telescope-018"
+    }
+  ],
+  "events": {
+    "telescope-001": {
+      "choices": {
+        "optA": {
+          "followUp": "telescope-011"
+        },
+        "optB": {
+          "followUp": "telescope-011"
+        }
+      }
+    },
+    "telescope-011": {
+      "choices": {
+        "optA": {
+          "set": [
+            "route-moon"
+          ],
+          "followUp": "telescope-012"
+        },
+        "optB": {
+          "set": [
+            "route-planets"
+          ],
+          "followUp": "telescope-013"
+        }
+      }
+    },
+    "telescope-012": {
+      "requires": {
+        "all": [
+          "route-moon"
+        ]
+      },
+      "choices": {
+        "optA": {
+          "set": [
+            "route-started"
+          ]
+        },
+        "optB": {
+          "set": [
+            "route-started"
+          ]
+        }
+      }
+    },
+    "telescope-023": {
+      "requires": {
+        "all": [
+          "route-moon",
+          "lenses-ready"
+        ]
+      }
+    },
+    "telescope-013": {
+      "requires": {
+        "all": [
+          "route-planets"
+        ]
+      },
+      "choices": {
+        "optA": {
+          "set": [
+            "route-started"
+          ]
+        },
+        "optB": {
+          "set": [
+            "route-started"
+          ]
+        }
+      }
+    },
+    "telescope-024": {
+      "requires": {
+        "all": [
+          "route-planets",
+          "lenses-ready"
+        ]
+      }
+    },
+    "telescope-014": {
+      "choices": {
+        "optA": {
+          "set": [
+            "lenses-ready"
+          ]
+        },
+        "optB": {
+          "set": [
+            "lenses-ready"
+          ]
+        }
+      }
+    },
+    "telescope-015": {
+      "choices": {
+        "optA": {
+          "set": [
+            "mount-ready"
+          ]
+        },
+        "optB": {
+          "set": [
+            "mount-ready"
+          ]
+        }
+      }
+    },
+    "telescope-016": {
+      "choices": {
+        "optA": {
+          "set": [
+            "scope-ready"
+          ]
+        },
+        "optB": {
+          "set": [
+            "scope-ready"
+          ]
+        }
+      }
+    },
+    "telescope-017": {
+      "choices": {
+        "optA": {
+          "set": [
+            "moon-ready"
+          ]
+        },
+        "optB": {
+          "set": [
+            "moon-ready"
+          ]
+        }
+      }
+    },
+    "telescope-018": {
+      "choices": {
+        "optA": {
+          "set": [
+            "planets-ready"
+          ]
+        },
+        "optB": {
+          "set": [
+            "planets-ready"
+          ]
+        }
+      }
+    },
+    "telescope-019": {
+      "cooldown": 3,
+      "urgentWhen": {
+        "stats": [
+          {
+            "stat": "money",
+            "operator": "<=",
+            "value": 25
+          }
+        ]
+      }
+    },
+    "telescope-020": {
+      "cooldown": 3,
+      "urgentWhen": {
+        "stats": [
+          {
+            "stat": "tech",
+            "operator": "<=",
+            "value": 25
+          }
+        ]
+      }
+    },
+    "telescope-021": {
+      "cooldown": 3,
+      "urgentWhen": {
+        "stats": [
+          {
+            "stat": "trust",
+            "operator": "<=",
+            "value": 25
+          }
+        ]
+      }
+    },
+    "telescope-022": {
+      "cooldown": 3,
+      "urgentWhen": {
+        "stats": [
+          {
+            "stat": "team",
+            "operator": "<=",
+            "value": 25
+          }
+        ]
+      }
+    },
+    "telescope-004": {
+      "boosts": [
+        {
+          "when": {
+            "stats": [
+              {
+                "stat": "team",
+                "operator": "<=",
+                "value": 50
+              }
+            ]
+          },
+          "factor": 3
+        }
+      ]
+    },
+    "telescope-008": {
+      "boosts": [
+        {
+          "when": {
+            "stats": [
+              {
+                "stat": "tech",
+                "operator": "<=",
+                "value": 50
+              }
+            ]
+          },
+          "factor": 3
+        }
+      ]
+    }
+  }
+}

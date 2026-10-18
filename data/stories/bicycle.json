@@ -1,0 +1,427 @@
+{
+  "version": 2,
+  "opening": "bicycle-001",
+  "facts": [
+    "route-family",
+    "route-friends",
+    "route-started",
+    "wheels-ready",
+    "gears-ready",
+    "bike-ready",
+    "helmet-ready",
+    "route-ready"
+  ],
+  "maxTurns": 60,
+  "chapters": [
+    {
+      "id": "wheels",
+      "title": "Колёса",
+      "completeWhen": {
+        "stats": [
+          {
+            "stat": "dream",
+            "operator": ">=",
+            "value": 16
+          }
+        ],
+        "all": [
+          "route-started"
+        ]
+      },
+      "pool": [
+        "bicycle-002",
+        "bicycle-003",
+        "bicycle-004",
+        "bicycle-005",
+        "bicycle-006",
+        "bicycle-007",
+        "bicycle-008",
+        "bicycle-009",
+        "bicycle-010"
+      ],
+      "repeatable": [
+        "bicycle-019",
+        "bicycle-020",
+        "bicycle-021",
+        "bicycle-022"
+      ],
+      "milestone": "bicycle-014"
+    },
+    {
+      "id": "gears",
+      "title": "Передачи",
+      "completeWhen": {
+        "stats": [
+          {
+            "stat": "dream",
+            "operator": ">=",
+            "value": 32
+          }
+        ],
+        "all": [
+          "wheels-ready"
+        ]
+      },
+      "pool": [
+        "bicycle-002",
+        "bicycle-003",
+        "bicycle-004",
+        "bicycle-005",
+        "bicycle-006",
+        "bicycle-007",
+        "bicycle-008",
+        "bicycle-009",
+        "bicycle-010",
+        "bicycle-023",
+        "bicycle-024"
+      ],
+      "repeatable": [
+        "bicycle-019",
+        "bicycle-020",
+        "bicycle-021",
+        "bicycle-022"
+      ],
+      "milestone": "bicycle-015"
+    },
+    {
+      "id": "bike",
+      "title": "Велосипед",
+      "completeWhen": {
+        "stats": [
+          {
+            "stat": "dream",
+            "operator": ">=",
+            "value": 48
+          }
+        ],
+        "all": [
+          "gears-ready"
+        ]
+      },
+      "pool": [
+        "bicycle-002",
+        "bicycle-003",
+        "bicycle-004",
+        "bicycle-005",
+        "bicycle-006",
+        "bicycle-007",
+        "bicycle-008",
+        "bicycle-009",
+        "bicycle-010",
+        "bicycle-023",
+        "bicycle-024"
+      ],
+      "repeatable": [
+        "bicycle-019",
+        "bicycle-020",
+        "bicycle-021",
+        "bicycle-022"
+      ],
+      "milestone": "bicycle-016"
+    },
+    {
+      "id": "helmet",
+      "title": "Шлем",
+      "completeWhen": {
+        "stats": [
+          {
+            "stat": "dream",
+            "operator": ">=",
+            "value": 64
+          }
+        ],
+        "all": [
+          "bike-ready"
+        ]
+      },
+      "pool": [
+        "bicycle-002",
+        "bicycle-003",
+        "bicycle-004",
+        "bicycle-005",
+        "bicycle-006",
+        "bicycle-007",
+        "bicycle-008",
+        "bicycle-009",
+        "bicycle-010",
+        "bicycle-023",
+        "bicycle-024"
+      ],
+      "repeatable": [
+        "bicycle-019",
+        "bicycle-020",
+        "bicycle-021",
+        "bicycle-022"
+      ],
+      "milestone": "bicycle-017"
+    },
+    {
+      "id": "route",
+      "title": "Маршрут",
+      "completeWhen": {
+        "stats": [
+          {
+            "stat": "dream",
+            "operator": ">=",
+            "value": 80
+          }
+        ],
+        "all": [
+          "helmet-ready"
+        ]
+      },
+      "pool": [
+        "bicycle-002",
+        "bicycle-003",
+        "bicycle-004",
+        "bicycle-005",
+        "bicycle-006",
+        "bicycle-007",
+        "bicycle-008",
+        "bicycle-009",
+        "bicycle-010",
+        "bicycle-023",
+        "bicycle-024"
+      ],
+      "repeatable": [
+        "bicycle-019",
+        "bicycle-020",
+        "bicycle-021",
+        "bicycle-022"
+      ],
+      "milestone": "bicycle-018"
+    }
+  ],
+  "events": {
+    "bicycle-001": {
+      "choices": {
+        "optA": {
+          "followUp": "bicycle-011"
+        },
+        "optB": {
+          "followUp": "bicycle-011"
+        }
+      }
+    },
+    "bicycle-011": {
+      "choices": {
+        "optA": {
+          "set": [
+            "route-family"
+          ],
+          "followUp": "bicycle-012"
+        },
+        "optB": {
+          "set": [
+            "route-friends"
+          ],
+          "followUp": "bicycle-013"
+        }
+      }
+    },
+    "bicycle-012": {
+      "requires": {
+        "all": [
+          "route-family"
+        ]
+      },
+      "choices": {
+        "optA": {
+          "set": [
+            "route-started"
+          ]
+        },
+        "optB": {
+          "set": [
+            "route-started"
+          ]
+        }
+      }
+    },
+    "bicycle-023": {
+      "requires": {
+        "all": [
+          "route-family",
+          "wheels-ready"
+        ]
+      }
+    },
+    "bicycle-013": {
+      "requires": {
+        "all": [
+          "route-friends"
+        ]
+      },
+      "choices": {
+        "optA": {
+          "set": [
+            "route-started"
+          ]
+        },
+        "optB": {
+          "set": [
+            "route-started"
+          ]
+        }
+      }
+    },
+    "bicycle-024": {
+      "requires": {
+        "all": [
+          "route-friends",
+          "wheels-ready"
+        ]
+      }
+    },
+    "bicycle-014": {
+      "choices": {
+        "optA": {
+          "set": [
+            "wheels-ready"
+          ]
+        },
+        "optB": {
+          "set": [
+            "wheels-ready"
+          ]
+        }
+      }
+    },
+    "bicycle-015": {
+      "choices": {
+        "optA": {
+          "set": [
+            "gears-ready"
+          ]
+        },
+        "optB": {
+          "set": [
+            "gears-ready"
+          ]
+        }
+      }
+    },
+    "bicycle-016": {
+      "choices": {
+        "optA": {
+          "set": [
+            "bike-ready"
+          ]
+        },
+        "optB": {
+          "set": [
+            "bike-ready"
+          ]
+        }
+      }
+    },
+    "bicycle-017": {
+      "choices": {
+        "optA": {
+          "set": [
+            "helmet-ready"
+          ]
+        },
+        "optB": {
+          "set": [
+            "helmet-ready"
+          ]
+        }
+      }
+    },
+    "bicycle-018": {
+      "choices": {
+        "optA": {
+          "set": [
+            "route-ready"
+          ]
+        },
+        "optB": {
+          "set": [
+            "route-ready"
+          ]
+        }
+      }
+    },
+    "bicycle-019": {
+      "cooldown": 3,
+      "urgentWhen": {
+        "stats": [
+          {
+            "stat": "money",
+            "operator": "<=",
+            "value": 25
+          }
+        ]
+      }
+    },
+    "bicycle-020": {
+      "cooldown": 3,
+      "urgentWhen": {
+        "stats": [
+          {
+            "stat": "tech",
+            "operator": "<=",
+            "value": 25
+          }
+        ]
+      }
+    },
+    "bicycle-021": {
+      "cooldown": 3,
+      "urgentWhen": {
+        "stats": [
+          {
+            "stat": "trust",
+            "operator": "<=",
+            "value": 25
+          }
+        ]
+      }
+    },
+    "bicycle-022": {
+      "cooldown": 3,
+      "urgentWhen": {
+        "stats": [
+          {
+            "stat": "team",
+            "operator": "<=",
+            "value": 25
+          }
+        ]
+      }
+    },
+    "bicycle-004": {
+      "boosts": [
+        {
+          "when": {
+            "stats": [
+              {
+                "stat": "money",
+                "operator": "<=",
+                "value": 50
+              }
+            ]
+          },
+          "factor": 3
+        }
+      ]
+    },
+    "bicycle-008": {
+      "boosts": [
+        {
+          "when": {
+            "stats": [
+              {
+                "stat": "team",
+                "operator": "<=",
+                "value": 50
+              }
+            ]
+          },
+          "factor": 3
+        }
+      ]
+    }
+  }
+}

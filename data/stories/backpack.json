@@ -1,0 +1,486 @@
+{
+  "version": 2,
+  "opening": "backpack-001",
+  "facts": [
+    "route-a",
+    "route-b",
+    "route-started",
+    "stage-1-ready",
+    "stage-2-ready",
+    "stage-3-ready",
+    "stage-4-ready",
+    "stage-5-ready"
+  ],
+  "maxTurns": 60,
+  "chapters": [
+    {
+      "id": "stage-1",
+      "title": "Рюкзак",
+      "completeWhen": {
+        "all": [
+          "route-started"
+        ],
+        "stats": [
+          {
+            "stat": "dream",
+            "operator": ">=",
+            "value": 17
+          }
+        ]
+      },
+      "pool": [
+        "backpack-002",
+        "backpack-003",
+        "backpack-004",
+        "backpack-005",
+        "backpack-006",
+        "backpack-007",
+        "backpack-008",
+        "backpack-009",
+        "backpack-010",
+        "backpack-022",
+        "backpack-023"
+      ],
+      "repeatable": [
+        "backpack-018",
+        "backpack-019",
+        "backpack-020",
+        "backpack-021"
+      ],
+      "milestone": "backpack-013"
+    },
+    {
+      "id": "stage-2",
+      "title": "Ботинки",
+      "completeWhen": {
+        "all": [
+          "stage-1-ready"
+        ],
+        "stats": [
+          {
+            "stat": "dream",
+            "operator": ">=",
+            "value": 34
+          }
+        ]
+      },
+      "pool": [
+        "backpack-002",
+        "backpack-003",
+        "backpack-004",
+        "backpack-005",
+        "backpack-006",
+        "backpack-007",
+        "backpack-008",
+        "backpack-009",
+        "backpack-010",
+        "backpack-022",
+        "backpack-023"
+      ],
+      "repeatable": [
+        "backpack-018",
+        "backpack-019",
+        "backpack-020",
+        "backpack-021"
+      ],
+      "milestone": "backpack-014"
+    },
+    {
+      "id": "stage-3",
+      "title": "Запас воды",
+      "completeWhen": {
+        "all": [
+          "stage-2-ready"
+        ],
+        "stats": [
+          {
+            "stat": "dream",
+            "operator": ">=",
+            "value": 51
+          }
+        ]
+      },
+      "pool": [
+        "backpack-002",
+        "backpack-003",
+        "backpack-004",
+        "backpack-005",
+        "backpack-006",
+        "backpack-007",
+        "backpack-008",
+        "backpack-009",
+        "backpack-010",
+        "backpack-022",
+        "backpack-023"
+      ],
+      "repeatable": [
+        "backpack-018",
+        "backpack-019",
+        "backpack-020",
+        "backpack-021"
+      ],
+      "milestone": "backpack-015"
+    },
+    {
+      "id": "stage-4",
+      "title": "Компас",
+      "completeWhen": {
+        "all": [
+          "stage-3-ready"
+        ],
+        "stats": [
+          {
+            "stat": "dream",
+            "operator": ">=",
+            "value": 68
+          }
+        ]
+      },
+      "pool": [
+        "backpack-002",
+        "backpack-003",
+        "backpack-004",
+        "backpack-005",
+        "backpack-006",
+        "backpack-007",
+        "backpack-008",
+        "backpack-009",
+        "backpack-010",
+        "backpack-022",
+        "backpack-023"
+      ],
+      "repeatable": [
+        "backpack-018",
+        "backpack-019",
+        "backpack-020",
+        "backpack-021"
+      ],
+      "milestone": "backpack-016"
+    },
+    {
+      "id": "stage-5",
+      "title": "Палатка",
+      "completeWhen": {
+        "all": [
+          "stage-4-ready"
+        ],
+        "stats": [
+          {
+            "stat": "dream",
+            "operator": ">=",
+            "value": 85
+          }
+        ]
+      },
+      "pool": [
+        "backpack-002",
+        "backpack-003",
+        "backpack-004",
+        "backpack-005",
+        "backpack-006",
+        "backpack-007",
+        "backpack-008",
+        "backpack-009",
+        "backpack-010",
+        "backpack-022",
+        "backpack-023"
+      ],
+      "repeatable": [
+        "backpack-018",
+        "backpack-019",
+        "backpack-020",
+        "backpack-021"
+      ],
+      "milestone": "backpack-017"
+    }
+  ],
+  "events": {
+    "backpack-001": {
+      "choices": {
+        "optA": {
+          "set": [
+            "route-a"
+          ],
+          "followUp": "backpack-011"
+        },
+        "optB": {
+          "set": [
+            "route-b"
+          ],
+          "followUp": "backpack-012"
+        }
+      }
+    },
+    "backpack-011": {
+      "requires": {
+        "all": [
+          "route-a"
+        ]
+      },
+      "choices": {
+        "optA": {
+          "set": [
+            "route-started"
+          ]
+        },
+        "optB": {
+          "set": [
+            "route-started"
+          ]
+        }
+      }
+    },
+    "backpack-012": {
+      "requires": {
+        "all": [
+          "route-b"
+        ]
+      },
+      "choices": {
+        "optA": {
+          "set": [
+            "route-started"
+          ]
+        },
+        "optB": {
+          "set": [
+            "route-started"
+          ]
+        }
+      }
+    },
+    "backpack-013": {
+      "choices": {
+        "optA": {
+          "set": [
+            "stage-1-ready"
+          ]
+        },
+        "optB": {
+          "set": [
+            "stage-1-ready"
+          ]
+        }
+      }
+    },
+    "backpack-014": {
+      "choices": {
+        "optA": {
+          "set": [
+            "stage-2-ready"
+          ]
+        },
+        "optB": {
+          "set": [
+            "stage-2-ready"
+          ]
+        }
+      }
+    },
+    "backpack-015": {
+      "choices": {
+        "optA": {
+          "set": [
+            "stage-3-ready"
+          ]
+        },
+        "optB": {
+          "set": [
+            "stage-3-ready"
+          ]
+        }
+      }
+    },
+    "backpack-016": {
+      "choices": {
+        "optA": {
+          "set": [
+            "stage-4-ready"
+          ]
+        },
+        "optB": {
+          "set": [
+            "stage-4-ready"
+          ]
+        }
+      }
+    },
+    "backpack-017": {
+      "choices": {
+        "optA": {
+          "set": [
+            "stage-5-ready"
+          ]
+        },
+        "optB": {
+          "set": [
+            "stage-5-ready"
+          ]
+        }
+      }
+    },
+    "backpack-018": {
+      "cooldown": 3,
+      "urgentWhen": {
+        "stats": [
+          {
+            "stat": "money",
+            "operator": "<=",
+            "value": 25
+          }
+        ]
+      }
+    },
+    "backpack-019": {
+      "cooldown": 3,
+      "urgentWhen": {
+        "stats": [
+          {
+            "stat": "tech",
+            "operator": "<=",
+            "value": 25
+          }
+        ]
+      }
+    },
+    "backpack-020": {
+      "cooldown": 3,
+      "urgentWhen": {
+        "stats": [
+          {
+            "stat": "trust",
+            "operator": "<=",
+            "value": 25
+          }
+        ]
+      }
+    },
+    "backpack-021": {
+      "cooldown": 3,
+      "urgentWhen": {
+        "stats": [
+          {
+            "stat": "team",
+            "operator": "<=",
+            "value": 25
+          }
+        ]
+      }
+    },
+    "backpack-022": {
+      "requires": {
+        "all": [
+          "route-a",
+          "stage-2-ready"
+        ]
+      },
+      "boosts": [
+        {
+          "when": {
+            "stats": [
+              {
+                "stat": "team",
+                "operator": "<=",
+                "value": 35
+              }
+            ]
+          },
+          "factor": 2
+        }
+      ]
+    },
+    "backpack-023": {
+      "requires": {
+        "all": [
+          "route-b",
+          "stage-2-ready"
+        ]
+      },
+      "boosts": [
+        {
+          "when": {
+            "stats": [
+              {
+                "stat": "team",
+                "operator": "<=",
+                "value": 35
+              }
+            ]
+          },
+          "factor": 2
+        }
+      ]
+    },
+    "backpack-010": {
+      "requires": {
+        "all": [
+          "stage-4-ready"
+        ]
+      }
+    },
+    "backpack-002": {
+      "boosts": [
+        {
+          "when": {
+            "stats": [
+              {
+                "stat": "trust",
+                "operator": "<=",
+                "value": 35
+              }
+            ]
+          },
+          "factor": 2
+        }
+      ]
+    },
+    "backpack-003": {
+      "boosts": [
+        {
+          "when": {
+            "stats": [
+              {
+                "stat": "money",
+                "operator": "<=",
+                "value": 35
+              }
+            ]
+          },
+          "factor": 2
+        }
+      ]
+    },
+    "backpack-006": {
+      "boosts": [
+        {
+          "when": {
+            "stats": [
+              {
+                "stat": "tech",
+                "operator": "<=",
+                "value": 35
+              }
+            ]
+          },
+          "factor": 2
+        }
+      ]
+    },
+    "backpack-008": {
+      "boosts": [
+        {
+          "when": {
+            "stats": [
+              {
+                "stat": "team",
+                "operator": "<=",
+                "value": 35
+              }
+            ]
+          },
+          "factor": 2
+        }
+      ]
+    }
+  }
+}

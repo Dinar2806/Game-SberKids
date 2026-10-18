@@ -86,7 +86,7 @@ const GameData = (() => {
       const keys = ['resourceLoss', 'resourceGain', 'dreamLoss', 'dreamGain'];
       knownKeys(b.multipliers, keys, `${p}.balance.multipliers`);
       keys.forEach(key => number(b.multipliers[key], `${p}.balance.multipliers.${key}`, 0));
-      // Заготовки сюжетных концовок; игровой цикл пока их не использует.
+      // Сюжетные концовки используются игровым циклом при подключённом storyFile.
       if (Object.hasOwn(c, 'endings')) {
         object(c.endings, `${p}.endings`);
         const outcomes = [...stats, 'victory', 'incomplete'];
