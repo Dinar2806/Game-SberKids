@@ -11,7 +11,8 @@ let idleHintActive = false;
 // 9. СОСТОЯНИЕ ИГРЫ
 let activeDeck = [];
 let storyDirector = null;
-let storyMiniGamesPending = 0;
+let miniGamesPending = 0;
+let miniGameOfferCount = 0;
 let campaignRun = 0;
 let stats = { money: 55, tech: 55, trust: 55, team: 55 };
 let dreamPct = 15;
@@ -436,12 +437,20 @@ function resolveCard(i) {
   };
 }
 
-function showCard() {
+function showCard(allowMiniGame = true) {
   delete cardEl.dataset.dragging;
   emphasizeChoice();
   closeMascotHint();
   followCardWithMascot();
-  activeCardData = resolveCard(idx);
+  const offerMiniGame = allowMiniGame && miniGamesPending > 0 &&
+    (!storyDirector || !storyDirector.isPriorityCardReady({ stats, dreamPct }));
+  if (offerMiniGame) {
+    miniGamesPending--;
+    const gameType = miniGameOfferCount++ % MINI_GAMES.length;
+    activeCardData = { ...MINI_GAMES[gameType], type: 'minigame', gameType };
+  } else {
+    activeCardData = resolveCard(idx);
+  }
   const c = activeCardData;
   if (!c) {
     const ending = currentDream.endings && currentDream.endings.incomplete;
@@ -452,31 +461,82 @@ function showCard() {
 
   shiftBackground(idx);
 
-  document.getElementById('stepBadge').textContent = storyDirector
+  const isMiniGame = c.type === 'minigame';
+  document.getElementById('stepBadge').textContent = isMiniGame ? '🎮 Мини-игра' : storyDirector
     ? `Ход ${idx + 1} · ${storyDirector.getStatus().chapterTitle}`
     : `Ход ${idx + 1} / ${activeDeck.length}`;
   document.getElementById('condBadge').classList.toggle('show', !!c.isCond);
   document.getElementById('cardTitle').textContent = c.title;
   document.getElementById('cardDesc').textContent = c.desc;
   const artThemes = { shop: '#f8e8bb', friend: '#dcefc4', scam: '#f5d4dd', tech: '#d6e7f7', quiz: '#e5d4f5' };
-  document.getElementById('cardArtZone').style.background = `radial-gradient(ellipse at 35% 15%, #fffcf6, ${artThemes[c.type] || artThemes.quiz})`;
-  spriteWrap.innerHTML = buildCardSVG(c.type, c.emoji);
+  document.getElementById('cardArtZone').style.background = isMiniGame ? ''
+    : `radial-gradient(ellipse at 35% 15%, #fffcf6, ${artThemes[c.type] || artThemes.quiz})`;
+  if (isMiniGame) {
+    const icon = document.createElement('span');
+    icon.className = 'minigame-card-icon';
+    icon.setAttribute('aria-hidden', 'true');
+    icon.textContent = c.emoji;
+    const play = document.createElement('span');
+    play.className = 'minigame-play-mark';
+    play.setAttribute('aria-hidden', 'true');
+    play.textContent = '▶';
+    spriteWrap.replaceChildren(icon, play);
+  } else {
+    spriteWrap.innerHTML = buildCardSVG(c.type, c.emoji);
+  }
   spriteWrap.style.transform = '';
 
-  document.getElementById('btnLeftLabel').textContent = c.left.text;
-  document.getElementById('btnRightLabel').textContent = c.right.text;
+  document.getElementById('btnLeftLabel').textContent = isMiniGame ? 'Пропустить' : c.left.text;
+  document.getElementById('btnRightLabel').textContent = isMiniGame ? 'Играть' : c.right.text;
+  document.getElementById('btnRightArrow').textContent = isMiniGame ? '▶' : '→';
+  const meta = document.getElementById('minigameCardMeta');
+  meta.hidden = !isMiniGame;
+  document.getElementById('minigameCardHint').hidden = !isMiniGame;
+  if (isMiniGame) meta.textContent = `${c.duration} секунд · до +${currentDream.balance.miniGameMaxBonus}% к мечте`;
+  document.getElementById('btnRight').setAttribute('aria-label', isMiniGame ? `Играть: ${c.title}` : c.right.text);
 
   showDots(null);
   renderMascot('normal', null, 0);
 
-  tutorialHand.classList.toggle('visible', idx === 0 && !hasSwipedOnce);
+  tutorialHand.classList.toggle('visible', !isMiniGame && idx === 0 && !hasSwipedOnce);
 
-  cardEl.className = 'game-card enter';
+  cardEl.className = `game-card enter${isMiniGame ? ' is-minigame' : ''}`;
   cardEl.style.transform = 'translate3d(0,0,0) rotate(0deg)';
   cardEl.style.opacity = '1';
 
   // Предлагаем помощь после 20 секунд бездействия.
   resetIdleHintTimer();
+}
+
+function openMiniGameCard() {
+  if (busy || activeCardData?.type !== 'minigame' || !mascotHint.hidden || document.querySelector('.overlay-screen.active')) return;
+  busy = true;
+  dragging = false;
+  cardDragStarted = false;
+  delete cardEl.dataset.dragging;
+  emphasizeChoice();
+  cardEl.style.transform = 'translate3d(0,0,0) rotate(0deg)';
+  spriteWrap.style.transform = '';
+  followCardWithMascot();
+  closeMascotHint();
+  clearTimeout(idleHintTimer);
+  const run = campaignRun;
+  startMiniGame(activeCardData.gameType, () => {
+    if (run !== campaignRun) return;
+    // Мини-игра не занимает сюжетный ход и не расходует следующую сцену.
+    showCard(false);
+    busy = false;
+    resetIdleHintTimer();
+  });
+}
+
+function flyCardAway(dir) {
+  const flyX = dir === 'left' ? -window.innerWidth : window.innerWidth;
+  const flyRot = dir === 'left' ? -24 : 24;
+  cardEl.classList.remove('enter', 'smooth-return');
+  cardEl.classList.add('fly-away');
+  cardEl.style.transform = `translate3d(${flyX}px, 20px, 0) rotate(${flyRot}deg)`;
+  cardEl.style.opacity = '0';
 }
 
 
@@ -557,6 +617,17 @@ function applyDecision(dir) {
   tutorialHand.classList.remove('visible');
 
   const c = activeCardData;
+  if (c.type === 'minigame') {
+    flyCardAway(dir);
+    showDots(null);
+    setTimeout(() => {
+      if (run !== campaignRun) return;
+      showCard(false);
+      busy = false;
+      resetIdleHintTimer();
+    }, 360);
+    return;
+  }
   const choice = dir === 'left' ? c.left : c.right;
   if (storyDirector) storyDirector.commit(choice === c.optA ? 'optA' : 'optB');
   const rect = cardEl.getBoundingClientRect();
@@ -567,11 +638,7 @@ function applyDecision(dir) {
     scamMistakes++;
   }
 
-  const flyX = dir === 'left' ? -window.innerWidth : window.innerWidth;
-  const flyRot = dir === 'left' ? -24 : 24;
-  cardEl.className = 'game-card fly-away';
-  cardEl.style.transform = `translate3d(${flyX}px, 20px, 0) rotate(${flyRot}deg)`;
-  cardEl.style.opacity = '0';
+  flyCardAway(dir);
 
   // Применяем индивидуальные множители кампании к базовым эффектам события
   Object.keys(choice.effects).forEach(k => {
@@ -658,17 +725,8 @@ function applyDecision(dir) {
       showCard();
       busy = false;
     };
-    if (storyDirector) {
-      if ((idx + 1) % 4 === 0) storyMiniGamesPending++;
-      if (storyDirector.isPriorityCardReady({ stats, dreamPct }) || !storyMiniGamesPending) {
-        advance();
-      } else {
-        storyMiniGamesPending--;
-        triggerMiniGameIfNeeded(advance, true, true);
-      }
-    } else {
-      triggerMiniGameIfNeeded(advance, true);
-    }
+    if ((idx + 1) % 4 === 0) miniGamesPending++;
+    advance();
   }, 360);
 }
 
@@ -745,7 +803,7 @@ window.addEventListener('pointermove', (e) => {
     cardDragStarted = true;
     cardEl.dataset.dragging = 'true';
     tutorialHand.classList.remove('visible');
-    cardEl.className = 'game-card';
+    cardEl.classList.remove('enter', 'smooth-return');
   }
   emphasizeChoice(dx);
   const dy = pointerDy * 0.25;
@@ -787,7 +845,8 @@ function endDrag(event) {
     applyDecision('right');
   } else {
     emphasizeChoice();
-    cardEl.className = 'game-card smooth-return';
+    cardEl.classList.remove('enter', 'fly-away');
+    cardEl.classList.add('smooth-return');
     cardEl.style.transform = 'translate3d(0,0,0) rotate(0deg)';
     spriteWrap.style.transform = '';
     showDots(null);
@@ -806,11 +865,23 @@ function chooseFromButton(event, direction) {
     draggedPastTap = false;
     return;
   }
-  Sound.swipe();
-  applyDecision(direction);
+  if (activeCardData?.type === 'minigame' && direction === 'right') {
+    openMiniGameCard();
+  } else {
+    Sound.swipe();
+    applyDecision(direction);
+  }
 }
 document.getElementById('btnLeft').addEventListener('click', event => chooseFromButton(event, 'left'));
 document.getElementById('btnRight').addEventListener('click', event => chooseFromButton(event, 'right'));
+cardEl.addEventListener('click', event => {
+  if (event.target.closest('button')) return;
+  if (draggedPastTap) {
+    draggedPastTap = false;
+    return;
+  }
+  openMiniGameCard();
+});
 
 window.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowLeft') { Sound.swipe(); applyDecision('left'); }
@@ -1050,6 +1121,7 @@ async function startCampaign(id) {
   const campaign = campaigns.find(item => item.id === id);
   if (!campaign) return;
   const run = ++campaignRun;
+  cancelMiniGame();
   campaignLoadRun = run;
   setCampaignLoading(true);
   retryCampaignId = id;
@@ -1061,7 +1133,8 @@ async function startCampaign(id) {
     if (run !== campaignRun) return;
     activeDeck = events;
     storyDirector = story ? StoryDirector.create(story, events) : null;
-    storyMiniGamesPending = 0;
+    miniGamesPending = 0;
+    miniGameOfferCount = 0;
     applyDreamTheme(campaign);
     stats = { ...campaign.balance.initialStats };
     dreamPct = campaign.balance.initialDream;
@@ -1106,6 +1179,7 @@ campaignRetryBtn.addEventListener('click', () => {
 
 document.getElementById('restartBtn').addEventListener('click', () => {
   campaignRun++;
+  cancelMiniGame();
   campaignLoadRun = null;
   setCampaignLoading(false);
   busy = true;
@@ -1128,6 +1202,7 @@ if (shareBtn) {
 
 function closeApp() {
   campaignRun++;
+  cancelMiniGame();
   campaignLoadRun = null;
   setCampaignLoading(false);
   busy = true;

@@ -222,6 +222,45 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
 .reward-banner.is-anchored { position: absolute; top: auto; bottom: calc(100% + 10px); }
 .comic-pop { font-size: 18px; background: #52346f; background-image: none; border: 2px solid #fff; border-radius: 18px; max-width: 90vw; white-space: normal; text-align: center; }
 
+/* A warm game ticket among the story cards; either swipe passes the invitation. */
+.deck-area:has(> .game-card.is-minigame) { height: auto; flex: 1 0 auto; align-items: stretch; }
+.game-card.is-minigame { height: auto; min-height: 360px; max-height: none; background: #fff8e9; border-color: #f4d493; box-shadow: 0 5px 0 #bc9360, 0 13px 24px #07040b40; cursor: pointer; }
+.game-card.is-minigame .card-art-zone { height: clamp(100px, calc(var(--viewport-height, 790px) * .14), 120px); background: radial-gradient(circle at 50% 40%, #fff1cd 0, #f7deb0 48%, #e9d8f2 100%) !important; border-bottom: 2px dashed #d9b785; }
+.game-card.is-minigame .card-art-zone::before { content: '\2726'; color: #a982bd; top: 44%; font-size: 25px; }
+.game-card.is-minigame .card-art-zone::after { content: '\2726'; color: #9b6d2e; top: 62%; font-size: 17px; }
+.game-card.is-minigame .step-badge { background: #fffaf0; border-color: #dec095; color: #765020; }
+.game-card.is-minigame .sprite-wrapper { position: relative; width: min(112px, 43%); height: 82%; max-height: 126px; animation: none; }
+.minigame-card-icon { display: grid; place-items: center; width: 90%; height: 88%; border: 2px solid #fff1c9; border-radius: 27%; background: linear-gradient(145deg, #fff4c9, #f6c875); box-shadow: inset 0 2px 0 #ffffffb3, 0 5px 0 #c2934e, 0 9px 15px #6a3b2824; font-size: clamp(42px, 12vw, 65px); line-height: 1; transform: rotate(-8deg); }
+.minigame-play-mark { display: grid; place-items: center; position: absolute; right: -3px; bottom: 1px; width: 37px; height: 37px; padding-left: 3px; border: 3px solid #fff1d9; border-radius: 50%; background: #6b4588; color: #fff6e7; box-shadow: 0 3px 0 #422650; font-size: 16px; }
+.game-card.is-minigame .card-text-zone { flex: 1 0 auto; overflow: visible; background: #fff8e9; padding-top: 9px; padding-bottom: 8px; }
+.game-card.is-minigame .card-title { color: #654324; font-size: clamp(21px, 6vw, 24px); overflow-wrap: anywhere; }
+.game-card.is-minigame .card-desc { margin-top: 6px; color: #695644; font-size: 15px; line-height: 1.35; }
+.minigame-card-meta { display: inline-block; margin: 8px 0 0; padding: 4px 9px; border: 1px solid #e3c58d; border-radius: 99px; background: #ffedc4; color: #765020; font-size: 12px; font-weight: 800; line-height: 1.35; }
+.minigame-card-hint { max-width: 280px; margin: 7px auto 0; color: #796b61; font-size: 12px; line-height: 1.35; }
+.minigame-card-meta[hidden], .minigame-card-hint[hidden] { display: none; }
+.game-card.is-minigame .controls-row { background: #fff8e9; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: 58px; column-gap: 10px; transition: none; padding-top: 5px; padding-bottom: 14px; }
+.game-card.is-minigame .choice-btn { --choice-presence: 1; gap: 6px; padding: 10px 8px; border-width: 1px; opacity: 1; font-size: 14px; }
+.game-card.is-minigame .choice-label { flex: 0 1 auto; max-height: none; overflow: visible; }
+.game-card.is-minigame .choice-arrow { position: static; width: auto; font-size: 15px; transform: none; }
+.game-card.is-minigame .choice-btn.left { background: #f1e8f7; border-color: #d1b9e0; color: #654a79; }
+.game-card.is-minigame .choice-btn.left .choice-arrow { display: none; }
+.game-card.is-minigame .choice-btn.right { background: linear-gradient(150deg, #ffdf8e, #f5c16a); border-color: #dcaa55; color: #66421f; }
+.game-card.is-minigame[data-dragging] .choice-btn.left { background: #e4d4f0; border-color: #ac86c4; }
+.game-card.is-minigame .choice-btn:focus-visible { outline: 3px solid #79509a; outline-offset: -4px; }
+@media (max-width: 359px) {
+  .game-card.is-minigame .card-text-zone { padding-right: 10px; padding-left: 10px; }
+  .game-card.is-minigame .choice-btn { font-size: 13px; }
+  .minigame-card-meta { font-size: 11px; }
+}
+@media (max-height: 740px) {
+  .game-card.is-minigame .card-art-zone { height: 92px; }
+  .game-card.is-minigame .card-text-zone { padding-top: 8px; padding-bottom: 8px; }
+  .game-card.is-minigame .card-title { font-size: 22px; }
+  .game-card.is-minigame .card-desc { font-size: 15px; }
+  .minigame-card-meta { margin-top: 7px; }
+  .minigame-card-hint { margin-top: 6px; font-size: 11px; }
+}
+
 /* Mini-games and results belong to the same toy collection. */
 .overlay-screen { background: #110c1bdc; overflow-y: auto; overscroll-behavior: contain; padding: max(56px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom)); }
 /* The opaque catalog covers the game completely; resume its animations on start. */

@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="./css/main.css?v=webview-layout-1">
   <link rel="stylesheet" href="./css/cards.css?v=rendering-perf-1">
   <link rel="stylesheet" href="./css/modals.css">
-  <link rel="stylesheet" href="./css/playful.css?v=rendering-perf-1">
+  <link rel="stylesheet" href="./css/playful.css?v=minigame-cards-1">
   <meta name="theme-color" content="#19171f">
 </head>
 <body>
@@ -137,6 +137,8 @@
         <div>
           <h2 class="card-title" id="cardTitle">Загрузка...</h2>
           <p class="card-desc" id="cardDesc"></p>
+          <p class="minigame-card-meta" id="minigameCardMeta" hidden></p>
+          <p class="minigame-card-hint" id="minigameCardHint" hidden>Нажми для игры · смахни для пропуска</p>
         </div>
       </div>
       <!-- РЕШЕНИЯ ВНУТРИ КАРТОЧКИ -->
@@ -147,7 +149,7 @@
     </button>
     <button class="choice-btn right" id="btnRight" type="button">
       <span class="choice-label" id="btnRightLabel">Вариант 2</span>
-      <span class="choice-arrow" aria-hidden="true">→</span>
+      <span class="choice-arrow" id="btnRightArrow" aria-hidden="true">→</span>
     </button>
       </div>
     </div>
@@ -221,8 +223,8 @@
   <script src="./js/story-director.js?v=story-checkpoints-5"></script>
   <script src="./js/campaign-data.js?v=story-checkpoints-5"></script>
   <script src="./js/graphics-vfx.js?v=rendering-perf-1"></script>
-  <script src="./js/minigames.js?v=story-checkpoints-5"></script>
-  <script src="./js/game.js?v=story-checkpoints-5"></script>
+  <script src="./js/minigames.js?v=minigame-cards-1"></script>
+  <script src="./js/game.js?v=minigame-cards-1"></script>
   <script src="./js/accessibility.js"></script>
 </body>
 </html>

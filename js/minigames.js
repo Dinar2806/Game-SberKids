@@ -1,10 +1,60 @@
-// Пул из 8 обучающих мини-игр по 15 секунд с таймер-полосой
-// 10. ПУЛ ИЗ 6 РАЗНЫХ МИНИ-ИГР ПО 15 СЕКУНД (Каждые 4 карточки: 4, 8, 12, 16, 20, 24, 28, 32, 36)
-function triggerMiniGameIfNeeded(nextCallback, hasMoreCards = idx + 1 < activeDeck.length, force = false) {
-  const step = idx + 1;
-  if (!hasMoreCards || (!force && step % 4 !== 0)) {
-    nextCallback();
-    return;
+// Порядок совпадает с gameType в колоде и механиками ниже.
+const MINI_GAMES = [
+  {
+    title: 'Монетный звездопад', emoji: '🪙',
+    desc: 'Лови монетки и звёзды, обходи бомбочки.',
+    tip: 'Нажимай на 🪙 и 🌟, не трогай 💣.', duration: 15
+  },
+  {
+    title: 'Кибер-щит 3×3', emoji: '🛡️',
+    desc: 'Поймай мошенников, не задевая друзей.',
+    tip: 'Нажимай на 🥷 и 🎣, пропускай 🦊.', duration: 15
+  },
+  {
+    title: 'Умная сортировка', emoji: '⚡',
+    desc: 'Полезное — в копилку, ловушки — в корзину.',
+    tip: 'Выбирай, куда отправить каждое действие.', duration: 15
+  },
+  {
+    title: 'Выгодный ценник', emoji: '🛒',
+    desc: 'Сравни предложения и выбери покупку дешевле.',
+    tip: 'Учти скидки, доставку и количество товаров.', duration: 15
+  },
+  {
+    title: 'Сейф памяти', emoji: '🧠',
+    desc: 'Открывай карточки и находи одинаковые пары.',
+    tip: 'Запоминай символы и найди все четыре пары.', duration: 15
+  },
+  {
+    title: 'Турбо-реактор', emoji: '🔋',
+    desc: 'Лови заряды и батарейки, избегай красных искр.',
+    tip: 'Нажимай на ⚡ и 🔋, не трогай 💢.', duration: 15
+  },
+  {
+    title: 'Детектор подвоха', emoji: '🔍',
+    desc: 'Найди обман в сообщениях и лишние траты в чеке.',
+    tip: 'Нажимай только на подозрительные строки.', duration: 15
+  },
+  {
+    title: 'Кибер-сейф пароля', emoji: '🔐',
+    desc: 'Выбирай надёжный пароль и безопасные настройки.',
+    tip: 'Нажимай на вариант, который лучше защитит аккаунт.', duration: 15
+  }
+];
+
+let activeMiniGame = null;
+
+// Смена кампании закрывает игру без награды и перехода по старой колоде.
+function cancelMiniGame() {
+  if (activeMiniGame) activeMiniGame.cancel();
+}
+
+function startMiniGame(gameType, nextCallback) {
+  const game = Number.isInteger(gameType) ? MINI_GAMES[gameType] : null;
+  if (!game) return false;
+  if (activeMiniGame) {
+    if (activeMiniGame.run === campaignRun) return false;
+    cancelMiniGame();
   }
 
   clearTimeout(idleHintTimer);
@@ -20,51 +70,80 @@ function triggerMiniGameIfNeeded(nextCallback, hasMoreCards = idx + 1 < activeDe
   arena.innerHTML = '';
   overlay.classList.add('active');
   let bonus = 0;
-  let timeLeft = 15;
+  let timeLeft = game.duration;
   let finished = false;
-  let spawnTimer = null;
-  let countdown = null;
+  const timeouts = new Set();
+  const intervals = new Set();
+  const session = { run, cancel: () => endMiniGame(false) };
+  activeMiniGame = session;
+
+  function isCurrent() {
+    if (finished) return false;
+    if (run === campaignRun) return true;
+    endMiniGame(false);
+    return false;
+  }
+
+  function later(callback, delay) {
+    const timer = setTimeout(() => {
+      timeouts.delete(timer);
+      if (isCurrent()) callback();
+    }, delay);
+    timeouts.add(timer);
+    return timer;
+  }
+
+  function repeat(callback, delay) {
+    const timer = setInterval(() => {
+      if (isCurrent()) callback();
+    }, delay);
+    intervals.add(timer);
+    return timer;
+  }
 
   // Бонус задаётся кампанией независимо от количества событий.
   const maxCap = currentDream.balance.miniGameMaxBonus;
 
   const timerFillEl = document.getElementById('mgTimerFill');
+  titleEl.textContent = `${game.emoji} ${game.title}`;
+  subEl.textContent = game.tip;
   if (timerFillEl) timerFillEl.style.width = '100%';
   timerEl.textContent = `⏱️ ${timeLeft} сек`;
   scoreEl.textContent = `Бонус: +0 🌟`;
 
   function addBonus(delta, x, y, symbol) {
+    if (!isCurrent()) return;
     bonus = Math.max(0, Math.min(maxCap, bonus + delta));
     scoreEl.textContent = `Бонус: +${bonus} 🌟`;
     if (delta > 0) Sound.coin(); else Sound.bad();
     if (x && y) spawnBurst(x, y, [symbol], 3);
   }
 
-  function endMiniGame() {
+  function endMiniGame(award = true) {
     if (finished) return;
     finished = true;
-    if (countdown) clearInterval(countdown);
-    if (spawnTimer) clearInterval(spawnTimer);
-    if (run !== campaignRun) return;
+    timeouts.forEach(clearTimeout);
+    intervals.forEach(clearInterval);
+    timeouts.clear();
+    intervals.clear();
+    if (activeMiniGame === session) activeMiniGame = null;
     overlay.classList.remove('active');
+    arena.innerHTML = '';
+    skipBtn.onclick = null;
+    if (!award || run !== campaignRun) return;
     dreamPct = clampDreamProgress(dreamPct + bonus);
     stats.money = clamp(stats.money + Math.round(bonus / 2));
     syncUI();
     Sound.unlock();
     flashBanner(`🎉 Мини-игра: +${bonus}% к Мечте и +${Math.round(bonus / 2)} 🪙!`);
-    nextCallback();
+    if (typeof nextCallback === 'function') nextCallback();
   }
 
-  skipBtn.onclick = endMiniGame;
-
-  // Чередуем 8 разных мини-игр по кругу
-  const gameType = (Math.floor(step / 4) - 1) % 8;
+  skipBtn.onclick = () => endMiniGame();
 
   if (gameType === 0) {
     // ИГРА 1: Монетный звездопад
-    titleEl.textContent = '🪙 Монетный звездопад!';
-    subEl.textContent = 'Лови монетки 🪙 и звёзды 🌟, не трогай бомбочки 💣!';
-    spawnTimer = setInterval(() => {
+    repeat(() => {
       const item = document.createElement('div');
       item.className = 'mg-item';
       const isBomb = Math.random() < 0.3;
@@ -73,19 +152,18 @@ function triggerMiniGameIfNeeded(nextCallback, hasMoreCards = idx + 1 < activeDe
       item.style.left = (8 + Math.random() * 76) + '%';
       item.style.top = (8 + Math.random() * 74) + '%';
       item.addEventListener('pointerdown', (e) => {
+        if (!isCurrent()) return;
         e.stopPropagation();
         const r = item.getBoundingClientRect();
         addBonus(isBomb ? -1 : 1, r.left + 25, r.top + 25, isBomb ? '💥' : '🌟');
         item.remove();
       });
       arena.appendChild(item);
-      setTimeout(() => { if (item.parentNode) item.remove(); }, 1000);
+      later(() => { if (item.parentNode) item.remove(); }, 1000);
     }, 430);
 
   } else if (gameType === 1) {
     // ИГРА 2: Кибер-Щит 3x3
-    titleEl.textContent = '🛡️ Кибер-Щит 3×3!';
-    subEl.textContent = 'Лопай мошенников 🥷 и крючки 🎣, не задевай друзей 🦊!';
     const grid = document.createElement('div');
     grid.className = 'mg-grid3x3';
     const holes = [];
@@ -97,13 +175,14 @@ function triggerMiniGameIfNeeded(nextCallback, hasMoreCards = idx + 1 < activeDe
     }
     arena.appendChild(grid);
 
-    spawnTimer = setInterval(() => {
+    repeat(() => {
       const hole = holes[Math.floor(Math.random() * holes.length)];
       if (hole.textContent) return;
       const isFriend = Math.random() < 0.28;
       hole.textContent = isFriend ? '🦊' : (Math.random() < 0.5 ? '🥷' : '🎣');
       hole.style.background = isFriend ? '#dcfce7' : '#ffe4e6';
       hole.onpointerdown = (e) => {
+        if (!isCurrent()) return;
         e.stopPropagation();
         if (!hole.textContent) return;
         const r = hole.getBoundingClientRect();
@@ -111,7 +190,7 @@ function triggerMiniGameIfNeeded(nextCallback, hasMoreCards = idx + 1 < activeDe
         hole.textContent = '';
         hole.style.background = '#e2e8f0';
       };
-      setTimeout(() => {
+      later(() => {
         hole.textContent = '';
         hole.style.background = '#e2e8f0';
       }, 880);
@@ -119,8 +198,6 @@ function triggerMiniGameIfNeeded(nextCallback, hasMoreCards = idx + 1 < activeDe
 
   } else if (gameType === 2) {
     // ИГРА 3: Умная сортировка
-    titleEl.textContent = '⚡ Умная сортировка!';
-    subEl.textContent = 'Полезное отправляй в Копилку 🏦, а ловушки — в Корзину 🗑️!';
     const items = [
       { t: '🥷 Назвать код из СМС', good: false },
       { t: '🐷 Отложить сдачу в копилку', good: true },
@@ -146,6 +223,7 @@ function triggerMiniGameIfNeeded(nextCallback, hasMoreCards = idx + 1 < activeDe
     const cardTxt = wrap.querySelector('#sortCardText');
     function nextSortItem() { cardTxt.textContent = items[sIdx % items.length].t; }
     function handleSort(toBank, btnEl) {
+      if (!isCurrent()) return;
       const cur = items[sIdx % items.length];
       const ok = (toBank && cur.good) || (!toBank && !cur.good);
       const r = btnEl.getBoundingClientRect();
@@ -159,8 +237,6 @@ function triggerMiniGameIfNeeded(nextCallback, hasMoreCards = idx + 1 < activeDe
 
   } else if (gameType === 3) {
     // ИГРА 4: Честный Ценник (выбери где покупка выгоднее!)
-    titleEl.textContent = '🛒 Выгодный ценник!';
-    subEl.textContent = 'Посчитай в уме и нажми на вариант, где покупка ДЕШЕВЛЕ!';
     const deals = [
       { a: '🏷️ 100 🪙 (скидка 30 🪙)', b: '🏷️ 80 🪙 (без скидки)', aWin: true },
       { a: '📦 60 🪙 + доставка 25 🪙', b: '📦 75 🪙 + доставка 0 🪙', aWin: false },
@@ -188,6 +264,7 @@ function triggerMiniGameIfNeeded(nextCallback, hasMoreCards = idx + 1 < activeDe
       btnB.textContent = d.b;
     }
     function pickDeal(choseA, btnEl) {
+      if (!isCurrent()) return;
       const d = deals[dIdx % deals.length];
       const ok = (choseA && d.aWin) || (!choseA && !d.aWin);
       const r = btnEl.getBoundingClientRect();
@@ -201,8 +278,6 @@ function triggerMiniGameIfNeeded(nextCallback, hasMoreCards = idx + 1 < activeDe
 
   } else if (gameType === 4) {
     // ИГРА 5: Сейф Памяти (найди 4 пары символов)
-    titleEl.textContent = '🧠 Сейф Памяти!';
-    subEl.textContent = 'Открывай карточки и находи одинаковые пары!';
     const syms = ['🪙', '🪙', '🛡️', '🛡️', '🔋', '🔋', '🌟', '🌟'].sort(() => Math.random() - 0.5);
     const grid = document.createElement('div');
     grid.className = 'mem-grid';
@@ -215,6 +290,7 @@ function triggerMiniGameIfNeeded(nextCallback, hasMoreCards = idx + 1 < activeDe
       cell.textContent = '❓';
       cell.dataset.sym = sym;
       cell.onpointerdown = (e) => {
+        if (!isCurrent()) return;
         e.stopPropagation();
         if (lockBoard || cell === firstCard || cell.classList.contains('matched')) return;
         cell.textContent = sym;
@@ -233,7 +309,7 @@ function triggerMiniGameIfNeeded(nextCallback, hasMoreCards = idx + 1 < activeDe
             Sound.bad();
             const prev = firstCard;
             firstCard = null;
-            setTimeout(() => {
+            later(() => {
               prev.textContent = '❓';
               cell.textContent = '❓';
               lockBoard = false;
@@ -247,9 +323,7 @@ function triggerMiniGameIfNeeded(nextCallback, hasMoreCards = idx + 1 < activeDe
 
   } else if (gameType === 5) {
     // ИГРА 6: Турбо-Реактор с защитой от короткого замыкания
-    titleEl.textContent = '🔋 Турбо-Реактор!';
-    subEl.textContent = 'Лови заряды ⚡ и батарейки 🔋, не трогай красные искры 💢!';
-    spawnTimer = setInterval(() => {
+    repeat(() => {
       const orb = document.createElement('div');
       orb.className = 'mg-item';
       const isBad = Math.random() < 0.25;
@@ -259,19 +333,18 @@ function triggerMiniGameIfNeeded(nextCallback, hasMoreCards = idx + 1 < activeDe
       orb.style.left = (10 + Math.random() * 72) + '%';
       orb.style.top = (10 + Math.random() * 72) + '%';
       orb.addEventListener('pointerdown', (e) => {
+        if (!isCurrent()) return;
         e.stopPropagation();
         const r = orb.getBoundingClientRect();
         addBonus(isBad ? -1 : 1, r.left + 25, r.top + 25, isBad ? '💥' : '⚡');
         orb.remove();
       });
       arena.appendChild(orb);
-      setTimeout(() => { if (orb.parentNode) orb.remove(); }, 860);
+      later(() => { if (orb.parentNode) orb.remove(); }, 860);
     }, 410);
 
   } else if (gameType === 6) {
     // ИГРА 7: Детектор Подвоха в чеке и СМС
-    titleEl.textContent = '🔍 Детектор Подвоха!';
-    subEl.textContent = 'Нажимай только на ПОДОЗРИТЕЛЬНЫЕ строки с обманом или лишней наценкой!';
     const rounds = [
       [
         { t: '🧾 Самокат городской — 100 🪙', bad: false },
@@ -307,6 +380,7 @@ function triggerMiniGameIfNeeded(nextCallback, hasMoreCards = idx + 1 < activeDe
         row.className = 'detective-row';
         row.innerHTML = `<span>${item.t}</span><span>🔍</span>`;
         row.onclick = () => {
+          if (!isCurrent()) return;
           const r = row.getBoundingClientRect();
           if (item.bad) {
             addBonus(2, r.left + 80, r.top, '🛡️');
@@ -324,8 +398,6 @@ function triggerMiniGameIfNeeded(nextCallback, hasMoreCards = idx + 1 < activeDe
 
   } else {
     // ИГРА 8: Кибер-Сейф Пароля
-    titleEl.textContent = '🔐 Кибер-Сейф Пароля!';
-    subEl.textContent = 'Выбирай НАДЁЖНЫЙ пароль или безопасную настройку!';
     const pairs = [
       { a: '🔓 Пароль: 123456', b: '🔐 Пароль: Fox#92!Voltik', aGood: false },
       { a: '🔐 Двухфакторная защита ВКЛ', b: '🔓 Одинаковый пароль везде', aGood: true },
@@ -351,6 +423,7 @@ function triggerMiniGameIfNeeded(nextCallback, hasMoreCards = idx + 1 < activeDe
       btnB.textContent = p.b;
     }
     function pickPw(isA, el) {
+      if (!isCurrent()) return;
       const p = pairs[pIdx % pairs.length];
       const ok = (isA && p.aGood) || (!isA && !p.aGood);
       const r = el.getBoundingClientRect();
@@ -363,11 +436,11 @@ function triggerMiniGameIfNeeded(nextCallback, hasMoreCards = idx + 1 < activeDe
     renderPw();
   }
 
-  countdown = setInterval(() => {
-    if (run !== campaignRun) { endMiniGame(); return; }
+  repeat(() => {
     timeLeft--;
     timerEl.textContent = `⏱️ ${timeLeft} сек`;
-    if (timerFillEl) timerFillEl.style.width = `${Math.max(0, (timeLeft / 15) * 100)}%`;
+    if (timerFillEl) timerFillEl.style.width = `${Math.max(0, (timeLeft / game.duration) * 100)}%`;
     if (timeLeft <= 0) endMiniGame();
   }, 1000);
+  return true;
 }

@@ -32,6 +32,9 @@ jobs:
       - name: Validate campaigns and events
         run: node scripts/check-data.cjs
 
+      - name: Check optional mini-game cards
+        run: node scripts/check-minigames.cjs
+
       - name: Package public files
         run: |
           mkdir _site
