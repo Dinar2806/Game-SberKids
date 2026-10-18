@@ -17,6 +17,7 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
 .bg-shape.s1 { width: 330px; height: 330px; }
 .bg-shape.s2 { width: 280px; height: 280px; }
 .bg-shape.s3 { opacity: .035; }
+.welcome-header-right { display: flex; align-items: center; gap: 10px; }
 .eyebrow { font-size: 10px; font-weight: 800; letter-spacing: .1em; }
 .wordmark { display: flex; gap: 6px; align-items: center; color: #fff; font-size: 23px; font-weight: 900; letter-spacing: -.9px; }
 .wordmark > span:last-child { color: var(--lime); margin-left: -5px; }
@@ -182,7 +183,7 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 .streak-pill { top: 8px; right: 0; background: #e0f4a3; color: #3b501c; border: 1px solid #e4ffc0; font-size: 9px; box-shadow: 0 2px 0 #6f8249; }
-.deck-area { margin: 0 0 11px; min-height: 360px; }
+.deck-area { margin: 0 0 11px; min-height: 430px; }
 .game-card, .card-shadow-1, .card-shadow-2 { max-width: none; max-height: 620px; border-radius: 25px; }
 .game-card { border: 2px solid #fff; box-shadow: 0 5px 0 #b6a8c9, 0 13px 24px #07040b40; touch-action: pan-y; }
 .card-shadow-1 { background: #c5b2db; border: 0; box-shadow: 0 4px 0 #725f8c; transform: translateY(9px) scale(.95); }
@@ -202,18 +203,15 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
 .tut-pill { font-size: 16px; padding: 5px 14px; background: #30243ed9; }
 .tut-caption { background: #fffef4; border: 1px solid #d9c5e6; font-size: 10px; padding: 5px 9px; }
 .game-card .controls-row { gap: 10px; padding: 7px 12px 18px; margin-top: auto; border: 0; background: #fff; flex-shrink: 0; touch-action: manipulation; }
-.game-card .controls-row { container-type: inline-size; grid-template-columns: minmax(0, var(--choice-left, 1fr)) minmax(0, var(--choice-right, 1fr)); grid-template-rows: 84px; column-gap: calc(10px * (1 - var(--choice-focus, 0))); transition: grid-template-columns .16s ease-out, column-gap .16s ease-out; }
-.game-card .choice-btn { min-width: 0; min-height: 0; overflow: hidden; justify-content: center; padding-left: calc(12px * var(--choice-presence, 1)); padding-right: calc(12px * var(--choice-presence, 1)); border-width: calc(1px * var(--choice-presence, 1)); opacity: var(--choice-presence, 1); transition: opacity .16s ease-out, padding .16s ease-out, border-width .16s ease-out, transform .1s ease, box-shadow .1s ease; }
-.game-card .choice-btn.left { --choice-presence: var(--choice-left-presence, 1); }
-.game-card .choice-btn.right { --choice-presence: var(--choice-right-presence, 1); }
-.game-card .choice-btn, .game-card .choice-btn:active { box-shadow: none; }
-.game-card[data-dragging] .controls-row, .game-card[data-dragging] .choice-btn { transition: none; }
-/* Center the copy independently of the arrow, without reflow during a swipe. */
-.game-card .choice-btn { position: relative; gap: 0; }
-.game-card .choice-label { flex: 0 0 max(0px, calc((100cqi - 10px) / 2 - 72px)); min-width: 0; max-height: 100%; overflow: hidden; text-align: center; }
-.game-card .choice-arrow { position: absolute; top: 50%; width: 21px; text-align: center; transform: translateY(-50%); }
-.game-card .choice-btn.left .choice-arrow { left: 10px; }
-.game-card .choice-btn.right .choice-arrow { right: 10px; }
+/* Answers grow with their copy and keep the same readable width during a swipe. */
+.game-card .controls-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: minmax(104px, auto); }
+.game-card .choice-btn { display: grid; grid-template-columns: 16px minmax(0, 1fr); min-width: 0; min-height: 104px; padding: 14px 10px; column-gap: 6px; border-width: 1px; justify-content: stretch; transition: transform .1s ease, box-shadow .16s ease; }
+.game-card .choice-btn.left { --choice-emphasis: var(--choice-left-emphasis, 0); }
+.game-card .choice-btn.right { --choice-emphasis: var(--choice-right-emphasis, 0); grid-template-columns: minmax(0, 1fr) 16px; }
+.game-card .choice-btn, .game-card .choice-btn:active { box-shadow: inset 0 0 0 calc(2px * var(--choice-emphasis, 0)) currentColor; }
+.game-card[data-dragging] .choice-btn { transition: none; }
+.game-card .choice-label { min-width: 0; white-space: normal; overflow-wrap: anywhere; hyphens: auto; text-align: center; }
+.game-card .choice-arrow { position: static; width: 16px; font-size: 18px; text-align: center; transform: none; }
 .choice-btn { min-height: 76px; font-size: 15px; line-height: 1.3; border-radius: 19px; padding: 11px 12px; gap: 8px; }
 .choice-btn.left { background: linear-gradient(160deg, #f3eaff, #d4b9f0); border: 1px solid #e6d3ff; box-shadow: none; }
 .choice-btn.right { background: linear-gradient(160deg, #e4ffb0, #c1e78a); border: 1px solid #e9ffc8; box-shadow: none; }
@@ -221,6 +219,45 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
 .reward-banner { top: max(75px, env(safe-area-inset-top)); background: #f4eaff; color: #432c5b; font-size: 12px; line-height: 1.45; border-radius: 17px; padding: 12px 16px; border: 1px solid #d6baf4; box-shadow: 0 7px 25px #0e071950; width: max-content; max-width: min(92%, 410px); }
 .reward-banner.is-anchored { position: absolute; top: auto; bottom: calc(100% + 10px); }
 .comic-pop { font-size: 18px; background: #52346f; background-image: none; border: 2px solid #fff; border-radius: 18px; max-width: 90vw; white-space: normal; text-align: center; }
+
+/* A warm game ticket among the story cards; either swipe passes the invitation. */
+.deck-area:has(> .game-card.is-minigame) { height: auto; min-height: 360px; flex: 1 0 auto; align-items: stretch; }
+.game-card.is-minigame { height: auto; min-height: 360px; max-height: none; background: #fff8e9; border-color: #f4d493; box-shadow: 0 5px 0 #bc9360, 0 13px 24px #07040b40; cursor: pointer; }
+.game-card.is-minigame .card-art-zone { height: clamp(100px, calc(var(--viewport-height, 790px) * .14), 120px); background: radial-gradient(circle at 50% 40%, #fff1cd 0, #f7deb0 48%, #e9d8f2 100%) !important; border-bottom: 2px dashed #d9b785; }
+.game-card.is-minigame .card-art-zone::before { content: '\2726'; color: #a982bd; top: 44%; font-size: 25px; }
+.game-card.is-minigame .card-art-zone::after { content: '\2726'; color: #9b6d2e; top: 62%; font-size: 17px; }
+.game-card.is-minigame .step-badge { background: #fffaf0; border-color: #dec095; color: #765020; }
+.game-card.is-minigame .sprite-wrapper { position: relative; width: min(112px, 43%); height: 82%; max-height: 126px; animation: none; }
+.minigame-card-icon { display: grid; place-items: center; width: 90%; height: 88%; border: 2px solid #fff1c9; border-radius: 27%; background: linear-gradient(145deg, #fff4c9, #f6c875); box-shadow: inset 0 2px 0 #ffffffb3, 0 5px 0 #c2934e, 0 9px 15px #6a3b2824; font-size: clamp(42px, 12vw, 65px); line-height: 1; transform: rotate(-8deg); }
+.minigame-play-mark { display: grid; place-items: center; position: absolute; right: -3px; bottom: 1px; width: 37px; height: 37px; padding-left: 3px; border: 3px solid #fff1d9; border-radius: 50%; background: #6b4588; color: #fff6e7; box-shadow: 0 3px 0 #422650; font-size: 16px; }
+.game-card.is-minigame .card-text-zone { flex: 1 0 auto; overflow: visible; background: #fff8e9; padding-top: 9px; padding-bottom: 8px; }
+.game-card.is-minigame .card-title { color: #654324; font-size: clamp(21px, 6vw, 24px); overflow-wrap: anywhere; }
+.game-card.is-minigame .card-desc { margin-top: 6px; color: #695644; font-size: 15px; line-height: 1.35; }
+.minigame-card-meta { display: inline-block; margin: 8px 0 0; padding: 4px 9px; border: 1px solid #e3c58d; border-radius: 99px; background: #ffedc4; color: #765020; font-size: 12px; font-weight: 800; line-height: 1.35; }
+.minigame-card-hint { max-width: 280px; margin: 7px auto 0; color: #796b61; font-size: 12px; line-height: 1.35; }
+.minigame-card-meta[hidden], .minigame-card-hint[hidden] { display: none; }
+.game-card.is-minigame .controls-row { background: #fff8e9; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: minmax(58px, auto); column-gap: 10px; transition: none; padding-top: 5px; padding-bottom: 14px; }
+.game-card.is-minigame .choice-btn { --choice-emphasis: 0; display: flex; justify-content: center; min-height: 58px; gap: 6px; padding: 10px 8px; border-width: 1px; font-size: 14px; }
+.game-card.is-minigame .choice-label { flex: 0 1 auto; max-height: none; overflow: visible; }
+.game-card.is-minigame .choice-arrow { position: static; width: auto; font-size: 15px; transform: none; }
+.game-card.is-minigame .choice-btn.left { background: #f1e8f7; border-color: #d1b9e0; color: #654a79; }
+.game-card.is-minigame .choice-btn.left .choice-arrow { display: none; }
+.game-card.is-minigame .choice-btn.right { background: linear-gradient(150deg, #ffdf8e, #f5c16a); border-color: #dcaa55; color: #66421f; }
+.game-card.is-minigame[data-dragging] .choice-btn.left { background: #e4d4f0; border-color: #ac86c4; }
+.game-card.is-minigame .choice-btn:focus-visible { outline: 3px solid #79509a; outline-offset: -4px; }
+@media (max-width: 359px) {
+  .game-card.is-minigame .card-text-zone { padding-right: 10px; padding-left: 10px; }
+  .game-card.is-minigame .choice-btn { font-size: 13px; }
+  .minigame-card-meta { font-size: 11px; }
+}
+@media (max-height: 740px) {
+  .game-card.is-minigame .card-art-zone { height: 92px; }
+  .game-card.is-minigame .card-text-zone { padding-top: 8px; padding-bottom: 8px; }
+  .game-card.is-minigame .card-title { font-size: 22px; }
+  .game-card.is-minigame .card-desc { font-size: 15px; }
+  .minigame-card-meta { margin-top: 7px; }
+  .minigame-card-hint { margin-top: 6px; font-size: 11px; }
+}
 
 /* Mini-games and results belong to the same toy collection. */
 .overlay-screen { background: #110c1bdc; overflow-y: auto; overscroll-behavior: contain; padding: max(56px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom)); }
@@ -237,9 +274,8 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
 .mg-hole { background: #e5d9f1; border: 1px solid #c7b5dc; }
 .mem-card, .sorter-card, .detective-row { border-color: #c8b3dd; box-shadow: 0 3px 0 #b9a1d0; }
 #mgSkipBtn { min-height: 44px; }
-.btn-main { background: linear-gradient(#d6f99f, #bce17a); color: #33481e; border: 1px solid #d9fbb0; box-shadow: 0 4px 0 #7e9e4c; min-height: 52px; font-size: 15px; }
-.btn-share { background: #ecdefb; border: 1px solid #c8abeb; color: #563978; box-shadow: 0 3px 0 #ab8bc9; min-height: 48px; }
-.btn-sub { background: #eee9f3; border: 1px solid #d2c5de; color: #60516e; box-shadow: 0 3px 0 #b6a6c3; min-height: 48px; }
+.btn-main { background: linear-gradient(#d6f99f, #bce17a); color: #33481e; border: 1px solid #d9fbb0; box-shadow: 0 4px 0 #7e9e4c; min-height: 52px; font-size: 15px; margin-bottom: 8px; }
+.btn-sub { background: #eee9f3; border: 1px solid #d2c5de; color: #60516e; box-shadow: 0 3px 0 #b6a6c3; min-height: 44px; }
 .rank-pill { background: #e9ddfb; border: 1px solid #c5a8ea; color: #664188; box-shadow: 0 2px 0 #b99ad5; font-size: 10px; text-transform: none; }
 .skill-summary-box { background: #ece4f6; border: 1px solid #d1bfe5; color: #59416f; padding: 11px; font-size: 12px; line-height: 1.5; }
 .ach-card { padding: 10px; background: #eee8f4; border: 1px solid #d8cbe5; opacity: .7; }
@@ -278,13 +314,12 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
   .dream-progress-area { gap: 4px; }
   .mascot-dock { height: 82px; margin-bottom: -22px; }
   .mascot-avatar { width: 100px; height: 90px; }
-  .deck-area { min-height: 360px; }
   .card-text-zone { padding: 6px 12px; gap: 9px; }
   .card-desc { margin-top: 6px; line-height: 1.45; }
   .choice-btn { min-height: 76px; }
 }
 @media (max-height: 590px) {
-  .deck-area { flex-shrink: 0; height: 390px; }
+  .deck-area { flex-shrink: 0; height: 430px; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }

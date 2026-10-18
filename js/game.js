@@ -11,7 +11,8 @@ let idleHintActive = false;
 // 9. СОСТОЯНИЕ ИГРЫ
 let activeDeck = [];
 let storyDirector = null;
-let storyMiniGamesPending = 0;
+let miniGamesPending = 0;
+let miniGameOfferCount = 0;
 let campaignRun = 0;
 let stats = { money: 55, tech: 55, trust: 55, team: 55 };
 let dreamPct = 15;
@@ -436,12 +437,20 @@ function resolveCard(i) {
   };
 }
 
-function showCard() {
+function showCard(allowMiniGame = true) {
   delete cardEl.dataset.dragging;
   emphasizeChoice();
   closeMascotHint();
   followCardWithMascot();
-  activeCardData = resolveCard(idx);
+  const offerMiniGame = allowMiniGame && miniGamesPending > 0 &&
+    (!storyDirector || !storyDirector.isPriorityCardReady({ stats, dreamPct }));
+  if (offerMiniGame) {
+    miniGamesPending--;
+    const gameType = miniGameOfferCount++ % MINI_GAMES.length;
+    activeCardData = { ...MINI_GAMES[gameType], type: 'minigame', gameType };
+  } else {
+    activeCardData = resolveCard(idx);
+  }
   const c = activeCardData;
   if (!c) {
     const ending = currentDream.endings && currentDream.endings.incomplete;
@@ -452,31 +461,82 @@ function showCard() {
 
   shiftBackground(idx);
 
-  document.getElementById('stepBadge').textContent = storyDirector
+  const isMiniGame = c.type === 'minigame';
+  document.getElementById('stepBadge').textContent = isMiniGame ? '🎮 Мини-игра' : storyDirector
     ? `Ход ${idx + 1} · ${storyDirector.getStatus().chapterTitle}`
     : `Ход ${idx + 1} / ${activeDeck.length}`;
   document.getElementById('condBadge').classList.toggle('show', !!c.isCond);
   document.getElementById('cardTitle').textContent = c.title;
   document.getElementById('cardDesc').textContent = c.desc;
   const artThemes = { shop: '#f8e8bb', friend: '#dcefc4', scam: '#f5d4dd', tech: '#d6e7f7', quiz: '#e5d4f5' };
-  document.getElementById('cardArtZone').style.background = `radial-gradient(ellipse at 35% 15%, #fffcf6, ${artThemes[c.type] || artThemes.quiz})`;
-  spriteWrap.innerHTML = buildCardSVG(c.type, c.emoji);
+  document.getElementById('cardArtZone').style.background = isMiniGame ? ''
+    : `radial-gradient(ellipse at 35% 15%, #fffcf6, ${artThemes[c.type] || artThemes.quiz})`;
+  if (isMiniGame) {
+    const icon = document.createElement('span');
+    icon.className = 'minigame-card-icon';
+    icon.setAttribute('aria-hidden', 'true');
+    icon.textContent = c.emoji;
+    const play = document.createElement('span');
+    play.className = 'minigame-play-mark';
+    play.setAttribute('aria-hidden', 'true');
+    play.textContent = '▶';
+    spriteWrap.replaceChildren(icon, play);
+  } else {
+    spriteWrap.innerHTML = buildCardSVG(c.type, c.emoji);
+  }
   spriteWrap.style.transform = '';
 
-  document.getElementById('btnLeftLabel').textContent = c.left.text;
-  document.getElementById('btnRightLabel').textContent = c.right.text;
+  document.getElementById('btnLeftLabel').textContent = isMiniGame ? 'Пропустить' : c.left.text;
+  document.getElementById('btnRightLabel').textContent = isMiniGame ? 'Играть' : c.right.text;
+  document.getElementById('btnRightArrow').textContent = isMiniGame ? '▶' : '→';
+  const meta = document.getElementById('minigameCardMeta');
+  meta.hidden = !isMiniGame;
+  document.getElementById('minigameCardHint').hidden = !isMiniGame;
+  if (isMiniGame) meta.textContent = `${c.duration} секунд · до +${currentDream.balance.miniGameMaxBonus}% к мечте`;
+  document.getElementById('btnRight').setAttribute('aria-label', isMiniGame ? `Играть: ${c.title}` : c.right.text);
 
   showDots(null);
   renderMascot('normal', null, 0);
 
-  tutorialHand.classList.toggle('visible', idx === 0 && !hasSwipedOnce);
+  tutorialHand.classList.toggle('visible', !isMiniGame && idx === 0 && !hasSwipedOnce);
 
-  cardEl.className = 'game-card enter';
+  cardEl.className = `game-card enter${isMiniGame ? ' is-minigame' : ''}`;
   cardEl.style.transform = 'translate3d(0,0,0) rotate(0deg)';
   cardEl.style.opacity = '1';
 
   // Предлагаем помощь после 20 секунд бездействия.
   resetIdleHintTimer();
+}
+
+function openMiniGameCard() {
+  if (busy || activeCardData?.type !== 'minigame' || !mascotHint.hidden || document.querySelector('.overlay-screen.active')) return;
+  busy = true;
+  dragging = false;
+  cardDragStarted = false;
+  delete cardEl.dataset.dragging;
+  emphasizeChoice();
+  cardEl.style.transform = 'translate3d(0,0,0) rotate(0deg)';
+  spriteWrap.style.transform = '';
+  followCardWithMascot();
+  closeMascotHint();
+  clearTimeout(idleHintTimer);
+  const run = campaignRun;
+  startMiniGame(activeCardData.gameType, () => {
+    if (run !== campaignRun) return;
+    // Мини-игра не занимает сюжетный ход и не расходует следующую сцену.
+    showCard(false);
+    busy = false;
+    resetIdleHintTimer();
+  });
+}
+
+function flyCardAway(dir) {
+  const flyX = dir === 'left' ? -window.innerWidth : window.innerWidth;
+  const flyRot = dir === 'left' ? -24 : 24;
+  cardEl.classList.remove('enter', 'smooth-return');
+  cardEl.classList.add('fly-away');
+  cardEl.style.transform = `translate3d(${flyX}px, 20px, 0) rotate(${flyRot}deg)`;
+  cardEl.style.opacity = '0';
 }
 
 
@@ -488,9 +548,11 @@ function renderFinalAchievements(isExitOnly) {
 
   if (isExitOnly) {
     rankEl.style.display = 'none';
+    listEl.style.display = 'none';
     return;
   }
   rankEl.style.display = 'inline-block';
+  listEl.style.display = 'grid';
 
   const earnedArmor = scamMistakes === 0 && idx >= 2;
   const earnedPiggy = stats.money >= 50;
@@ -537,7 +599,7 @@ function renderFinalAchievements(isExitOnly) {
         <div class="ach-title">${b.title}</div>
         <div class="ach-desc">${b.desc}</div>
       </div>
-      <span class="ach-status">${b.earned ? '✨ Получено!' : 'Закрыто'}</span>
+      <span class="ach-status">${b.earned ? '✨ Получено!' : 'Впереди'}</span>
     `;
     listEl.appendChild(card);
   });
@@ -557,6 +619,17 @@ function applyDecision(dir) {
   tutorialHand.classList.remove('visible');
 
   const c = activeCardData;
+  if (c.type === 'minigame') {
+    flyCardAway(dir);
+    showDots(null);
+    setTimeout(() => {
+      if (run !== campaignRun) return;
+      showCard(false);
+      busy = false;
+      resetIdleHintTimer();
+    }, 360);
+    return;
+  }
   const choice = dir === 'left' ? c.left : c.right;
   if (storyDirector) storyDirector.commit(choice === c.optA ? 'optA' : 'optB');
   const rect = cardEl.getBoundingClientRect();
@@ -567,11 +640,7 @@ function applyDecision(dir) {
     scamMistakes++;
   }
 
-  const flyX = dir === 'left' ? -window.innerWidth : window.innerWidth;
-  const flyRot = dir === 'left' ? -24 : 24;
-  cardEl.className = 'game-card fly-away';
-  cardEl.style.transform = `translate3d(${flyX}px, 20px, 0) rotate(${flyRot}deg)`;
-  cardEl.style.opacity = '0';
+  flyCardAway(dir);
 
   // Применяем индивидуальные множители кампании к базовым эффектам события
   Object.keys(choice.effects).forEach(k => {
@@ -614,18 +683,45 @@ function applyDecision(dir) {
 
   setTimeout(() => {
     if (run !== campaignRun) return;
-    // Проверяем, какой именно показатель упал до нуля
-    const failReasons = {
-      money: '🪙 Копилка опустела до нуля! Не забывай пополнять бюджет и беречь монеты.',
-      tech:  '⚡ Бодрость на нуле — ты совсем выбился из сил! Чередуй труд с отдыхом и сном.',
-      trust: '❤️ Дружба упала до нуля — все друзья обиделись! Деньги важны, но о друзьях забывать нельзя.',
-      team:  '🧠 Смекалка упала до нуля из-за ловушек и поспешных решений! Проверяй чеки, схемы и ссылки.'
+    // Проверяем, какой именно показатель опустел, и даём доброе наставление без ощущения проигрыша
+    const pauseMoments = {
+      money: {
+        icon: '🪙',
+        title: 'Копилке нужна подзарядка!',
+        text: 'Ты здорово двигался к цели, но монетки закончились чуть раньше времени.',
+        tip: 'Оставляй часть монет про запас — тогда на пути к мечте не страшны никакие сюрпризы!'
+      },
+      tech: {
+        icon: '⚡',
+        title: 'Время уютного привала!',
+        text: 'Ты так старался успеть всё сразу, что силы подошли к концу. Даже героям нужен отдых!',
+        tip: 'Чередуй полезные дела со сном и передышкой, чтобы бодрости хватило до самой мечты.'
+      },
+      trust: {
+        icon: '❤️',
+        title: 'Друзья ждут тебя во дворе!',
+        text: 'В спешке за целью друзьям не хватило твоего внимания, и без компании стало скучно.',
+        tip: 'Для дружбы не обязательно тратить монеты: доброе слово и помощь друзьям делают путь радостнее!'
+      },
+      team: {
+        icon: '🧭',
+        title: 'Хитрый поворот на маршруте!',
+        text: 'Попалось несколько запутанных предложений, поэтому самое время сделать паузу и осмотреться.',
+        tip: 'Не спеши верить громким акциям и таймерам: проверяй условия и советуйся со взрослыми.'
+      }
     };
     for (const k of ['money', 'tech', 'trust', 'team']) {
       if (stats[k] <= 0) {
         const ending = storyDirector && currentDream.endings && currentDream.endings[k];
-        finishGame(false, '🔧', ending ? ending.title : 'Баланс нарушен!',
-          ending ? `${ending.text} ${ending.tip}` : failReasons[k], false);
+        const fallback = pauseMoments[k];
+        finishGame(
+          false,
+          fallback.icon,
+          ending ? ending.title : fallback.title,
+          ending ? ending.text : fallback.text,
+          false,
+          ending ? ending.tip : fallback.tip
+        );
         busy = false;
         return;
       }
@@ -638,15 +734,21 @@ function applyDecision(dir) {
         spawnBurst(window.innerWidth / 2, window.innerHeight / 2, [currentDream.icon, '🏆', '🎉', '🌟'], 10);
       }
       const ending = storyDirector && currentDream.endings && currentDream.endings[won ? 'victory' : 'incomplete'];
-      const completedCards = idx + 1;
       finishGame(
         won,
         won ? currentDream.icon : '🌟',
-        ending ? ending.title : won ? `${currentDream.name} у тебя!` : 'Почти у цели!',
-        ending ? `${ending.text} ${ending.tip}` : won
-          ? `Ура! Ты прошёл все ${completedCards} карточек кампании и собрал Мечту на ${dreamPct}%!`
-          : `Ты выдержал все ${completedCards} карточек и собрал Мечту на ${dreamPct}% (нужно ${currentDream.balance.winDream}%). Попробуй ещё раз!`,
-        false
+        ending ? ending.title : won ? `${currentDream.name} у тебя!` : 'Мечта уже совсем близко!',
+        ending
+          ? ending.text
+          : won
+            ? `Ура! Ты прошёл всё приключение и собрал мечту «${currentDream.name}» на ${dreamPct}%!`
+            : `Ты прошёл всю историю и собрал мечту уже на ${dreamPct}%! Осталось совсем чуть-чуть до цели.`,
+        false,
+        ending
+          ? ending.tip
+          : won
+            ? 'Ты отлично держал баланс между копилкой, отдыхом, друзьями и смекалкой!'
+            : 'В новой попытке чаще выбирай шаги, которые приближают мечту, и заглядывай в мини-игры!'
       );
       busy = false;
       return;
@@ -658,36 +760,30 @@ function applyDecision(dir) {
       showCard();
       busy = false;
     };
-    if (storyDirector) {
-      if ((idx + 1) % 4 === 0) storyMiniGamesPending++;
-      if (storyDirector.isPriorityCardReady({ stats, dreamPct }) || !storyMiniGamesPending) {
-        advance();
-      } else {
-        storyMiniGamesPending--;
-        triggerMiniGameIfNeeded(advance, true, true);
-      }
-    } else {
-      triggerMiniGameIfNeeded(advance, true);
-    }
+    if ((idx + 1) % 4 === 0) miniGamesPending++;
+    advance();
   }, 360);
 }
 
 let completedSent = false;
 
-function finishGame(won, icon, title, text, isExitOnly) {
+function finishGame(won, icon, title, text, isExitOnly, customTip = '') {
   clearTimeout(idleHintTimer);
   document.getElementById('modalArt').textContent = icon;
   document.getElementById('modalTitle').textContent = title;
   document.getElementById('modalText').textContent = text;
+  const restartBtn = document.getElementById('restartBtn');
+  if (restartBtn) {
+    restartBtn.textContent = won ? 'Выбрать новую Мечту ↻' : 'Попробовать ещё раз ↻';
+  }
   const skillBox = document.getElementById('skillSummaryBox');
   if (skillBox) {
     skillBox.style.display = isExitOnly ? 'none' : 'block';
-    if (won) {
-      skillBox.innerHTML = '🎓 <b>Навык освоен:</b> ';
-      skillBox.append(document.createTextNode(`ты умеешь распознавать уловки мошенников, проверять выгоду покупок и держать баланс ресурсов (${currentDream.name} — ${dreamPct}%)!`));
-    } else {
-      skillBox.innerHTML = `💡 <b>Принцип баланса:</b> перед выбором проверяй подсказку Вольтика 🔍 и следи, чтобы ни одна из 4 колб не опускалась до нуля!`;
-    }
+    const adviceText = customTip || (won
+      ? 'Ты умеешь распознавать уловки, проверять выгоду покупок и беречь баланс ресурсов!'
+      : 'Заглядывай в подсказку Вольтика и следи, чтобы все четыре показателя оставались в плюсе.');
+    skillBox.innerHTML = won ? '🎓 <b>Чему мы научились:</b> ' : '🦊 <b>Совет Вольтика:</b> ';
+    skillBox.append(document.createTextNode(adviceText));
   }
   renderFinalAchievements(isExitOnly);
   document.getElementById('endModal').classList.add('active');
@@ -711,11 +807,8 @@ let startX = 0, startY = 0, dx = 0;
 function emphasizeChoice(offset = 0) {
   const amount = Math.min(1, Math.abs(offset) / 65);
   const bias = Math.sign(offset) * amount;
-  cardEl.style.setProperty('--choice-left', `${1 - bias}fr`);
-  cardEl.style.setProperty('--choice-right', `${1 + bias}fr`);
-  cardEl.style.setProperty('--choice-focus', amount);
-  cardEl.style.setProperty('--choice-left-presence', 1 - Math.max(0, bias));
-  cardEl.style.setProperty('--choice-right-presence', 1 + Math.min(0, bias));
+  cardEl.style.setProperty('--choice-left-emphasis', Math.max(0, -bias));
+  cardEl.style.setProperty('--choice-right-emphasis', Math.max(0, bias));
 }
 
 cardEl.addEventListener('pointerdown', (e) => {
@@ -745,7 +838,7 @@ window.addEventListener('pointermove', (e) => {
     cardDragStarted = true;
     cardEl.dataset.dragging = 'true';
     tutorialHand.classList.remove('visible');
-    cardEl.className = 'game-card';
+    cardEl.classList.remove('enter', 'smooth-return');
   }
   emphasizeChoice(dx);
   const dy = pointerDy * 0.25;
@@ -787,7 +880,8 @@ function endDrag(event) {
     applyDecision('right');
   } else {
     emphasizeChoice();
-    cardEl.className = 'game-card smooth-return';
+    cardEl.classList.remove('enter', 'fly-away');
+    cardEl.classList.add('smooth-return');
     cardEl.style.transform = 'translate3d(0,0,0) rotate(0deg)';
     spriteWrap.style.transform = '';
     showDots(null);
@@ -806,11 +900,23 @@ function chooseFromButton(event, direction) {
     draggedPastTap = false;
     return;
   }
-  Sound.swipe();
-  applyDecision(direction);
+  if (activeCardData?.type === 'minigame' && direction === 'right') {
+    openMiniGameCard();
+  } else {
+    Sound.swipe();
+    applyDecision(direction);
+  }
 }
 document.getElementById('btnLeft').addEventListener('click', event => chooseFromButton(event, 'left'));
 document.getElementById('btnRight').addEventListener('click', event => chooseFromButton(event, 'right'));
+cardEl.addEventListener('click', event => {
+  if (event.target.closest('button')) return;
+  if (draggedPastTap) {
+    draggedPastTap = false;
+    return;
+  }
+  openMiniGameCard();
+});
 
 window.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowLeft') { Sound.swipe(); applyDecision('left'); }
@@ -1029,6 +1135,7 @@ function renderCampaignList() {
 }
 
 async function loadCampaignCatalog() {
+  initSoundButton();
   setCampaignLoading(true);
   retryCampaignId = null;
   campaignStatus.hidden = false;
@@ -1037,7 +1144,6 @@ async function loadCampaignCatalog() {
     campaigns = await GameData.loadCatalog();
     renderCampaignList();
     campaignStatus.hidden = true;
-    initSoundButton();
   } catch (error) {
     showCampaignError(error);
   } finally {
@@ -1050,6 +1156,7 @@ async function startCampaign(id) {
   const campaign = campaigns.find(item => item.id === id);
   if (!campaign) return;
   const run = ++campaignRun;
+  cancelMiniGame();
   campaignLoadRun = run;
   setCampaignLoading(true);
   retryCampaignId = id;
@@ -1061,7 +1168,8 @@ async function startCampaign(id) {
     if (run !== campaignRun) return;
     activeDeck = events;
     storyDirector = story ? StoryDirector.create(story, events) : null;
-    storyMiniGamesPending = 0;
+    miniGamesPending = 0;
+    miniGameOfferCount = 0;
     applyDreamTheme(campaign);
     stats = { ...campaign.balance.initialStats };
     dreamPct = campaign.balance.initialDream;
@@ -1106,6 +1214,7 @@ campaignRetryBtn.addEventListener('click', () => {
 
 document.getElementById('restartBtn').addEventListener('click', () => {
   campaignRun++;
+  cancelMiniGame();
   campaignLoadRun = null;
   setCampaignLoading(false);
   busy = true;
@@ -1114,20 +1223,9 @@ document.getElementById('restartBtn').addEventListener('click', () => {
   document.getElementById('dreamSelectScreen').classList.add('active');
 });
 
-const shareBtn = document.getElementById('shareBtn');
-if (shareBtn) {
-  shareBtn.addEventListener('click', () => {
-    Sound.coin();
-    const rankText = document.getElementById('modalRank').textContent;
-    sendEvent('SHARING_EVENT', {
-      text: `Я прошёл игру «Твоя Мечта» с лисёнком Вольтиком и собрал ${currentDream.name} на ${dreamPct}%! (${rankText})`
-    });
-    flashBanner('📤 Диплом отправлен в меню «Поделиться»!');
-  });
-}
-
 function closeApp() {
   campaignRun++;
+  cancelMiniGame();
   campaignLoadRun = null;
   setCampaignLoading(false);
   busy = true;

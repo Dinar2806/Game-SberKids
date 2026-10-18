@@ -7,10 +7,12 @@
   <link rel="stylesheet" href="./css/main.css?v=webview-layout-1">
   <link rel="stylesheet" href="./css/cards.css?v=rendering-perf-1">
   <link rel="stylesheet" href="./css/modals.css">
-  <link rel="stylesheet" href="./css/playful.css?v=rendering-perf-1">
+  <link rel="stylesheet" href="./css/playful.css?v=readable-choices-2">
   <meta name="theme-color" content="#19171f">
 </head>
 <body>
+
+<audio id="bgmAudio" src="./assets/audio.mp3" loop preload="none"></audio>
 
 <div class="bg-decor">
   <div class="bg-shape s1" id="bgShape1"></div>
@@ -28,7 +30,10 @@
   <div class="welcome-shell">
     <header class="welcome-header">
       <span class="wordmark"><span class="brand-spark" aria-hidden="true">✳</span> сбер<span>kids</span></span>
-      <span class="game-label">ИГРА ПРО МЕЧТЫ</span>
+      <div class="welcome-header-right">
+        <span class="game-label">ИГРА ПРО МЕЧТЫ</span>
+        <button class="icon-btn" id="welcomeSoundBtn" type="button" aria-label="Включить звук и музыку" aria-pressed="false">🔇</button>
+      </div>
     </header>
     <section class="welcome-hero">
       <div class="hero-copy">
@@ -54,7 +59,7 @@
 <div class="app">
   <div class="mascot-backdrop" aria-hidden="true"></div>
   <header class="game-heading"><div><span class="eyebrow">СБЕРKIDS · ИГРА</span><h1>Путь к мечте<span>✦</span></h1></div>
-    <div class="header-actions"><button class="icon-btn" id="soundBtn" type="button" aria-label="Включить звук" aria-pressed="false">🔇</button><button class="icon-btn" id="closeBtn" type="button" aria-label="Выйти из игры">✕</button></div>
+    <div class="header-actions"><button class="icon-btn" id="soundBtn" type="button" aria-label="Включить звук и музыку" aria-pressed="false">🔇</button><button class="icon-btn" id="closeBtn" type="button" aria-label="Выйти из игры">✕</button></div>
   </header>
   <!-- ВЕРХНИЙ БЛОК: Ресурсы -->
   <div>
@@ -137,6 +142,8 @@
         <div>
           <h2 class="card-title" id="cardTitle">Загрузка...</h2>
           <p class="card-desc" id="cardDesc"></p>
+          <p class="minigame-card-meta" id="minigameCardMeta" hidden></p>
+          <p class="minigame-card-hint" id="minigameCardHint" hidden>Нажми для игры · смахни для пропуска</p>
         </div>
       </div>
       <!-- РЕШЕНИЯ ВНУТРИ КАРТОЧКИ -->
@@ -147,7 +154,7 @@
     </button>
     <button class="choice-btn right" id="btnRight" type="button">
       <span class="choice-label" id="btnRightLabel">Вариант 2</span>
-      <span class="choice-arrow" aria-hidden="true">→</span>
+      <span class="choice-arrow" id="btnRightArrow" aria-hidden="true">→</span>
     </button>
       </div>
     </div>
@@ -194,22 +201,17 @@
   </div>
 </div>
 
-<!-- МОДАЛКА КОНЦА ИГРЫ С АЧИВКАМИ И ДИПЛОМОМ СБЕРKIDS -->
+<!-- МОДАЛКА КОНЦА ИГРЫ С НАСТАВЛЕНИЕМ ВОЛЬТИКА -->
 <div class="overlay-screen" id="endModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="dialog-box">
-    <div style="font-size: 50px; margin-bottom: 2px;" id="modalArt">🏆</div>
+    <div class="end-modal-art" id="modalArt">🏆</div>
     <div class="rank-pill" id="modalRank">👑 Титул: Финансовый Профи</div>
-    <h2 style="font-size: 19px; font-weight: 900; margin: 0 0 4px;" id="modalTitle">Победа!</h2>
-    <p style="font-size: 12px; color: #475569; line-height: 1.35; margin: 0;" id="modalText"></p>
-    <div class="skill-summary-box" id="skillSummaryBox">
-      🎓 <b>Навык освоен:</b> ты умеешь распознавать уловки мошенников, проверять выгоду покупок и сохранять баланс между копилкой и дружбой!
-    </div>
+    <h2 class="end-modal-title" id="modalTitle">Мечта собрана!</h2>
+    <p class="end-modal-text" id="modalText"></p>
+    <div class="skill-summary-box" id="skillSummaryBox"></div>
     <div class="achievements-list" id="achievementsList"></div>
-    <button class="btn-main" id="restartBtn" type="button">Выбрать другую Мечту ↻</button>
-    <div class="btn-row-duo">
-      <button class="btn-share" id="shareBtn" type="button">Поделиться 📤</button>
-      <button class="btn-sub" id="exitBtn" type="button">Выйти ✕</button>
-    </div>
+    <button class="btn-main" id="restartBtn" type="button">Сыграть ещё раз ↻</button>
+    <button class="btn-sub" id="exitBtn" type="button">Выйти</button>
   </div>
 </div>
 
@@ -221,8 +223,8 @@
   <script src="./js/story-director.js?v=story-checkpoints-5"></script>
   <script src="./js/campaign-data.js?v=story-checkpoints-5"></script>
   <script src="./js/graphics-vfx.js?v=rendering-perf-1"></script>
-  <script src="./js/minigames.js?v=story-checkpoints-5"></script>
-  <script src="./js/game.js?v=story-checkpoints-5"></script>
+  <script src="./js/minigames.js?v=minigame-cards-1"></script>
+  <script src="./js/game.js?v=readable-choices-2"></script>
   <script src="./js/accessibility.js"></script>
 </body>
 </html>
