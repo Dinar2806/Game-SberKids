@@ -782,6 +782,10 @@ function renderCampaignList() {
   const groupTitles = { easy: 'Лёгкий старт', medium: 'Держим баланс', hard: 'Большие планы' };
   const rowMates = new Map();
   let previousInRow = null;
+  function makeFullRow(card) {
+    if (!card) return;
+    card.classList.add('dream-full-row', 'dream-featured');
+  }
   let campaignMotion = [];
   let campaignCleanup = [];
   let motionVersion = 0;
@@ -875,6 +879,7 @@ function renderCampaignList() {
   }
   orderedCampaigns.forEach((campaign, index) => {
     if (index === 0 || campaign.difficulty !== orderedCampaigns[index - 1].difficulty) {
+      makeFullRow(previousInRow);
       previousInRow = null;
       const heading = document.createElement('h3');
       heading.className = 'campaign-group-title';
@@ -891,7 +896,7 @@ function renderCampaignList() {
     btn.style.setProperty('--campaign-hue', Math.round(hue));
     btn.dataset.dream = campaign.id;
     // Сохраняем оформление visual, все значения из JSON вставляются как текст.
-    btn.innerHTML = '<div class="dream-option-copy"><span class="dream-opt-title"></span><span class="dream-meta"></span></div><span class="dream-opt-sub"><span class="dream-description-text"></span></span><button class="campaign-toggle" type="button" aria-expanded="false"></button><button class="campaign-close" type="button" aria-label="Свернуть карточку" hidden>×</button><button class="campaign-start" type="button" hidden>Начать приключение</button>';
+    btn.innerHTML = '<div class="dream-option-copy"><span class="dream-opt-title"></span></div><span class="dream-opt-sub"><span class="dream-description-text"></span></span><div class="dream-option-footer"><span class="dream-meta"></span><span class="campaign-expand-icon" aria-hidden="true"></span></div><button class="campaign-toggle" type="button" aria-expanded="false"></button><button class="campaign-close" type="button" aria-label="Свернуть карточку" hidden>×</button><button class="campaign-start" type="button" hidden>Начать приключение</button>';
     btn.prepend(createCampaignArt(campaign, 'dream-toy', 240, 220));
     if (index === 0) {
       const kicker = document.createElement('span');
@@ -947,6 +952,7 @@ function renderCampaignList() {
     campaignList.appendChild(btn);
     campaignDescriptionObserver.observe(description);
   });
+  makeFullRow(previousInRow);
 }
 
 async function loadCampaignCatalog() {
