@@ -630,6 +630,9 @@ function finishGame(won, icon, title, text, isExitOnly) {
 
 // 13. ФИЗИКА ПЕРЕТАСКИВАНИЯ + ПАРАЛЛАКС ИЛЛЮСТРАЦИИ
 let dragging = false;
+let draggedPastTap = false;
+let cardDragStarted = false;
+let startedOnScrollableText = false;
 let startX = 0, startY = 0, dx = 0;
 
 function emphasizeChoice(offset = 0) {
@@ -644,24 +647,35 @@ function emphasizeChoice(offset = 0) {
 
 cardEl.addEventListener('pointerdown', (e) => {
   if (busy) return;
-  if (e.target.closest('.controls-row')) return;
   const textArea = e.target.closest('.card-text-zone');
-  if (textArea && textArea.scrollHeight > textArea.clientHeight) return;
+  startedOnScrollableText = Boolean(textArea && textArea.scrollHeight > textArea.clientHeight);
   dragging = true;
-  cardEl.dataset.dragging = 'true';
+  draggedPastTap = false;
+  cardDragStarted = false;
   startX = e.clientX;
   startY = e.clientY;
   dx = 0;
-  emphasizeChoice();
-  tutorialHand.classList.remove('visible');
-  cardEl.className = 'game-card';
 });
 
 window.addEventListener('pointermove', (e) => {
   if (!dragging || busy) return;
   dx = e.clientX - startX;
+  const pointerDy = e.clientY - startY;
+  if (!cardDragStarted) {
+    if (Math.hypot(dx, pointerDy) <= 8) return;
+    draggedPastTap = true;
+    // В тексте вертикальный жест оставляем нативной прокрутке.
+    if (startedOnScrollableText && Math.abs(pointerDy) > Math.abs(dx)) {
+      dragging = false;
+      return;
+    }
+    cardDragStarted = true;
+    cardEl.dataset.dragging = 'true';
+    tutorialHand.classList.remove('visible');
+    cardEl.className = 'game-card';
+  }
   emphasizeChoice(dx);
-  const dy = (e.clientY - startY) * 0.25;
+  const dy = pointerDy * 0.25;
   const rot = dx * 0.055;
   followCardWithMascot(dx, dy);
   cardEl.style.transform = `translate3d(${dx}px, ${dy}px, 0) rotate(${rot}deg)`;
@@ -684,6 +698,11 @@ function endDrag(event) {
   if (!dragging) return;
   dragging = false;
   delete cardEl.dataset.dragging;
+  if (!cardDragStarted) {
+    if (event.type === 'pointercancel') draggedPastTap = true;
+    return;
+  }
+  cardDragStarted = false;
   followCardWithMascot();
   if (busy) return;
 
@@ -707,8 +726,18 @@ function endDrag(event) {
 window.addEventListener('pointerup', endDrag);
 window.addEventListener('pointercancel', endDrag);
 
-document.getElementById('btnLeft').addEventListener('click', () => { Sound.swipe(); applyDecision('left'); });
-document.getElementById('btnRight').addEventListener('click', () => { Sound.swipe(); applyDecision('right'); });
+function chooseFromButton(event, direction) {
+  // После перетаскивания браузер может отправить click на исходную кнопку.
+  if (draggedPastTap && event.detail !== 0) {
+    event.preventDefault();
+    draggedPastTap = false;
+    return;
+  }
+  Sound.swipe();
+  applyDecision(direction);
+}
+document.getElementById('btnLeft').addEventListener('click', event => chooseFromButton(event, 'left'));
+document.getElementById('btnRight').addEventListener('click', event => chooseFromButton(event, 'right'));
 
 window.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowLeft') { Sound.swipe(); applyDecision('left'); }

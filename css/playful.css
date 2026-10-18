@@ -162,20 +162,21 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
 .game-card { border: 2px solid #fff; box-shadow: 0 5px 0 #b6a8c9, 0 13px 24px #07040b40; touch-action: pan-y; }
 .card-shadow-1 { background: #c5b2db; border: 0; box-shadow: 0 4px 0 #725f8c; transform: translateY(9px) scale(.95); }
 .card-shadow-2 { background: #796888; border: 0; transform: translateY(17px) scale(.9); }
-.card-art-zone { height: 30%; min-height: 88px; border: 0; flex-shrink: 0; }
+/* One viewport-based illustration height for every story, independent of copy. */
+.card-art-zone { height: clamp(88px, 18vh, 176px); height: clamp(88px, 18svh, 176px); min-height: 88px; border: 0; flex-shrink: 0; }
 .card-art-zone::before, .card-art-zone::after { content: '✦'; position: absolute; color: #ffffffaa; font-size: 22px; left: 17%; top: 37%; transform: rotate(15deg); }
 .card-art-zone::after { left: auto; right: 17%; top: 65%; font-size: 13px; }
 .sprite-wrapper { width: 180px; height: 100%; max-height: 180px; }
 .step-badge { font-size: 12px; top: 10px; left: 11px; color: #51405e; border: 1px solid #ffffff88; background: #ffffffba; padding: 6px 10px; box-shadow: none; }
 .cond-badge { font-size: 8px; padding: 5px; max-width: 49%; right: 7px; }
-.card-text-zone { text-align: center; padding: 16px; gap: 12px; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; min-height: 0; }
-.card-text-zone > div { flex-shrink: 0; }
+.card-text-zone { text-align: center; padding: 8px 16px; gap: 12px; justify-content: flex-start; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; min-height: 0; }
+.card-text-zone > div { flex-shrink: 0; margin-block: auto; }
 .card-title { font-size: 24px; line-height: 1.12; letter-spacing: -.55px; color: #2b2236; }
 .card-desc { font-size: 17px; line-height: 1.45; margin-top: 8px; color: #5e5369; font-weight: 500; }
 .tutorial-hand { top: 22%; width: 100%; }
 .tut-pill { font-size: 16px; padding: 5px 14px; background: #30243ed9; }
 .tut-caption { background: #fffef4; border: 1px solid #d9c5e6; font-size: 10px; padding: 5px 9px; }
-.game-card .controls-row { gap: 10px; padding: 14px 12px 18px; margin-top: auto; border: 0; background: #fff; flex-shrink: 0; touch-action: manipulation; }
+.game-card .controls-row { gap: 10px; padding: 7px 12px 18px; margin-top: auto; border: 0; background: #fff; flex-shrink: 0; touch-action: manipulation; }
 .game-card .controls-row { container-type: inline-size; grid-template-columns: minmax(0, var(--choice-left, 1fr)) minmax(0, var(--choice-right, 1fr)); grid-template-rows: 84px; column-gap: calc(10px * (1 - var(--choice-focus, 0))); transition: grid-template-columns .16s ease-out, column-gap .16s ease-out; }
 .game-card .choice-btn { min-width: 0; min-height: 0; overflow: hidden; justify-content: center; padding-left: calc(12px * var(--choice-presence, 1)); padding-right: calc(12px * var(--choice-presence, 1)); border-width: calc(1px * var(--choice-presence, 1)); opacity: var(--choice-presence, 1); transition: opacity .16s ease-out, padding .16s ease-out, border-width .16s ease-out, transform .1s ease, box-shadow .1s ease; }
 .game-card .choice-btn.left { --choice-presence: var(--choice-left-presence, 1); }
@@ -249,7 +250,7 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
   .mascot-dock { height: 82px; margin-bottom: -22px; }
   .mascot-avatar { width: 100px; height: 90px; }
   .deck-area { min-height: 360px; }
-  .card-text-zone { padding: 12px; gap: 9px; }
+  .card-text-zone { padding: 6px 12px; gap: 9px; }
   .card-desc { margin-top: 6px; line-height: 1.45; }
   .choice-btn { min-height: 76px; }
 }
