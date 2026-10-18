@@ -1100,6 +1100,7 @@ function renderCampaignList() {
 }
 
 async function loadCampaignCatalog() {
+  initSoundButton();
   setCampaignLoading(true);
   retryCampaignId = null;
   campaignStatus.hidden = false;
@@ -1108,7 +1109,6 @@ async function loadCampaignCatalog() {
     campaigns = await GameData.loadCatalog();
     renderCampaignList();
     campaignStatus.hidden = true;
-    initSoundButton();
   } catch (error) {
     showCampaignError(error);
   } finally {

@@ -149,7 +149,28 @@ const GameData = (() => {
     return data.events;
   }
 
+  function getBuiltinJSON(path) {
+    const store = typeof globalThis !== 'undefined' && globalThis.BUILTIN_JSON_DATA;
+    if (!store || typeof store !== 'object') return null;
+    const raw = String(path || '');
+    const dataIdx = raw.lastIndexOf('/data/');
+    const key = dataIdx !== -1
+      ? `.${raw.slice(dataIdx)}`
+      : (raw.startsWith('./') ? raw : `./${raw.replace(/^\/+/, '')}`);
+    const entry = store[raw] || store[key];
+    if (!entry) return null;
+    return JSON.parse(JSON.stringify(entry));
+  }
+
   async function readJSON(path, baseURL) {
+    const isFileProtocol = (typeof location !== 'undefined' && location.protocol === 'file:') ||
+      String(baseURL || '').startsWith('file:') ||
+      String(path || '').startsWith('file:');
+    if (isFileProtocol) {
+      const localData = getBuiltinJSON(path);
+      if (localData !== null) return localData;
+    }
+
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), JSON_TIMEOUT_MS);
     try {
@@ -158,6 +179,8 @@ const GameData = (() => {
       // Дожидаемся тела ответа здесь, чтобы таймаут покрывал всю загрузку JSON.
       return await response.json();
     } catch (error) {
+      const fallbackData = getBuiltinJSON(path);
+      if (fallbackData !== null) return fallbackData;
       if (controller.signal.aborted) {
         const timeoutError = new Error(`${path}: загрузка превысила ${JSON_TIMEOUT_MS / 1000} секунд`);
         timeoutError.name = 'TimeoutError';

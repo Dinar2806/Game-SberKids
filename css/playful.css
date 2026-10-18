@@ -17,6 +17,7 @@ h1[tabindex="-1"]:focus, h2[tabindex="-1"]:focus, #mgTitle[tabindex="-1"]:focus 
 .bg-shape.s1 { width: 330px; height: 330px; }
 .bg-shape.s2 { width: 280px; height: 280px; }
 .bg-shape.s3 { opacity: .035; }
+.welcome-header-right { display: flex; align-items: center; gap: 10px; }
 .eyebrow { font-size: 10px; font-weight: 800; letter-spacing: .1em; }
 .wordmark { display: flex; gap: 6px; align-items: center; color: #fff; font-size: 23px; font-weight: 900; letter-spacing: -.9px; }
 .wordmark > span:last-child { color: var(--lime); margin-left: -5px; }

@@ -12,6 +12,8 @@
 </head>
 <body>
 
+<audio id="bgmAudio" src="./assets/audio.mp3" loop preload="none"></audio>
+
 <div class="bg-decor">
   <div class="bg-shape s1" id="bgShape1"></div>
   <div class="bg-shape s2" id="bgShape2"></div>
@@ -28,7 +30,10 @@
   <div class="welcome-shell">
     <header class="welcome-header">
       <span class="wordmark"><span class="brand-spark" aria-hidden="true">✳</span> сбер<span>kids</span></span>
-      <span class="game-label">ИГРА ПРО МЕЧТЫ</span>
+      <div class="welcome-header-right">
+        <span class="game-label">ИГРА ПРО МЕЧТЫ</span>
+        <button class="icon-btn" id="welcomeSoundBtn" type="button" aria-label="Включить звук и музыку" aria-pressed="false">🔇</button>
+      </div>
     </header>
     <section class="welcome-hero">
       <div class="hero-copy">
@@ -54,7 +59,7 @@
 <div class="app">
   <div class="mascot-backdrop" aria-hidden="true"></div>
   <header class="game-heading"><div><span class="eyebrow">СБЕРKIDS · ИГРА</span><h1>Путь к мечте<span>✦</span></h1></div>
-    <div class="header-actions"><button class="icon-btn" id="soundBtn" type="button" aria-label="Включить звук" aria-pressed="false">🔇</button><button class="icon-btn" id="closeBtn" type="button" aria-label="Выйти из игры">✕</button></div>
+    <div class="header-actions"><button class="icon-btn" id="soundBtn" type="button" aria-label="Включить звук и музыку" aria-pressed="false">🔇</button><button class="icon-btn" id="closeBtn" type="button" aria-label="Выйти из игры">✕</button></div>
   </header>
   <!-- ВЕРХНИЙ БЛОК: Ресурсы -->
   <div>
