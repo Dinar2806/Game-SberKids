@@ -16,6 +16,7 @@ const GameData = (() => {
     hard: { label: 'Сложная', className: 'diff-hard' }
   };
   const eventCache = new Map();
+  const storyCache = new Map();
   const JSON_TIMEOUT_MS = 15000;
 
   function requireValue(ok, path, message) {
@@ -49,7 +50,7 @@ const GameData = (() => {
     data.campaigns.forEach((c, i) => {
       const p = `campaigns[${i}]`;
       object(c, p);
-      knownKeys(c, ['id', 'name', 'icon', 'image', 'description', 'difficulty', 'progressIcons', 'progressSteps', 'eventsFile', 'balance', 'endings'], p);
+      knownKeys(c, ['id', 'name', 'icon', 'image', 'description', 'difficulty', 'progressIcons', 'progressSteps', 'eventsFile', 'storyFile', 'balance', 'endings'], p);
       id(c.id, `${p}.id`, seen);
       for (const key of ['name', 'icon', 'description']) text(c[key], `${p}.${key}`);
       if (Object.hasOwn(c, 'image')) {
@@ -69,6 +70,9 @@ const GameData = (() => {
         });
       }
       requireValue(typeof c.eventsFile === 'string' && /^\.\/data\/events\/[a-z0-9-]+\.json$/.test(c.eventsFile), `${p}.eventsFile`, 'нужен относительный путь ./data/events/<имя>.json');
+      if (Object.hasOwn(c, 'storyFile')) {
+        requireValue(typeof c.storyFile === 'string' && /^\.\/data\/stories\/[a-z0-9-]+\.json$/.test(c.storyFile), `${p}.storyFile`, 'нужен относительный путь ./data/stories/<имя>.json');
+      }
       const b = c.balance;
       object(b, `${p}.balance`);
       knownKeys(b, ['initialStats', 'initialDream', 'winDream', 'miniGameMaxBonus', 'multipliers'], `${p}.balance`);
@@ -177,6 +181,18 @@ const GameData = (() => {
     return eventCache.get(url);
   }
 
+  async function loadStory(campaign, events, baseURL = document.baseURI) {
+    if (!campaign.storyFile) return null;
+    const url = new URL(campaign.storyFile, baseURL).href;
+    if (!storyCache.has(url)) storyCache.set(url, readJSON(url, baseURL));
+    try {
+      return StoryDirector.validate(await storyCache.get(url), events, campaign.id + '.story');
+    } catch (error) {
+      storyCache.delete(url);
+      throw error;
+    }
+  }
+
   function resolveEvent(event, state) {
     if (!event.condition) return { ...event, isCond: false };
     const { stat, operator, value } = event.condition;
@@ -188,5 +204,5 @@ const GameData = (() => {
     return Math.round(value * multipliers[key]);
   }
 
-  return { difficulties, validateCatalog, validateEvents, loadCatalog, loadEvents, resolveEvent, scaleEffect };
+  return { difficulties, validateCatalog, validateEvents, loadCatalog, loadEvents, loadStory, resolveEvent, scaleEffect };
 })();

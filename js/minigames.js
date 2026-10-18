@@ -1,13 +1,14 @@
 // Пул из 8 обучающих мини-игр по 15 секунд с таймер-полосой
 // 10. ПУЛ ИЗ 6 РАЗНЫХ МИНИ-ИГР ПО 15 СЕКУНД (Каждые 4 карточки: 4, 8, 12, 16, 20, 24, 28, 32, 36)
-function triggerMiniGameIfNeeded(nextCallback) {
+function triggerMiniGameIfNeeded(nextCallback, hasMoreCards = idx + 1 < activeDeck.length, force = false) {
   const step = idx + 1;
-  if (step >= activeDeck.length || step % 4 !== 0) {
+  if (!hasMoreCards || (!force && step % 4 !== 0)) {
     nextCallback();
     return;
   }
 
   clearTimeout(idleHintTimer);
+  const run = campaignRun;
   const overlay = document.getElementById('minigameOverlay');
   const arena = document.getElementById('mgArena');
   const titleEl = document.getElementById('mgTitle');
@@ -44,8 +45,9 @@ function triggerMiniGameIfNeeded(nextCallback) {
     finished = true;
     if (countdown) clearInterval(countdown);
     if (spawnTimer) clearInterval(spawnTimer);
+    if (run !== campaignRun) return;
     overlay.classList.remove('active');
-    dreamPct = clamp(dreamPct + bonus);
+    dreamPct = clampDreamProgress(dreamPct + bonus);
     stats.money = clamp(stats.money + Math.round(bonus / 2));
     syncUI();
     Sound.unlock();
@@ -56,7 +58,7 @@ function triggerMiniGameIfNeeded(nextCallback) {
   skipBtn.onclick = endMiniGame;
 
   // Чередуем 8 разных мини-игр по кругу
-  const gameType = ((step / 4) - 1) % 8;
+  const gameType = (Math.floor(step / 4) - 1) % 8;
 
   if (gameType === 0) {
     // ИГРА 1: Монетный звездопад
@@ -362,6 +364,7 @@ function triggerMiniGameIfNeeded(nextCallback) {
   }
 
   countdown = setInterval(() => {
+    if (run !== campaignRun) { endMiniGame(); return; }
     timeLeft--;
     timerEl.textContent = `⏱️ ${timeLeft} сек`;
     if (timerFillEl) timerFillEl.style.width = `${Math.max(0, (timeLeft / 15) * 100)}%`;

@@ -2,6 +2,7 @@
 let currentDream = null;
 let campaigns = [];
 let campaignLoading = false;
+let campaignLoadRun = null;
 let retryCampaignId = null;
 const mascotAvatar = document.getElementById("mascotAvatar");
 let idleHintTimer = null;
@@ -9,6 +10,9 @@ let idleHintActive = false;
 
 // 9. СОСТОЯНИЕ ИГРЫ
 let activeDeck = [];
+let storyDirector = null;
+let storyMiniGamesPending = 0;
+let campaignRun = 0;
 let stats = { money: 55, tech: 55, trust: 55, team: 55 };
 let dreamPct = 15;
 let streak = 0;
@@ -26,6 +30,11 @@ const streakPill = document.getElementById('streakPill');
 const tutorialHand = document.getElementById('tutorialHand');
 
 function clamp(n) { return Math.max(0, Math.min(100, Math.round(n))); }
+
+function clampDreamProgress(n) {
+  const checkpoint = storyDirector ? storyDirector.getStatus().checkpoint : 0;
+  return clamp(Math.max(checkpoint, n));
+}
 
 function flashBanner(text, dur = 2500, anchor = null) {
   const b = document.getElementById('rewardBanner');
@@ -245,12 +254,13 @@ function applyDreamTheme(campaign) {
 }
 
 function getDreamStage() {
-  const complete = dreamPct >= currentDream.balance.winDream;
+  const status = storyDirector && storyDirector.getStatus();
+  const complete = dreamPct >= currentDream.balance.winDream && (!status || status.completed);
   const track = document.querySelector('.dream-bar-track');
   const edge = track.clientWidth * getDreamPathPercent() / 100;
   const nodes = [...track.querySelectorAll('.part-node')];
   const next = nodes.findIndex(node => node.offsetLeft + node.offsetWidth > edge);
-  const index = complete ? 5 : Math.max(0, next);
+  const index = complete ? 5 : status ? Math.min(4, status.milestonesCompleted) : Math.max(0, next);
   const steps = currentDream.progressSteps || currentDream.progressIcons.map((icon, i) => ({
     name: `Этап ${i + 1}`, text: `${icon} Собираем мечту: этап ${i + 1} из 5`
   }));
@@ -264,7 +274,7 @@ function syncUI() {
     document.getElementById('pill-' + k).classList.toggle('low-warn', stats[k] <= 22);
   });
 
-  dreamPct = clamp(dreamPct);
+  dreamPct = clampDreamProgress(dreamPct);
 
   if (streak >= 2) {
     streakPill.textContent = streak >= 4 ? `💎 МЕГА x${streak}` : `🔥 КОМБО x${streak}`;
@@ -285,7 +295,7 @@ function syncUI() {
     node.classList.toggle('unlocked', isNow);
     const isCurrent = !stage.complete && i === stage.index;
     node.classList.toggle('is-current', isCurrent);
-    node.setAttribute('aria-label', `${stage.steps[i].name}: ${isNow ? 'собрано' : isCurrent ? 'собираем сейчас' : 'впереди'}`);
+    node.setAttribute('aria-label', `${stage.steps[i].name}: ${isNow ? storyDirector ? 'этап пройден' : 'собрано' : isCurrent ? 'собираем сейчас' : 'впереди'}`);
     if (isNow && !wasUnlocked && idx > 0) {
       Sound.unlock();
       animateDreamPartArrival(node, icon, flightOrigin);
@@ -331,7 +341,33 @@ function animateDreamPartArrival(node, icon, origin) {
 }
 
 function getDreamPathPercent() {
-  return currentDream ? Math.min(100, dreamPct / currentDream.balance.winDream * 100) : 0;
+  if (!currentDream) return 0;
+  if (storyDirector) {
+    const status = storyDirector.getStatus();
+    if (!status.completed) {
+      const track = document.querySelector('.dream-bar-track');
+      const nodes = track.querySelectorAll('.part-node');
+      const node = nodes[status.milestonesCompleted];
+      const previous = nodes[status.milestonesCompleted - 1];
+      if (node && track.clientWidth > 0) {
+        // Map each story threshold to its own circle, independent of screen width.
+        const edge = part => part.offsetLeft + (part.clientLeft || 0) + (part.clientWidth ?? part.offsetWidth);
+        const from = previous ? edge(previous) : 0;
+        const to = edge(node);
+        const range = status.progressRange;
+        const fraction = range
+          ? Math.max(0, Math.min(1, (dreamPct - range.from) / (range.to - range.from)))
+          : 0;
+        const ready = storyDirector.isMilestoneReady({ stats, dreamPct });
+        const position = from + (to - from) * fraction;
+        // A numeric target alone cannot visually finish a fact-gated stage.
+        const limit = fraction === 1 && !ready ? to - 4 : to;
+        return Math.max(from, Math.min(position, limit)) / track.clientWidth * 100;
+      }
+      return 0;
+    }
+  }
+  return Math.min(100, dreamPct / currentDream.balance.winDream * 100);
 }
 
 // Keep one continuous horizontal fill edge through the connecting line and circles.
@@ -385,10 +421,14 @@ function showDots(choice) {
 }
 
 function resolveCard(i) {
-  const raw = activeDeck[i];
+  const raw = storyDirector ? storyDirector.next({ stats, dreamPct }) : activeDeck[i];
+  if (!raw) {
+    if (storyDirector && storyDirector.isComplete()) return null;
+    throw new Error('В приключении не осталось следующей карточки');
+  }
   const resolved = GameData.resolveEvent(raw, stats);
   const base = { ...resolved, bg: BG_PAL[resolved.type] };
-  const flip = sideFlipMap[i];
+  const flip = sideFlipMap[storyDirector ? activeDeck.indexOf(raw) : i];
   return {
     ...base,
     left: flip ? base.optA : base.optB,
@@ -403,10 +443,18 @@ function showCard() {
   followCardWithMascot();
   activeCardData = resolveCard(idx);
   const c = activeCardData;
+  if (!c) {
+    const ending = currentDream.endings && currentDream.endings.incomplete;
+    finishGame(false, '🌟', ending ? ending.title : 'Продолжим в другой раз!',
+      ending ? `${ending.text} ${ending.tip}` : 'Ты сохранил баланс, но самокат пока не готов. Попробуй другой путь к мечте!', false);
+    return;
+  }
 
   shiftBackground(idx);
 
-  document.getElementById('stepBadge').textContent = `Ход ${idx + 1} / ${activeDeck.length}`;
+  document.getElementById('stepBadge').textContent = storyDirector
+    ? `Ход ${idx + 1} · ${storyDirector.getStatus().chapterTitle}`
+    : `Ход ${idx + 1} / ${activeDeck.length}`;
   document.getElementById('condBadge').classList.toggle('show', !!c.isCond);
   document.getElementById('cardTitle').textContent = c.title;
   document.getElementById('cardDesc').textContent = c.desc;
@@ -502,6 +550,7 @@ function applyDecision(dir) {
   closeMascotHint();
   followCardWithMascot();
   busy = true;
+  const run = campaignRun;
   hasSwipedOnce = true;
   clearTimeout(idleHintTimer);
   mascotAvatar.classList.remove('idle-nudge');
@@ -509,6 +558,7 @@ function applyDecision(dir) {
 
   const c = activeCardData;
   const choice = dir === 'left' ? c.left : c.right;
+  if (storyDirector) storyDirector.commit(choice === c.optA ? 'optA' : 'optB');
   const rect = cardEl.getBoundingClientRect();
   const cx = rect.left + rect.width / 2;
   const cy = rect.top + rect.height / 2.4;
@@ -553,7 +603,7 @@ function applyDecision(dir) {
   }
 
   if (dreamGain !== 0) {
-    dreamPct = clamp(dreamPct + dreamGain);
+    dreamPct = clampDreamProgress(dreamPct + dreamGain);
   }
 
   triggerComicJuice(choice.mascot);
@@ -563,6 +613,7 @@ function applyDecision(dir) {
   sendEvent('VIBRATION_EVENT');
 
   setTimeout(() => {
+    if (run !== campaignRun) return;
     // Проверяем, какой именно показатель упал до нуля
     const failReasons = {
       money: '🪙 Копилка опустела до нуля! Не забывай пополнять бюджет и беречь монеты.',
@@ -572,34 +623,52 @@ function applyDecision(dir) {
     };
     for (const k of ['money', 'tech', 'trust', 'team']) {
       if (stats[k] <= 0) {
-        finishGame(false, '🔧', 'Баланс нарушен!', failReasons[k], false);
+        const ending = storyDirector && currentDream.endings && currentDream.endings[k];
+        finishGame(false, '🔧', ending ? ending.title : 'Баланс нарушен!',
+          ending ? `${ending.text} ${ending.tip}` : failReasons[k], false);
         busy = false;
         return;
       }
     }
 
-    if (idx >= activeDeck.length - 1) {
-      Sound.unlock();
-      spawnBurst(window.innerWidth / 2, window.innerHeight / 2, [currentDream.icon, '🏆', '🎉', '🌟'], 10);
-      const won = dreamPct >= currentDream.balance.winDream;
+    if (storyDirector ? storyDirector.isComplete() : idx >= activeDeck.length - 1) {
+      const won = dreamPct >= currentDream.balance.winDream && (!storyDirector || storyDirector.getStatus().completed);
+      if (won || !storyDirector) {
+        Sound.unlock();
+        spawnBurst(window.innerWidth / 2, window.innerHeight / 2, [currentDream.icon, '🏆', '🎉', '🌟'], 10);
+      }
+      const ending = storyDirector && currentDream.endings && currentDream.endings[won ? 'victory' : 'incomplete'];
+      const completedCards = idx + 1;
       finishGame(
         won,
         won ? currentDream.icon : '🌟',
-        won ? `${currentDream.name} у тебя!` : 'Почти у цели!',
-        won
-          ? `Ура! Ты прошёл все ${activeDeck.length} карточек кампании и собрал Мечту на ${dreamPct}%!`
-          : `Ты выдержал все ${activeDeck.length} карточек и собрал Мечту на ${dreamPct}% (нужно ${currentDream.balance.winDream}%). Попробуй ещё раз!`,
+        ending ? ending.title : won ? `${currentDream.name} у тебя!` : 'Почти у цели!',
+        ending ? `${ending.text} ${ending.tip}` : won
+          ? `Ура! Ты прошёл все ${completedCards} карточек кампании и собрал Мечту на ${dreamPct}%!`
+          : `Ты выдержал все ${completedCards} карточек и собрал Мечту на ${dreamPct}% (нужно ${currentDream.balance.winDream}%). Попробуй ещё раз!`,
         false
       );
       busy = false;
       return;
     }
 
-    triggerMiniGameIfNeeded(() => {
+    const advance = () => {
+      if (run !== campaignRun) return;
       idx++;
       showCard();
       busy = false;
-    });
+    };
+    if (storyDirector) {
+      if ((idx + 1) % 4 === 0) storyMiniGamesPending++;
+      if (storyDirector.isPriorityCardReady({ stats, dreamPct }) || !storyMiniGamesPending) {
+        advance();
+      } else {
+        storyMiniGamesPending--;
+        triggerMiniGameIfNeeded(advance, true, true);
+      }
+    } else {
+      triggerMiniGameIfNeeded(advance, true);
+    }
   }, 360);
 }
 
@@ -980,13 +1049,19 @@ async function startCampaign(id) {
   if (campaignLoading) return;
   const campaign = campaigns.find(item => item.id === id);
   if (!campaign) return;
+  const run = ++campaignRun;
+  campaignLoadRun = run;
   setCampaignLoading(true);
   retryCampaignId = id;
   campaignStatus.hidden = false;
   campaignStatus.textContent = 'Загружаем приключение…';
   try {
     const events = await GameData.loadEvents(campaign);
+    const story = await GameData.loadStory(campaign, events);
+    if (run !== campaignRun) return;
     activeDeck = events;
+    storyDirector = story ? StoryDirector.create(story, events) : null;
+    storyMiniGamesPending = 0;
     applyDreamTheme(campaign);
     stats = { ...campaign.balance.initialStats };
     dreamPct = campaign.balance.initialDream;
@@ -997,7 +1072,7 @@ async function startCampaign(id) {
     busy = false;
     buildFlipMap();
     const badge = Array.from(campaignList.children).find(btn => btn.dataset.dream === id).querySelector('.dream-meta');
-    badge.textContent = GameData.difficulties[campaign.difficulty].label + ' · ' + events.length + ' карт';
+    badge.textContent = GameData.difficulties[campaign.difficulty].label + (storyDirector ? ' · разные истории' : ' · ' + events.length + ' карт');
     syncUI();
     showCard();
     gameApp.scrollTop = 0;
@@ -1006,16 +1081,21 @@ async function startCampaign(id) {
     resetIdleHintTimer();
     Sound.coin();
   } catch (error) {
+    if (run !== campaignRun) return;
     busy = true;
     activeCardData = null;
     activeDeck = [];
+    storyDirector = null;
     currentDream = null;
     clearTimeout(idleHintTimer);
     document.getElementById('dreamSelectScreen').classList.add('active');
     showCampaignError(error);
     document.getElementById('dreamSelectScreen').scrollTop = campaignStatus.offsetTop;
   } finally {
-    setCampaignLoading(false);
+    if (campaignLoadRun === run) {
+      campaignLoadRun = null;
+      setCampaignLoading(false);
+    }
   }
 }
 
@@ -1025,6 +1105,9 @@ campaignRetryBtn.addEventListener('click', () => {
 });
 
 document.getElementById('restartBtn').addEventListener('click', () => {
+  campaignRun++;
+  campaignLoadRun = null;
+  setCampaignLoading(false);
   busy = true;
   clearTimeout(idleHintTimer);
   document.getElementById('endModal').classList.remove('active');
@@ -1044,6 +1127,10 @@ if (shareBtn) {
 }
 
 function closeApp() {
+  campaignRun++;
+  campaignLoadRun = null;
+  setCampaignLoading(false);
+  busy = true;
   sendEvent('CLOSE_EVENT');
   if (!currentDream) return;
   finishGame(false, '👋', 'До новой встречи!', 'Сигнал о выходе отправлен в приложение.', true);

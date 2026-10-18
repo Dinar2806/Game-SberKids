@@ -1,0 +1,450 @@
+{
+  "version": 2,
+  "opening": "scooter-001",
+  "facts": [
+    "route-friends",
+    "route-plan",
+    "route-started",
+    "wheels-ready",
+    "deck-ready",
+    "controls-ready",
+    "battery-ready",
+    "ride-ready"
+  ],
+  "maxTurns": 60,
+  "chapters": [
+    {
+      "id": "wheels",
+      "title": "Колёса",
+      "completeWhen": {
+        "stats": [
+          {
+            "stat": "dream",
+            "operator": ">=",
+            "value": 15
+          }
+        ],
+        "all": [
+          "route-started"
+        ]
+      },
+      "pool": [
+        "scooter-003",
+        "scooter-005",
+        "scooter-007",
+        "scooter-009",
+        "scooter-011",
+        "scooter-013",
+        "scooter-015"
+      ],
+      "repeatable": [
+        "scooter-025",
+        "scooter-026",
+        "scooter-027",
+        "scooter-028"
+      ],
+      "milestone": "scooter-004"
+    },
+    {
+      "id": "deck",
+      "title": "Дека",
+      "completeWhen": {
+        "stats": [
+          {
+            "stat": "dream",
+            "operator": ">=",
+            "value": 30
+          }
+        ],
+        "all": [
+          "wheels-ready"
+        ]
+      },
+      "pool": [
+        "scooter-003",
+        "scooter-005",
+        "scooter-007",
+        "scooter-009",
+        "scooter-011",
+        "scooter-013",
+        "scooter-015",
+        "scooter-006",
+        "scooter-010",
+        "scooter-021",
+        "scooter-022"
+      ],
+      "repeatable": [
+        "scooter-025",
+        "scooter-026",
+        "scooter-027",
+        "scooter-028"
+      ],
+      "milestone": "scooter-023"
+    },
+    {
+      "id": "controls",
+      "title": "Управление",
+      "completeWhen": {
+        "stats": [
+          {
+            "stat": "dream",
+            "operator": ">=",
+            "value": 45
+          }
+        ],
+        "all": [
+          "deck-ready"
+        ]
+      },
+      "pool": [
+        "scooter-003",
+        "scooter-005",
+        "scooter-007",
+        "scooter-009",
+        "scooter-011",
+        "scooter-013",
+        "scooter-015",
+        "scooter-006",
+        "scooter-010",
+        "scooter-012",
+        "scooter-014",
+        "scooter-021",
+        "scooter-022"
+      ],
+      "repeatable": [
+        "scooter-025",
+        "scooter-026",
+        "scooter-027",
+        "scooter-028"
+      ],
+      "milestone": "scooter-008"
+    },
+    {
+      "id": "battery",
+      "title": "Аккумулятор",
+      "completeWhen": {
+        "stats": [
+          {
+            "stat": "dream",
+            "operator": ">=",
+            "value": 60
+          }
+        ],
+        "all": [
+          "controls-ready"
+        ]
+      },
+      "pool": [
+        "scooter-003",
+        "scooter-005",
+        "scooter-007",
+        "scooter-009",
+        "scooter-011",
+        "scooter-013",
+        "scooter-015",
+        "scooter-006",
+        "scooter-010",
+        "scooter-012",
+        "scooter-014",
+        "scooter-018",
+        "scooter-021",
+        "scooter-022"
+      ],
+      "repeatable": [
+        "scooter-025",
+        "scooter-026",
+        "scooter-027",
+        "scooter-028"
+      ],
+      "milestone": "scooter-024"
+    },
+    {
+      "id": "ride",
+      "title": "Первый заезд",
+      "completeWhen": {
+        "stats": [
+          {
+            "stat": "dream",
+            "operator": ">=",
+            "value": 75
+          }
+        ],
+        "all": [
+          "battery-ready"
+        ]
+      },
+      "pool": [
+        "scooter-003",
+        "scooter-005",
+        "scooter-007",
+        "scooter-009",
+        "scooter-011",
+        "scooter-013",
+        "scooter-015",
+        "scooter-006",
+        "scooter-010",
+        "scooter-012",
+        "scooter-014",
+        "scooter-018",
+        "scooter-019",
+        "scooter-021",
+        "scooter-022"
+      ],
+      "repeatable": [
+        "scooter-025",
+        "scooter-026",
+        "scooter-027",
+        "scooter-028"
+      ],
+      "milestone": "scooter-020"
+    }
+  ],
+  "events": {
+    "scooter-001": {
+      "choices": {
+        "optA": {
+          "followUp": "scooter-002"
+        },
+        "optB": {
+          "followUp": "scooter-002"
+        }
+      }
+    },
+    "scooter-002": {
+      "choices": {
+        "optA": {
+          "set": [
+            "route-friends"
+          ],
+          "followUp": "scooter-017"
+        },
+        "optB": {
+          "set": [
+            "route-plan"
+          ],
+          "followUp": "scooter-016"
+        }
+      }
+    },
+    "scooter-017": {
+      "requires": {
+        "all": [
+          "route-friends"
+        ]
+      },
+      "choices": {
+        "optA": {
+          "set": [
+            "route-started"
+          ]
+        },
+        "optB": {
+          "set": [
+            "route-started"
+          ]
+        }
+      }
+    },
+    "scooter-016": {
+      "requires": {
+        "all": [
+          "route-plan"
+        ]
+      },
+      "choices": {
+        "optA": {
+          "set": [
+            "route-started"
+          ]
+        },
+        "optB": {
+          "set": [
+            "route-started"
+          ]
+        }
+      }
+    },
+    "scooter-021": {
+      "requires": {
+        "all": [
+          "route-friends",
+          "route-started"
+        ]
+      }
+    },
+    "scooter-022": {
+      "requires": {
+        "all": [
+          "route-plan",
+          "route-started"
+        ]
+      }
+    },
+    "scooter-004": {
+      "choices": {
+        "optA": {
+          "set": [
+            "wheels-ready"
+          ]
+        },
+        "optB": {
+          "set": [
+            "wheels-ready"
+          ]
+        }
+      }
+    },
+    "scooter-023": {
+      "choices": {
+        "optA": {
+          "set": [
+            "deck-ready"
+          ]
+        },
+        "optB": {
+          "set": [
+            "deck-ready"
+          ]
+        }
+      }
+    },
+    "scooter-008": {
+      "choices": {
+        "optA": {
+          "set": [
+            "controls-ready"
+          ]
+        },
+        "optB": {
+          "set": [
+            "controls-ready"
+          ]
+        }
+      }
+    },
+    "scooter-024": {
+      "choices": {
+        "optA": {
+          "set": [
+            "battery-ready"
+          ]
+        },
+        "optB": {
+          "set": [
+            "battery-ready"
+          ]
+        }
+      }
+    },
+    "scooter-020": {
+      "choices": {
+        "optA": {
+          "set": [
+            "ride-ready"
+          ]
+        },
+        "optB": {
+          "set": [
+            "ride-ready"
+          ]
+        }
+      }
+    },
+    "scooter-009": {
+      "boosts": [
+        {
+          "when": {
+            "stats": [
+              {
+                "stat": "tech",
+                "operator": "<=",
+                "value": 50
+              }
+            ]
+          },
+          "factor": 3
+        }
+      ]
+    },
+    "scooter-018": {
+      "boosts": [
+        {
+          "when": {
+            "stats": [
+              {
+                "stat": "trust",
+                "operator": "<=",
+                "value": 50
+              }
+            ]
+          },
+          "factor": 3
+        }
+      ]
+    },
+    "scooter-014": {
+      "boosts": [
+        {
+          "when": {
+            "stats": [
+              {
+                "stat": "team",
+                "operator": "<=",
+                "value": 50
+              }
+            ]
+          },
+          "factor": 3
+        }
+      ]
+    },
+    "scooter-025": {
+      "cooldown": 3,
+      "urgentWhen": {
+        "stats": [
+          {
+            "stat": "money",
+            "operator": "<=",
+            "value": 25
+          }
+        ]
+      }
+    },
+    "scooter-026": {
+      "cooldown": 3,
+      "urgentWhen": {
+        "stats": [
+          {
+            "stat": "tech",
+            "operator": "<=",
+            "value": 25
+          }
+        ]
+      }
+    },
+    "scooter-027": {
+      "cooldown": 3,
+      "urgentWhen": {
+        "stats": [
+          {
+            "stat": "trust",
+            "operator": "<=",
+            "value": 25
+          }
+        ]
+      }
+    },
+    "scooter-028": {
+      "cooldown": 3,
+      "urgentWhen": {
+        "stats": [
+          {
+            "stat": "team",
+            "operator": "<=",
+            "value": 25
+          }
+        ]
+      }
+    }
+  }
+}

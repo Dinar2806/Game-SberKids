@@ -4,11 +4,15 @@ const path = require('node:path');
 const vm = require('node:vm');
 const root = path.resolve(__dirname, '..');
 const GameData = vm.runInNewContext(fs.readFileSync(path.join(root, 'js/campaign-data.js'), 'utf8') + '; GameData');
+const StoryDirector = vm.runInNewContext(fs.readFileSync(path.join(root, 'js/story-director.js'), 'utf8') + '; StoryDirector');
 try {
   const campaigns = GameData.validateCatalog(JSON.parse(fs.readFileSync(path.join(root, 'data/campaigns.json'), 'utf8')));
   let total = 0;
   for (const campaign of campaigns) {
     const events = GameData.validateEvents(JSON.parse(fs.readFileSync(path.join(root, campaign.eventsFile), 'utf8')), campaign.id);
+    if (campaign.storyFile) {
+      StoryDirector.validate(JSON.parse(fs.readFileSync(path.join(root, campaign.storyFile), 'utf8')), events, campaign.id + '.story');
+    }
     console.log(`${campaign.id}: ${events.length} событий, ${events.filter(e => e.condition).length} условных`);
     total += events.length;
   }
